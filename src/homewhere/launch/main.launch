@@ -1,0 +1,33 @@
+<launch>
+    <arg name="x_pos" default="-4.0"/> 
+    <arg name="y_pos" default="1.0"/>
+    <arg name="z_pos" default="0.5"/>
+
+    <!-- -2 0 for turtle -->
+    <!-- -2 1 for house -->
+
+    <!-- <arg name="world" default="turtle"/> -->
+    <arg name="world" default="empty"/>
+    <!-- <arg name="world" default="gas_station"/> -->
+
+    <arg name="mode" default="default"/>
+
+    <!-- Argument to pass the Xacro file path -->
+    <arg name="model" default="$(find homewhere)/urdf/urdf.xacro" />
+
+    <!-- Robot Description -->
+    <param name="robot_description" 
+           command="$(find xacro)/xacro --inorder $(arg model)" />
+
+    <!-- Launch an empty Gazebo world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false" />
+        <arg name="use_sim_time" value="true" />
+        <arg name="world_name" value="$(find rocker_bogie)/world/$(arg world).world" />
+    </include>
+
+    <!-- Spawn the rocker-bogie robot into Gazebo -->
+    <node name="spawn_rocker_bogie" pkg="gazebo_ros" type="spawn_model"
+          args="-urdf -param robot_description -model rocker_bogie -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)" output="screen" />
+
+</launch>
