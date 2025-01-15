@@ -13,7 +13,7 @@
     <arg name="mode" default="default"/>
 
     <!-- Argument to pass the Xacro file path -->
-    <arg name="model" default="$(find homewhere)/urdf/urdf.xacro" />
+    <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
 
     <!-- Robot Description -->
     <param name="robot_description" 

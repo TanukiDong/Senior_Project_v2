@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot name="rocker_bogie" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- <xacro:include filename="$(find homewhere)/urdf/color.xacro" /> -->
+
+  <!-- ================== -->
+  <!-- 1) Base Link      -->
+  <!-- ================== -->
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.5 0.5 0.5" />
+      </geometry>
+      <material name="orange">
+        <color rgba="1.0 0.423529 0.0392157 1.0" />
+        <!-- <color rgba="${255/255} ${108/255} ${10/255} 1.0" /> -->
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.5 0.5" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="10" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1" />
+    </inertial>
+  </link>
+
+  <!-- ============== -->
+  <!-- 2) Wheel      -->
+  <!-- ============== -->
+
+  <xacro:macro name="steering_joint" params="name x y">
+    <link name="steer_${name}">
+      <visual>
+        <geometry>
+          <box size="0.05 0.05 0.1" />
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0 1 1" />
+        </material>
+      </visual>
+    </link>
+
+    <link name="wheel_${name}">
+      <visual>
+        <geometry>
+          <cylinder length="0.05" radius="0.05" />
+        </geometry>
+        <material name="black">
+          <color rgba="0 0 0 1" />
+        </material>
+      </visual>
+    </link>
+
+    <joint name="steer_${name}_joint" type="revolute">
+      <parent link="base_link" />
+      <child link="steer_${name}" />
+      <origin xyz="${x} ${y} -0.3" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <limit lower="-0.785" upper="0.785" effort="5.0" velocity="1.0" />
+    </joint>
+
+    <joint name="wheel_${name}_joint" type="revolute">
+      <parent link="steer_${name}" />
+      <child link="wheel_${name}" />
+      <origin xyz="0 0 -0.05" rpy="0 1.5708 0" />
+      <axis xyz="0 0 1" />
+      <limit lower="-0.785" upper="0.785"/>
+    </joint>
+
+  </xacro:macro>
+
+  <xacro:steering_joint name="front_left" x="-0.2" y="0.2" />
+  <xacro:steering_joint name="front_right" x="0.2" y="0.2" />
+  <xacro:steering_joint name="rear_left" x="-0.2" y="-0.2" />
+  <xacro:steering_joint name="rear_right" x="0.2" y="-0.2" />
+
+
+</robot>
