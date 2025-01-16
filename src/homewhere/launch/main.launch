@@ -1,7 +1,7 @@
 <launch>
-    <arg name="x_pos" default="-4.0"/> 
-    <arg name="y_pos" default="1.0"/>
-    <arg name="z_pos" default="0.5"/>
+    <arg name="x" default="0.0"/> 
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="1.0"/>
 
     <!-- -2 0 for turtle -->
     <!-- -2 1 for house -->
@@ -19,15 +19,20 @@
     <param name="robot_description" 
            command="$(find xacro)/xacro --inorder $(arg model)" />
 
+    <!-- Launch Control Node -->
+    <node pkg="homewhere" type="control.py" name="control" output="screen"/>
+    
     <!-- Launch an empty Gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="paused" value="false" />
         <arg name="use_sim_time" value="true" />
-        <arg name="world_name" value="$(find rocker_bogie)/world/$(arg world).world" />
+        <arg name="world_name" value="$(find homewhere)/world/$(arg world).world" />
     </include>
 
-    <!-- Spawn the rocker-bogie robot into Gazebo -->
-    <node name="spawn_rocker_bogie" pkg="gazebo_ros" type="spawn_model"
-          args="-urdf -param robot_description -model rocker_bogie -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)" output="screen" />
+    <!-- Spawn the robot into Gazebo -->
+    <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
+          args="-urdf -param robot_description -model homewhere -x $(arg x) -y $(arg y) -z $(arg z)" output="screen" />
+
+
 
 </launch>
