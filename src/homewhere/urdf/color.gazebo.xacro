@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="color_gazebo" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- http://wiki.ros.org/simulator_gazebo/Tutorials/ListOfMaterials -->
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="steer_front_left">
+    <material>Gazebo/Green</material>
+  </gazebo>
+  <gazebo reference="steer_front_right">
+    <material>Gazebo/Red</material>
+  </gazebo>
+  <gazebo reference="steer_rear_left">
+    <material>Gazebo/Green</material>
+  </gazebo>
+  <gazebo reference="steer_rear_right">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <gazebo reference="wheel_front_left">
+    <material>Gazebo/Grey </material>
+  </gazebo>
+  <gazebo reference="wheel_front_right">
+    <material>Gazebo/Grey </material>
+  </gazebo>
+  <gazebo reference="wheel_rear_left">
+    <material>Gazebo/Grey </material>
+  </gazebo>
+  <gazebo reference="wheel_rear_right">
+    <material>Gazebo/Grey </material>
+  </gazebo>
+
+
+</robot>
