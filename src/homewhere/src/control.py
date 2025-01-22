@@ -14,7 +14,7 @@ class Control:
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
 
-        # Manual control flag
+        self.active_keys = set()
         self.manual_control_active = False
 
         # Initialize velocity messages for each wheel
@@ -57,23 +57,29 @@ class Control:
         self.manual_control_active = True
 
         try:
-            still = [0,0,0,0]
-            forward = [-10, -10, 10, -10]
-            backward = [10, 10, 10, 10]
-            left_turn = [0.785, 0.785, 0.785, 0.785]
-            right_turn = [-0.785, -0.785, -0.785, -0.785]
+            still = [0, 0, 0, 0]
+            forward = [10, 10, 10, 10]
+            backward = [-10, -10, -10, -10]
+            left_turn = [0.1, 0.1, 0.1, 0.1]
+            right_turn = [-0.1, -0.1, -0.1, -0.1]
 
-            if key.char == 'w':  # Forward
-                self.set_velocity([forward, still])
-            elif key.char == 's':  # Backward
-                self.set_velocity([backward, still])
-            elif key.char == 'a':  # Left turn
-                self.set_velocity([still,left_turn])
-            elif key.char == 'd':  # Right turn
-                self.set_velocity([still, right_turn])
-            elif key.char == 'q':  # Quit
-                rospy.signal_shutdown("User requested shutdown.")
+            # Add the pressed key to the active keys set
+            self.active_keys.add(key.char)
 
+            # Compute velocity and angular velocity based on active keys
+            velocity = still
+            angular_velocity = still
+
+            if 'w' in self.active_keys:  # Forward
+                velocity = forward
+            if 's' in self.active_keys:  # Backward
+                velocity = backward
+            if 'a' in self.active_keys:  # Left turn
+                angular_velocity = left_turn
+            if 'd' in self.active_keys:  # Right turn
+                angular_velocity = right_turn
+
+            self.set_velocity([velocity, angular_velocity])
             self.publish_velocity()
 
         except AttributeError:
@@ -82,6 +88,7 @@ class Control:
     def on_release(self, key):
         """Handle key release events."""
         self.manual_control_active = False
+        self.active_keys.discard(key.char)
         self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0]])
         self.publish_velocity()
 
