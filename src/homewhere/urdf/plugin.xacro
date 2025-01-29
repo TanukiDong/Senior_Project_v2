@@ -3,7 +3,39 @@
 <robot name="plugin" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <gazebo>
-        <plugin name="control_plugin" filename="libcontrol_plugin.so"/>
+        <plugin name="control_plugin" filename="libcontrol_plugin.so" />
+    </gazebo>
+
+    <gazebo reference="base_scan">
+        <sensor type="ray" name="lidar_sensor">
+            <origin xyz="0 0 0.2" rpy="0 0 0" />
+            <visualize>true</visualize>
+            <update_rate>60</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>360</samples>
+                        <resolution>1</resolution>
+                        <min_angle>0</min_angle> <!-- -90 degrees -->
+                        <max_angle>6.28319</max_angle>  <!-- +90 degrees -->
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.15</min> <!-- Min detection distance -->
+                    <max>3.5</max> <!-- Max detection distance -->
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_laser" filename="libgazebo_ros_laser.so">
+                <topicName>scan</topicName>
+                <frameName>base_scan</frameName>
+            </plugin>
+        </sensor>
     </gazebo>
 
 </robot>

@@ -33,5 +33,9 @@
     <material>Gazebo/Grey </material>
   </gazebo>
 
+  <gazebo reference="base_scan">
+    <material>Gazebo/Red </material>
+  </gazebo>
+
 
 </robot>

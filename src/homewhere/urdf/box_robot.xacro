@@ -12,11 +12,11 @@
   <xacro:property name="base_mass" value="20.0" />
   <xacro:property name="base_size" value="0.5 0.5 0.5" />
 
-  <xacro:property name="steer_mass" value="1.0" />
+  <xacro:property name="steer_mass" value="2.5" />
   <xacro:property name="steer_size" value="0.05 0.05 0.22" />
   <!-- z of steer is 0.1 + radius of wheel -->
 
-  <xacro:property name="wheel_mass" value="4.0" />
+  <xacro:property name="wheel_mass" value="2.0" />
   <xacro:property name="wheel_radius" value="0.07" />
   <xacro:property name="wheel_length" value="0.04" />
   
@@ -72,9 +72,9 @@
         <mass value="${wheel_mass}" />
         <origin xyz="0 0 0"/>
         <inertia
-          ixx="0.0054" ixy="0.0" ixz="0.0"
-          iyy="0.0098" iyz="0.0"
-          izz="0.0054"/>
+          ixx="0.0027" ixy="0.0" ixz="0.0"
+          iyy="0.0049" iyz="0.0"
+          izz="0.0027"/>
       </inertial>
     </link>
 
@@ -114,7 +114,7 @@
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.25" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <limit lower="-0.785" upper="0.785" effort="10.0" velocity="0.1" />
+      <limit lower="${-pi/2}" upper="${pi/2}" effort="1000.0" velocity="0.1" />
     </joint>
 
     <!-- z = -wheel_radius so the edge is at the center of the wheel -->
@@ -123,10 +123,29 @@
       <child link="wheel_${name}" />
       <origin xyz="0 0 -0.11"/>
       <axis xyz="0 1 0" />
-      <!-- <limit lower="-0.785" upper="0.785" effort="10.0" velocity="2.0" /> -->
     </joint>
 
   </xacro:macro>
+
+  <!-- ============== -->
+  <!-- 3) Lidar       -->
+  <!-- ============== -->
+
+  <link name="base_scan">
+    <visual>
+      <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
+      <geometry>
+        <cylinder length="0.05" radius="0.02" />
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+  <joint name="scan_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="base_scan" />
+    <origin xyz="0 0 0.275" rpy="0 0 0" />
+  </joint>
 
   <xacro:steering_wheel name="front_left"   x="0.2"  y="0.2" />
   <xacro:steering_wheel name="front_right"  x="0.2"   y="-0.2" />
