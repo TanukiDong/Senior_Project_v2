@@ -1,6 +1,6 @@
 <launch>
-    <arg name="x" default="0.0"/> 
-    <arg name="y" default="0.0"/>
+    <arg name="x" default="-1.0"/> 
+    <arg name="y" default="-1.0"/>
     <arg name="z" default="1.0"/>
 
     <!-- -2 0 for turtle -->
@@ -31,6 +31,18 @@
           args="-urdf -param robot_description -model homewhere -x $(arg x) -y $(arg y) -z $(arg z)" output="screen" />
 
     <!-- Launch Control Node -->
-    <node pkg="homewhere" type="control.py" name="control" output="screen"/>
+    <node name="control" pkg="homewhere" type="control.py" output="screen"/>
+    <!-- Movement Publisher -->
+    <node name="odometry" pkg="homewhere" type="odometry.py" output="screen"/>
+
+    <!-- Launch the robot_state_publisher to publish transforms -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+    <!-- Launch the joint_state_publisher to publish joint states -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen" />
+
+    <!-- SLAM: Gmapping -->
+    <group if="$(eval arg('mode') == 'slam')">
+         <include file="$(find homewhere)/launch/slam.launch"/>
+    </group>
 
 </launch>
