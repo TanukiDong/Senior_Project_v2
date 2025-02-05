@@ -21,7 +21,7 @@
                     </horizontal>
                 </scan>
                 <range>
-                    <min>0.15</min> <!-- Min detection distance -->
+                    <min>0.12</min> <!-- Min detection distance -->
                     <max>3.5</max> <!-- Max detection distance -->
                     <resolution>0.01</resolution>
                 </range>

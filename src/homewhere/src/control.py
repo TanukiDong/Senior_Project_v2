@@ -60,8 +60,8 @@ class Control:
             still = [0, 0, 0, 0]
             forward = [10, 10, 10, 10]
             backward = [-10, -10, -10, -10]
-            left_turn = [0.1, 0.1, 0.1, 0.1]
-            right_turn = [-0.1, -0.1, -0.1, -0.1]
+            left_turn = [1, 1, 1, 1]
+            right_turn = [-1, -1, -1, -1]
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)

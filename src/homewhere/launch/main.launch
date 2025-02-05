@@ -1,23 +1,23 @@
 <launch>
-    <arg name="x" default="-1.0"/> 
-    <arg name="y" default="-1.0"/>
-    <arg name="z" default="1.0"/>
+    <arg name="x" default="-2.0" />
+    <arg name="y" default="0.0" />
+    <arg name="z" default="1.0" />
 
     <!-- -2 0 for turtle -->
     <!-- -2 1 for house -->
+    <!-- 50 -3 1 for eng3 -->
 
-    <!-- <arg name="world" default="turtle"/> -->
-    <arg name="world" default="empty"/>
+    <arg name="world" default="turtle" />
+    <!-- <arg name="world" default="empty"/> -->
     <!-- <arg name="world" default="gas_station"/> -->
 
-    <arg name="mode" default="default"/>
+    <arg name="mode" default="default" />
 
     <!-- Argument to pass the Xacro file path -->
-    <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
+    <arg name="model" default="$(find homewhere)/urdf/box_robot.small.xacro" />
 
     <!-- Robot Description -->
-    <param name="robot_description" 
-           command="$(find xacro)/xacro --inorder $(arg model)" />
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
     <!-- Launch an empty Gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -28,21 +28,27 @@
 
     <!-- Spawn the robot into Gazebo -->
     <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
-          args="-urdf -param robot_description -model homewhere -x $(arg x) -y $(arg y) -z $(arg z)" output="screen" />
+        args="-urdf -param robot_description -model homewhere -x $(arg x) -y $(arg y) -z $(arg z)"
+        output="screen" />
 
     <!-- Launch Control Node -->
-    <node name="control" pkg="homewhere" type="control.py" output="screen"/>
+    <node name="control" pkg="homewhere" type="control.py" output="screen" />
     <!-- Movement Publisher -->
-    <node name="odometry" pkg="homewhere" type="odometry.py" output="screen"/>
+    <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
 
-    <!-- Launch the robot_state_publisher to publish transforms -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
-    <!-- Launch the joint_state_publisher to publish joint states -->
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen" />
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     <!-- SLAM: Gmapping -->
     <group if="$(eval arg('mode') == 'slam')">
-         <include file="$(find homewhere)/launch/slam.launch"/>
+        <include file="$(find homewhere)/launch/slam.launch" />
+    </group>
+
+    <!-- Navigation -->
+    <group if="$(eval arg('mode') == 'nav')">
+        <include file="$(find homewhere)/launch/navigation.launch">
+            <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
+        </include>
     </group>
 
 </launch>

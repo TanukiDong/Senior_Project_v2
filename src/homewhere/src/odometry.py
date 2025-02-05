@@ -7,7 +7,6 @@ import tf
 import math
 
 # Wheel base distance (distance between left and right wheels)
-WHEEL_DISTANCE = 0.5
 WHEEL_RADIUS = 0.07
 
 # Initialize global variables for wheel velocities
@@ -63,8 +62,8 @@ def odometry_publisher():
         last_time = current_time
 
         # Calculate average velocities for left and right wheel sets
-        left_avg = (velFrontLeft_Linear + velFrontRight_Linear) / 2 * WHEEL_RADIUS
-        right_avg = (velBackLeft_Linear + velBackRight_Angular) / 2 * WHEEL_RADIUS
+        # left_avg = (velFrontLeft_Linear + velFrontRight_Linear) / 2 * WHEEL_RADIUS
+        # right_avg = (velBackLeft_Linear + velBackRight_Angular) / 2 * WHEEL_RADIUS
 
         # Calculate linear and angular velocities
         dv = velFrontLeft_Linear * WHEEL_RADIUS  # Linear velocity
@@ -86,14 +85,14 @@ def odometry_publisher():
         # last_x, last_y, last_theta = x, y, theta
 
         # Create a quaternion from theta
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, 0)
 
         # Publish the transform over TF
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
             odom_quat,
             current_time,
-            "base_link",
+            "base_footprint",
             "odom"
         )
 
@@ -109,9 +108,9 @@ def odometry_publisher():
         odom.pose.pose.orientation = Quaternion(*odom_quat)
 
         # Set the velocity
-        odom.child_frame_id = "base_link"
+        odom.child_frame_id = "base_footprint"
         odom.twist.twist.linear.x = dv
-        odom.twist.twist.angular.z = dth
+        odom.twist.twist.angular.z = 0.0
 
         # Publish the odometry message
         odom_pub.publish(odom)

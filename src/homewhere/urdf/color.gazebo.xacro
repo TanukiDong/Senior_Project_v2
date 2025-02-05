@@ -3,7 +3,7 @@
 
   <!-- http://wiki.ros.org/simulator_gazebo/Tutorials/ListOfMaterials -->
 
-  <gazebo reference="base_link">
+  <gazebo reference="body">
     <material>Gazebo/Orange</material>
   </gazebo>
 
