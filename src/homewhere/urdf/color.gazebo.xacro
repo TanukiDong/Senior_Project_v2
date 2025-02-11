@@ -24,7 +24,7 @@
     <material>Gazebo/Grey </material>
   </gazebo>
   <gazebo reference="wheel_front_right">
-    <material>Gazebo/Grey </material>
+    <material>Gazebo/Red </material>
   </gazebo>
   <gazebo reference="wheel_rear_left">
     <material>Gazebo/Grey </material>

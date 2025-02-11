@@ -75,7 +75,12 @@
           <cylinder length="${wheel_length}" radius="${wheel_radius}" />
         </geometry>
         <origin xyz="0 0 0" rpy="1.57 0 0" />
-        <material name="grey" />
+        <xacro:if value="${name == 'front_right'}">
+          <material name="red" />
+        </xacro:if>
+        <xacro:unless value="${name == 'front_right'}">
+          <material name="grey" />
+        </xacro:unless>
       </visual>
 
       <collision>
@@ -101,7 +106,12 @@
           <box size="${steer_size}" />
         </geometry>
         <origin xyz="0 0 0" rpy="0 0 0" />
-        <material name="green" />
+        <xacro:if value="${name == 'front_right'}">
+          <material name="red" />
+        </xacro:if>
+        <xacro:unless value="${name == 'front_right'}">
+          <material name="green" />
+        </xacro:unless>
       </visual>
 
       <inertial>
