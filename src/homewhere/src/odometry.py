@@ -5,9 +5,11 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
+from sensor_msgs.msg import JointState
 
-# Wheel base distance (distance between left and right wheels)
+# Wheel base distance
 WHEEL_RADIUS = 0.07
+WHEEL_BASE = 0.5 / 2
 
 # Initialize global variables for wheel velocities
 velFrontLeft_Linear = 0.0
@@ -50,10 +52,12 @@ def odometry_publisher():
     rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
     rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
     rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
+    
+    joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
     # Initial position and orientation
     x = y = theta = 0.0
-    rate = rospy.Rate(10)  # 10 Hz
+    rate = rospy.Rate(10)
     last_time = rospy.Time.now()
 
     while not rospy.is_shutdown():
@@ -61,39 +65,36 @@ def odometry_publisher():
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
-        # Calculate average velocities for left and right wheel sets
-        # left_avg = (velFrontLeft_Linear + velFrontRight_Linear) / 2 * WHEEL_RADIUS
-        # right_avg = (velBackLeft_Linear + velBackRight_Angular) / 2 * WHEEL_RADIUS
-
         # Calculate linear and angular velocities
-        dv = velFrontLeft_Linear * WHEEL_RADIUS  # Linear velocity
-        dth = velFrontLeft_Angular  # Angular velocity
+        dv = velFrontLeft_Linear * WHEEL_RADIUS
+        omega = velFrontLeft_Angular
 
         # Update position
         dx = dv * math.cos(theta) * dt
         dy = dv * math.sin(theta) * dt
-        dth = dth * dt
+        dtheta = omega * dt
         x += dx
         y += dy
-        theta += dth
-
-        # Skip publishing if state hasn't changed significantly
-        # if last_x == x and last_y == y and last_theta == theta:
-        #     rate.sleep()
-        #     continue
-
-        # last_x, last_y, last_theta = x, y, theta
+        theta += dtheta
 
         # Create a quaternion from theta
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, 0)
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
+        odom_quat_2 = tf.transformations.quaternion_from_euler(0, 0, theta)
 
-        # Publish the transform over TF
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
             odom_quat,
             current_time,
             "base_footprint",
             "odom"
+        )
+        
+        odom_broadcaster.sendTransform(
+            (0.0, 0.0, 2.0),
+            tf.transformations.quaternion_from_euler(0, 0, -theta),
+            current_time,
+            "base_scan",
+            "base_link"
         )
 
         # Publish the odometry message
@@ -110,10 +111,36 @@ def odometry_publisher():
         # Set the velocity
         odom.child_frame_id = "base_footprint"
         odom.twist.twist.linear.x = dv
-        odom.twist.twist.angular.z = 0.0
+        odom.twist.twist.linear.y = 0.0
+        odom.twist.twist.angular.z = omega
 
         # Publish the odometry message
         odom_pub.publish(odom)
+        
+        
+        # # Create a JointState message
+        # joint_state = JointState()
+        # joint_state.header.stamp = current_time
+
+        # # Define joint names
+        # joint_state.name = [
+        #     "wheel_front_left_joint", "wheel_front_right_joint",
+        #     "wheel_rear_left_joint", "wheel_rear_right_joint",
+        #     "steer_front_left_joint", "steer_front_right_joint",
+        #     "steer_rear_left_joint", "steer_rear_right_joint"
+        # ]
+
+        # # Define joint positions
+        # joint_state.position = [
+        #     0.0, 0.0,
+        #     0.0, 0.0,
+        #     # theta, theta, theta, theta
+        #     0.0, 0.0,
+        #     0.0, 0.0,
+        # ]
+
+        # # Publish joint states
+        # joint_pub.publish(joint_state)
 
         rate.sleep()
 
