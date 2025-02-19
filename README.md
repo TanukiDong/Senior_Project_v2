@@ -34,3 +34,9 @@ Run SLAM in turtle world
 ```bash
 roslaunch homewhere main.launch mode:=slam world:=turtle
 ```
+
+Run navigation in turtle world
+
+```bash
+roslaunch homewhere main.launch mode:=nav world:=turtle
+```
