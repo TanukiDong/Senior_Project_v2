@@ -130,7 +130,7 @@
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.1" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <limit lower="${-pi/2}" upper="${pi/2}" effort="1000.0" velocity="0.1" />
+      <limit lower="${-3 * pi/2}" upper="${3 * pi/2}" effort="1000.0" velocity="0.1" />
     </joint>
 
     <!-- z = -leg/2 -->
