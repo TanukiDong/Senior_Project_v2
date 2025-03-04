@@ -42,13 +42,16 @@ class Control:
         # Threshold to prevent unnecessary rotation at goal
         ANGULAR_THRESHOLD = 0.1
         LINEAR_THRESHOLD = 0.1
-        MAX_ANGLE = math.radians(90)
+        MAX_ANGLE = math.pi
         
         # Determine if the desired rotation angle exceeds the limit
         if abs(angular_velocity) > MAX_ANGLE:
-            # Reverse direction and move backward instead
-            angular_velocity = -angular_velocity  # Flip the rotation direction
-            linear_velocity = -linear_velocity    # Move in reverse
+            if angular_velocity > math.pi / 2:
+                angular_velocity -= math.pi
+            elif angular_velocity < -math.pi / 2:
+                angular_velocity += math.pi
+                
+            linear_velocity = -linear_velocity
 
         # Decision logic for movement
         if abs(linear_velocity) < LINEAR_THRESHOLD and abs(angular_velocity) < ANGULAR_THRESHOLD:
@@ -100,8 +103,8 @@ class Control:
 
         try:
             still = [0, 0, 0, 0]
-            forward = [10, 10, 10, 10]
-            backward = [-10, -10, -10, -10]
+            forward = [5, 5, 5, 5]
+            backward = [-5, -5, -5, -5]
             left_turn = [1, 1, 1, 1]
             right_turn = [-1, -1, -1, -1]
 
