@@ -9,7 +9,7 @@ from sensor_msgs.msg import JointState
 
 # Wheel base distance
 WHEEL_RADIUS = 0.07
-WHEEL_BASE = 0.5 / 2
+# WHEEL_BASE = 0.5 / 2
 
 # Initialize global variables for wheel velocities
 velFrontLeft_Linear = 0.0
@@ -66,12 +66,12 @@ def odometry_publisher():
         last_time = current_time
 
         # Calculate linear and angular velocities
-        dv = velFrontLeft_Linear * WHEEL_RADIUS
+        v = velFrontLeft_Linear * WHEEL_RADIUS
         omega = velFrontLeft_Angular
 
         # Update position
-        dx = dv * math.cos(theta) * dt
-        dy = dv * math.sin(theta) * dt
+        dx = v * math.cos(theta) * dt
+        dy = v * math.sin(theta) * dt
         dtheta = omega * dt
         x += dx
         y += dy
@@ -79,7 +79,6 @@ def odometry_publisher():
 
         # Create a quaternion from theta
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
-        odom_quat_2 = tf.transformations.quaternion_from_euler(0, 0, theta)
 
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
@@ -90,7 +89,7 @@ def odometry_publisher():
         )
         
         odom_broadcaster.sendTransform(
-            (0.0, 0.0, 2.0),
+            (0.0, 0.0, 0.0),
             tf.transformations.quaternion_from_euler(0, 0, -theta),
             current_time,
             "base_scan",
@@ -110,7 +109,7 @@ def odometry_publisher():
 
         # Set the velocity
         odom.child_frame_id = "base_footprint"
-        odom.twist.twist.linear.x = dv
+        odom.twist.twist.linear.x = v
         odom.twist.twist.linear.y = 0.0
         odom.twist.twist.angular.z = omega
 
