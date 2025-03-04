@@ -1,7 +1,7 @@
 <launch>
     <arg name="x" default="-2.0" />
-    <arg name="y" default="0.0" />
-    <arg name="z" default="1.0" />
+    <arg name="y" default="1.0" />
+    <arg name="z" default="0.5" />
 
     <!-- -2 0 for turtle -->
     <!-- -2 1 for house -->
