@@ -65,14 +65,16 @@ def odometry_publisher():
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
-        # Calculate linear and angular velocities
+        # Calculation
         v = velFrontLeft_Linear * WHEEL_RADIUS
+        vx = v * math.cos(theta)
+        vy = v * math.sin(theta)
         omega = velFrontLeft_Angular
 
-        # Update position
-        dx = v * math.cos(theta) * dt
-        dy = v * math.sin(theta) * dt
+        dx = vx * dt
+        dy = vy * dt
         dtheta = omega * dt
+        
         x += dx
         y += dy
         theta += dtheta
@@ -82,7 +84,7 @@ def odometry_publisher():
 
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
-            odom_quat,
+            tf.transformations.quaternion_from_euler(0, 0, theta),
             current_time,
             "base_footprint",
             "odom"
@@ -92,9 +94,16 @@ def odometry_publisher():
             (0.0, 0.0, 0.0),
             tf.transformations.quaternion_from_euler(0, 0, -theta),
             current_time,
-            "base_scan",
-            "base_link"
+            "base_link",
+            "base_footprint"
         )
+        # odom_broadcaster.sendTransform(
+        #     (0.0, 0.0, 0.0),
+        #     tf.transformations.quaternion_from_euler(0, 0, -theta),
+        #     current_time,
+        #     "base_scan",
+        #     "base_link"
+        # )
 
         # Publish the odometry message
         odom = Odometry()
@@ -117,29 +126,29 @@ def odometry_publisher():
         odom_pub.publish(odom)
         
         
-        # # Create a JointState message
-        # joint_state = JointState()
-        # joint_state.header.stamp = current_time
+        # Create a JointState message
+        joint_state = JointState()
+        joint_state.header.stamp = current_time
 
-        # # Define joint names
-        # joint_state.name = [
-        #     "wheel_front_left_joint", "wheel_front_right_joint",
-        #     "wheel_rear_left_joint", "wheel_rear_right_joint",
-        #     "steer_front_left_joint", "steer_front_right_joint",
-        #     "steer_rear_left_joint", "steer_rear_right_joint"
-        # ]
+        # Define joint names
+        joint_state.name = [
+            "wheel_front_left_joint", "wheel_front_right_joint",
+            "wheel_rear_left_joint", "wheel_rear_right_joint",
+            "steer_front_left_joint", "steer_front_right_joint",
+            "steer_rear_left_joint", "steer_rear_right_joint"
+        ]
 
-        # # Define joint positions
-        # joint_state.position = [
-        #     0.0, 0.0,
-        #     0.0, 0.0,
-        #     # theta, theta, theta, theta
-        #     0.0, 0.0,
-        #     0.0, 0.0,
-        # ]
+        # Define joint positions
+        joint_state.position = [
+            0.0, 0.0,
+            0.0, 0.0,
+            theta, theta, theta, theta
+            # 0.0, 0.0,
+            # 0.0, 0.0,
+        ]
 
-        # # Publish joint states
-        # joint_pub.publish(joint_state)
+        # Publish joint states
+        joint_pub.publish(joint_state)
 
         rate.sleep()
 
