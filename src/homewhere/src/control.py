@@ -42,13 +42,13 @@ class Control:
         # Threshold to prevent unnecessary rotation at goal
         ANGULAR_THRESHOLD = 0.1
         LINEAR_THRESHOLD = 0.1
-        MAX_ANGLE = math.pi
+        MAX_ANGLE = math.pi / 2
         
         # Determine if the desired rotation angle exceeds the limit
         if abs(angular_velocity) > MAX_ANGLE:
-            if angular_velocity > math.pi / 2:
+            if angular_velocity > MAX_ANGLE:
                 angular_velocity -= math.pi
-            elif angular_velocity < -math.pi / 2:
+            else: # angular_velocity < MAX_ANGLE
                 angular_velocity += math.pi
                 
             linear_velocity = -linear_velocity
