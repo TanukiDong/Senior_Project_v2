@@ -34,7 +34,7 @@
     <!-- Launch Control Node -->
     <node name="control" pkg="homewhere" type="control.py" output="screen" />
     <!-- Movement Publisher -->
-    <node name="odometry" pkg="homewhere" type="od.py" output="screen" />
+    <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
 
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
