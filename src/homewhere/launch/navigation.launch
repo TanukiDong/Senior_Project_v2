@@ -29,12 +29,6 @@
 
         <!-- Load move_base-specific parameters -->
         <rosparam file="$(find homewhere)/config/move_base_params.yaml" command="load" />
-
-        <!-- Optional topic remapping -->
-        <!-- <remap from="odom" to="/odom" /> -->
-
-        <!-- Conditional parameter for forward-only navigation -->
-        <!-- <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" /> -->
     </node>
 
     <!-- RViz -->
