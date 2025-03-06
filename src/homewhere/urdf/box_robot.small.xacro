@@ -134,13 +134,14 @@
     </joint> -->
     
     <!-- z = base_side/2 + leg/2 -->
-    <joint name="steer_${name}_joint" type="continuous">
+    <joint name="steer_${name}_joint" type="revolute">
       <parent link="body" />
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.175" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <!-- <limit lower="${-pi/2}" upper="${pi/2}" effort="1000.0" velocity="0.1" />
-      <safety_controller soft_lower_limit="${-pi/2 * 0.9}" soft_upper_limit="${pi/2 * 0.9}" k_position="10.0" k_velocity="1000.0" /> -->
+      <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="0.1" />
+      <dynamics damping="1.0" friction="0.5"/>
+      <!-- <safety_controller soft_lower_limit="${-pi/2 * 0.9}" soft_upper_limit="${pi/2 * 0.9}" k_position="10.0" k_velocity="1000.0" /> --> -->
     </joint>
 
     <!-- z = -leg/2 -->

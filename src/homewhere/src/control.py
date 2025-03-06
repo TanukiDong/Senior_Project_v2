@@ -44,15 +44,15 @@ class Control:
         LINEAR_THRESHOLD = 0.1
         MAX_ANGLE = math.pi / 2
         
-        # Determine if the desired rotation angle exceeds the limit
+        # Determine if the desired rotation angle exceeds the limit             
+        #     linear_velocity = -linear_velocity
         if abs(angular_velocity) > MAX_ANGLE:
             if angular_velocity > MAX_ANGLE:
-                angular_velocity -= math.pi
+                angular_velocity = max(-MAX_ANGLE, min(MAX_ANGLE,angular_velocity))
+                linear_velocity = 0
             else: # angular_velocity < MAX_ANGLE
                 angular_velocity += math.pi
-                
-            linear_velocity = -linear_velocity
-
+            
         # Decision logic for movement
         if abs(linear_velocity) < LINEAR_THRESHOLD and abs(angular_velocity) < ANGULAR_THRESHOLD:
             # **Stop the robot completely**

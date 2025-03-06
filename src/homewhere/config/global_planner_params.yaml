@@ -4,4 +4,5 @@ GlobalPlanner:
   allow_unknown: true           # Allow planning in unknown space
   planner_costmap_width: 10.0   # Ensure wide enough costmap for smoother planning
   planner_costmap_height: 10.0
-  default_tolerance: 0.5
+  default_tolerance: 0.3
+  orientation_window_size: 1  # Prevents sharp turns
