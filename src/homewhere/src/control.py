@@ -6,8 +6,7 @@ from geometry_msgs.msg import Twist
 from pynput import keyboard
 
 # hardware imports
-import os
-from hardware import arduino_control, motors_control
+from std_msgs.msg import Float32, Float32MultiArray
 
 class Control:
 

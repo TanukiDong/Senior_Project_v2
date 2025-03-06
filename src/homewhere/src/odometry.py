@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float32, Float32MultiArray
 
 # Wheel base distance
 WHEEL_RADIUS = 0.07
@@ -44,15 +45,27 @@ def back_right_callback(msg):
 
 def angle_callback(msg):
     global theta 
-    theta = msg
+    theta = msg.data
 
 def hardware_callback(msg):
-    global l_front_left, l_front_right, l_back_left, l_back_right, imu_reading
-    l_front_left = msg[0][0]
-    l_front_right = msg[0][1]
-    l_back_left = msg[0][2]
-    l_back_right = msg[0][3]
-    imu_reading = msg[1]
+    """Process sensor data from /cmd_hardware_reading"""
+
+    global l_front_left, l_front_right, l_back_left, l_back_right, imu_x, imu_y
+
+    sensor_values = list(msg.data)  # Convert ROS message to Python list
+
+    if len(sensor_values) != 6:
+        rospy.logerr("Received incorrect sensor data length")
+        return
+
+    # Extract values
+    l_front_left, l_front_right, l_back_left, l_back_right = sensor_values[:4]
+    imu_x, imu_y = sensor_values[4:]
+
+    # Process the data
+    rospy.loginfo(f"Encoders - FL: {l_front_left}, FR: {l_front_right}, BL: {l_back_left}, BR: {l_back_right}")
+    rospy.loginfo(f"IMU - X: {imu_x}, Y: {imu_y}")
+
 
 def odometry_publisher():
     rospy.init_node('odometry')
@@ -64,8 +77,8 @@ def odometry_publisher():
     rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
     rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
     rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
-    rospy.Subscriber("/cmd_angle", float, angle_callback)
-    rospy.Subscriber("/cmd_hardware_reading", list, hardware_callback)
+    rospy.Subscriber("/cmd_angle", Float32, angle_callback)
+    rospy.Subscriber("/cmd_hardware_reading", Float32MultiArray, hardware_callback)
     
     joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 

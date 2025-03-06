@@ -81,11 +81,11 @@ class Arduino:
                 return None
         return None
 
-    def tilted(self, threshold=10):
+    def tilted(self):
         read = self.read_mpu6050()
         if read is not None:
             tiltx, tilty = read.get_angle()
-            return abs(tiltx) >= threshold or abs(tilty) >= threshold
+            return tiltx, tilty
         return
 
 def main():

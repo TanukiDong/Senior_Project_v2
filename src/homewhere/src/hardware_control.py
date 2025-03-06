@@ -12,7 +12,6 @@ class Hardware_Controller:
     ARDUINO_ADDR = "ttyUSB0"
     FRONT_ADDR = "ttyUSB1"
     REAR_ADDR = "ttyUSB2"
-    TILT_THRESHOLD = 10  # in degrees
     REFRESH_RATE = 0.1 # in second
 
     def __init__(self):
@@ -87,8 +86,8 @@ class Hardware_Controller:
         """Get IMU and Encoder Data"""
         try:
             encoder = self.motors.get_tick()
-            imu = self.arduino.tilted(threshold=Hardware_Controller.TILT_THRESHOLD)
-            return [encoder, imu]  # Return as a list
+            imu = self.arduino.get_tilt()
+            return [*encoder, *imu]  # Return as a list
         except Exception as e:
             rospy.logerr(f"Sensor reading error: {e}")
             return [0.0, 0.0]  # Fail-safe default
@@ -115,18 +114,25 @@ class Hardware_Controller:
     def update(self, event):
         """Runs periodically to get sensor readings and command actuators"""
         try:
-            # Read sensor data
+            # Read sensor data (returns 4 encoder values + 2 IMU values)
             reading_list = self.read_sensor()
+
+            # Ensure the list has exactly 6 elements
+            if len(reading_list) != 6:
+                rospy.logerr("Sensor data length mismatch. Expected 6 values.")
+                return
 
             # Publish sensor readings
             msg = Float32MultiArray()
-            msg.data = reading_list
+            msg.data = reading_list  # [enc1, enc2, enc3, enc4, imu1, imu2]
             self.reading_publisher.publish(msg)
 
-            # Command actuators
+            # Command the actuators
             self.cmd_actuators()
+
         except Exception as e:
             rospy.logerr(f"Update error: {e}")
+
 
     # ---- Fail-Safe Shutdown ----
     def fail_safe(self):
