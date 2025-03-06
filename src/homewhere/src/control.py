@@ -5,7 +5,17 @@ import rospy
 from geometry_msgs.msg import Twist
 from pynput import keyboard
 
+# hardware imports
+import os
+from hardware import arduino_control, motors_control
+
 class Control:
+
+    # Config Here
+    ARDUINO_ADDR = "ttyUSB0"
+    FRONT_ADDR = "ttyUSB1"
+    REAR_ADDR = "ttyUSB2"
+
     def __init__(self):
         rospy.init_node('control')
 
@@ -31,6 +41,30 @@ class Control:
         self.listener.start()
 
         rospy.loginfo("Use WASD keys to control the rover. Press 'q' to quit.")
+
+        # Set up Hardware
+        ports = os.listdir("/dev/")
+        usb = [port for port in ports if port[:6] == "ttyUSB"]
+
+        # Arduino
+        if Control.ARDUINO_ADDR in usb:
+            arduino = arduino_control.Arduino("/dev/"+Control.ARDUINO_ADDR)
+            self.arduino = arduino
+
+            rospy.loginfo(f"Arduino connected via serial @{Control.ARDUINO_ADDR}" )
+        else:
+            raise Exception(f"No Arduino at port:{Control.ARDUINO_ADDR}")
+
+        # Hub servo motors
+        if Control.FRONT_ADDR in usb and Control.REAR_ADDR in usb:
+            motors = motors_control.Motors(front_port="/dev/"+Control.FRONT_ADDR, 
+                                           rear_port="/dev/"+Control.REAR_ADDR)
+            self.motors = motors
+
+            rospy.loginfo(f"Motors connected via serial @({Control.FRONT_ADDR},{Control.REAR_ADDR})" )
+        else:
+            raise Exception(f"No motor at port {Control.FRONT_ADDR} or {Control.REAR_ADDR}")
+        
 
     def cmd_vel_callback(self, msg):
         """Handle /cmd_vel messages from move_base."""
@@ -96,6 +130,20 @@ class Control:
         self.front_right_velocity.angular.z = vel[1][1]
         self.back_left_velocity.angular.z = vel[1][2]
         self.back_right_velocity.angular.z = vel[1][3]
+
+        # Hardware velocity setting
+
+        # Arduino (Test)
+        key = vel[1][0]
+        state = 90
+        if key > 0:
+            state = 180
+        elif key < 0:
+            state = 0
+        rospy.loginfo(self.arduino.control_servo_8(state))
+
+        # Hub servo motors
+        self.motors.set_vel(vel[0])
             
     def on_press(self, key):
         """Handle key press events."""

@@ -7,7 +7,7 @@
     <!-- -2 1 for house -->
     <!-- 50 -3 1 for eng3 -->
 
-    <arg name="world" default="turtle" />
+    <arg name="world" default="empty" />
     <!-- <arg name="world" default="empty"/> -->
     <!-- <arg name="world" default="gas_station"/> -->
 
