@@ -131,8 +131,8 @@ class Control:
             still = [0, 0, 0, 0]
             forward = [5, 5, 5, 5]
             backward = [-5, -5, -5, -5]
-            left_turn = [1, 1, 1, 1]
-            right_turn = [-1, -1, -1, -1]
+            left_turn = [0.5]*2 + [-0.5]*2
+            right_turn = [-0.5]*2 + [0.5]*2
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)

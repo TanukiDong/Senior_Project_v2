@@ -35,6 +35,11 @@
     <node name="control" pkg="homewhere" type="control.py" output="screen" />
     <!-- Movement Publisher -->
     <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
+    <!-- Simulate Serco -->
+    <!-- Start the servo simulation node -->
+    <node name="servo_sim" pkg="homewhere" type="servo_sim.py" output="screen" />
+
+
 
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
