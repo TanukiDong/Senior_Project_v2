@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64
 
 # Wheel base distance
 WHEEL_RADIUS = 0.07
@@ -20,6 +21,8 @@ velBackLeft_Linear = 0.0
 velBackLeft_Angular = 0.0
 velBackRight_Linear = 0.0
 velBackRight_Angular = 0.0
+centroid_Linear = 0.0
+centroid_Angular = 0.0
 
 # Callback functions to update wheel velocities
 def front_left_callback(msg):
@@ -42,6 +45,11 @@ def back_right_callback(msg):
     velBackRight_Linear = msg.linear.x
     velBackRight_Angular = msg.angular.z
 
+def centroid_callback(msg):
+    global centroid_Linear, centroid_Angular
+    centroid_Linear = msg.linear.x
+    centroid_Angular = msg.angular.z
+
 def odometry_publisher():
     rospy.init_node('odometry')
     odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
@@ -52,6 +60,7 @@ def odometry_publisher():
     rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
     rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
     rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
+    rospy.Subscriber("/cmd_vel_centroid", Twist, centroid_callback)    
     
     joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
@@ -61,15 +70,18 @@ def odometry_publisher():
     last_time = rospy.Time.now()
 
     while not rospy.is_shutdown():
+
+        # print(velBackLeft_Linear,velBackRight_Linear)
+
         current_time = rospy.Time.now()
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
         # Calculation
-        v = velFrontLeft_Linear * WHEEL_RADIUS
+        v = centroid_Linear
         vx = v * math.cos(theta)
         vy = v * math.sin(theta)
-        omega = velFrontLeft_Angular
+        omega = centroid_Angular
 
         dx = vx * dt
         dy = vy * dt
