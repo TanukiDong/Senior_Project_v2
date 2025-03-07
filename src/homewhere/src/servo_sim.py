@@ -67,6 +67,8 @@ class ServoSim:
             bl_vel = self.compute_steer_velocity('back_left',   dt)
             br_vel = self.compute_steer_velocity('back_right',  dt)
 
+            # TODO: add publish theta at the current time in the compute_steer_velocity
+
             # Publish a Twist with angular.z = velocity
             self.publish_vel('front_left',  fl_vel)
             self.publish_vel('front_right', fr_vel)

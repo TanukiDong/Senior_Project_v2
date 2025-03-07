@@ -65,6 +65,7 @@ def odometry_publisher():
     joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
     # Initial position and orientation
+    # TODO accumulate theta1-4 and tick14
     x = y = theta = 0.0
     rate = rospy.Rate(10)
     last_time = rospy.Time.now()
