@@ -2,6 +2,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/Plugin.hh>
 #include <ros/ros.h>
+#include <geometry_msgs/Twist.h>  // Change back to Twist
 #include <std_msgs/Float64.h>
 
 namespace gazebo {
@@ -45,7 +46,7 @@ public:
         // Create a ROS node handle
         this->rosNode.reset(new ros::NodeHandle("control_plugin"));
 
-        // Subscribe to position commands instead of velocity
+        // Subscribe to position commands for steering (std_msgs/Float64)
         this->steerFrontLeftSub = this->rosNode->subscribe<std_msgs::Float64>(
             "/cmd_steer_front_left", 1, &ControlPlugin::OnReceived_SteerFrontLeft, this);
         this->steerFrontRightSub = this->rosNode->subscribe<std_msgs::Float64>(
@@ -54,6 +55,16 @@ public:
             "/cmd_steer_back_left", 1, &ControlPlugin::OnReceived_SteerBackLeft, this);
         this->steerBackRightSub = this->rosNode->subscribe<std_msgs::Float64>(
             "/cmd_steer_back_right", 1, &ControlPlugin::OnReceived_SteerBackRight, this);
+
+        // Subscribe to velocity commands for wheel movement (geometry_msgs/Twist)
+        this->velFrontLeftSub = this->rosNode->subscribe<geometry_msgs::Twist>(
+            "/cmd_vel_front_left", 1, &ControlPlugin::OnReceived_VelFrontLeft, this);
+        this->velFrontRightSub = this->rosNode->subscribe<geometry_msgs::Twist>(
+            "/cmd_vel_front_right", 1, &ControlPlugin::OnReceived_VelFrontRight, this);
+        this->velBackLeftSub = this->rosNode->subscribe<geometry_msgs::Twist>(
+            "/cmd_vel_back_left", 1, &ControlPlugin::OnReceived_VelBackLeft, this);
+        this->velBackRightSub = this->rosNode->subscribe<geometry_msgs::Twist>(
+            "/cmd_vel_back_right", 1, &ControlPlugin::OnReceived_VelBackRight, this);
 
         ROS_INFO("Control plugin loaded successfully.");
     }
@@ -74,14 +85,31 @@ public:
         this->steerBackRight_Position = msg->data;
     }
 
+    void OnReceived_VelFrontLeft(const geometry_msgs::Twist::ConstPtr& msg) {
+        this->velFrontLeft_Linear = msg->linear.x;
+        ROS_INFO("Received front left velocity: %f", this->velFrontLeft_Linear);
+    }
+
+    void OnReceived_VelFrontRight(const geometry_msgs::Twist::ConstPtr& msg) {
+        this->velFrontRight_Linear = msg->linear.x;
+    }
+
+    void OnReceived_VelBackLeft(const geometry_msgs::Twist::ConstPtr& msg) {
+        this->velBackLeft_Linear = msg->linear.x;
+    }
+
+    void OnReceived_VelBackRight(const geometry_msgs::Twist::ConstPtr& msg) {
+        this->velBackRight_Linear = msg->linear.x;
+    }
+
     void OnUpdate() {
-        // Apply wheel velocities (these are still in velocity control)
+        // Apply wheel velocities
         this->joints[0]->SetVelocity(0, this->velFrontLeft_Linear);
         this->joints[1]->SetVelocity(0, this->velFrontRight_Linear);
         this->joints[2]->SetVelocity(0, this->velBackLeft_Linear);
         this->joints[3]->SetVelocity(0, this->velBackRight_Linear);
 
-        // Apply steering positions (change to SetPosition for positional control)
+        // Apply steering positions
         this->joints[4]->SetPosition(0, this->steerFrontLeft_Position);
         this->joints[5]->SetPosition(0, this->steerFrontRight_Position);
         this->joints[6]->SetPosition(0, this->steerBackLeft_Position);
@@ -94,10 +122,11 @@ private:
     event::ConnectionPtr updateConnection;
     std::unique_ptr<ros::NodeHandle> rosNode;
 
+    ros::Subscriber velFrontLeftSub, velFrontRightSub, velBackLeftSub, velBackRightSub;
     ros::Subscriber steerFrontLeftSub, steerFrontRightSub, steerBackLeftSub, steerBackRightSub;
 
-    double velFrontLeft_Linear, velFrontRight_Linear, velBackLeft_Linear, velBackRight_Linear;
-    double steerFrontLeft_Position, steerFrontRight_Position, steerBackLeft_Position, steerBackRight_Position;
+    double velFrontLeft_Linear = 0.0, velFrontRight_Linear = 0.0, velBackLeft_Linear = 0.0, velBackRight_Linear = 0.0;
+    double steerFrontLeft_Position = 0.0, steerFrontRight_Position = 0.0, steerBackLeft_Position = 0.0, steerBackRight_Position = 0.0;
 };
 
 // Register the plugin with Gazebo

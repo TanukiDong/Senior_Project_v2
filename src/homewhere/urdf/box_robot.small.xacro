@@ -10,10 +10,11 @@
   <!-- ================== -->
 
   <xacro:property name="base_mass" value="20.0" />
-  <xacro:property name="base_size" value="0.25 0.25 0.25" />
+  <xacro:property name="base_size" value="0.5 0.5 0.5" />
 
-  <xacro:property name="steer_mass" value="2.0" />
-  <xacro:property name="steer_size" value="0.05 0.05 0.1" />
+  <xacro:property name="steer_mass" value="2.5" />
+  <xacro:property name="steer_size" value="0.05 0.05 0.22" />
+  <!-- z of steer is 0.1 + radius of wheel -->
 
   <xacro:property name="wheel_mass" value="2.0" />
   <xacro:property name="wheel_radius" value="0.07" />
@@ -49,9 +50,9 @@
       <mass value="${base_mass}" />
       <origin xyz="0 0 0" />
       <inertia
-        ixx="0.208" ixy="0.0" ixz="0.0"
-        iyy="0.208" iyz="0.0"
-        izz="0.208" />
+        ixx="0.833" ixy="0.0" ixz="0.0"
+        iyy="0.833" iyz="0.0"
+        izz="0.833" />
     </inertial>
   </link>
 
@@ -74,12 +75,7 @@
           <cylinder length="${wheel_length}" radius="${wheel_radius}" />
         </geometry>
         <origin xyz="0 0 0" rpy="1.57 0 0" />
-        <xacro:if value="${name == 'front_right'}">
-          <material name="red" />
-        </xacro:if>
-        <xacro:unless value="${name == 'front_right'}">
-          <material name="grey" />
-        </xacro:unless>
+        <material name="grey" />
       </visual>
 
       <collision>
@@ -105,14 +101,24 @@
           <box size="${steer_size}" />
         </geometry>
         <origin xyz="0 0 0" rpy="0 0 0" />
-        <xacro:if value="${name == 'front_right'}">
-          <material name="red" />
-        </xacro:if>
-        <xacro:unless value="${name == 'front_right'}">
-          <material name="green" />
-        </xacro:unless>
+        <material name="green" />
       </visual>
 
+      <!-- <collision>
+        <geometry>
+          <box size="${steer_size}" />
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </collision> -->
+
+      <!-- <inertial>
+        <mass value="${steer_mass}" />
+        <origin xyz="0 0 0" />
+        <inertia
+          ixx="0.0021" ixy="0.0" ixz="0.0"
+          iyy="0.0021" iyz="0.0"
+          izz="0.0008"/>
+      </inertial> -->
       <inertial>
         <mass value="${steer_mass}" />
         <origin xyz="0 0 0" />
@@ -122,32 +128,23 @@
           izz="0" />
       </inertial>
     </link>
-
-    <!-- z = base_side/2 + leg/2 -->
-    <!-- <joint name="steer_${name}_joint" type="revolute">
-      <parent link="body" />
-      <child link="steer_${name}" />
-      <origin xyz="${x} ${y} -0.1" rpy="0 0 0" />
-      <axis xyz="0 0 1" />
-      <limit lower="${-pi/2}" upper="${pi/2}" effort="1000.0" velocity="0.1" />
-      <safety_controller soft_lower_limit="${-pi/2 * 0.9}" soft_upper_limit="${pi/2 * 0.9}" k_position="10.0" k_velocity="1000.0" />
-    </joint> -->
     
     <!-- z = base_side/2 + leg/2 -->
-    <joint name="steer_${name}_joint" type="continuous">
+    <joint name="steer_${name}_joint" type="revolute">
       <parent link="body" />
       <child link="steer_${name}" />
-      <origin xyz="${x} ${y} -0.175" rpy="0 0 0" />
+      <origin xyz="${x} ${y} -0.25" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <!-- <limit lower="${-pi/2}" upper="${pi/2}" effort="1000.0" velocity="0.1" />
-      <safety_controller soft_lower_limit="${-pi/2 * 0.9}" soft_upper_limit="${pi/2 * 0.9}" k_position="10.0" k_velocity="1000.0" /> -->
+      <!-- Updated to positional control -->
+      <limit lower="${-3 * pi / 2}" upper="${3 * pi / 2}" effort="1000.0" velocity="314" />
+      <!-- Removed velocity control, since it's not needed for position -->
     </joint>
 
     <!-- z = -leg/2 -->
     <joint name="wheel_${name}_joint" type="continuous">
       <parent link="steer_${name}" />
       <child link="wheel_${name}" />
-      <origin xyz="0 0 -0.05" />
+      <origin xyz="0 0 -0.11" />
       <axis xyz="0 1 0" />
     </joint>
 
@@ -170,12 +167,12 @@
   <joint name="scan_joint" type="fixed">
     <parent link="base_link" />
     <child link="base_scan" />
-    <origin xyz="0 0 0.15" rpy="0 0 0" />
+    <origin xyz="0 0 0.275" rpy="0 0 0" />
   </joint>
 
-  <xacro:steering_wheel name="front_left" x="0.1" y="0.1" />
-  <xacro:steering_wheel name="front_right" x="0.1" y="-0.1" />
-  <xacro:steering_wheel name="rear_left" x="-0.1" y="0.1" />
-  <xacro:steering_wheel name="rear_right" x="-0.1" y="-0.1" />
+  <xacro:steering_wheel name="front_left" x="0.2" y="0.2" />
+  <xacro:steering_wheel name="front_right" x="0.2" y="-0.2" />
+  <xacro:steering_wheel name="rear_left" x="-0.2" y="0.2" />
+  <xacro:steering_wheel name="rear_right" x="-0.2" y="-0.2" />
 
 </robot>
