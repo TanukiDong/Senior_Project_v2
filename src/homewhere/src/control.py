@@ -3,19 +3,28 @@
 import math
 import rospy
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Float64
 from pynput import keyboard
 
 class Control:
     def __init__(self):
         rospy.init_node('control')
 
-        # Publishers for left and right wheel velocity commands
+        # Publishers for wheel velocity commands
         self.front_left_velocity_publisher = rospy.Publisher('/cmd_vel_front_left', Twist, queue_size=10)
         self.front_right_velocity_publisher = rospy.Publisher('/cmd_vel_front_right', Twist, queue_size=10)
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
+
+        # Publishers for steering angle commands
+        self.front_left_steer_publisher = rospy.Publisher('/cmd_steer_front_left', Float64, queue_size=10)
+        self.front_right_steer_publisher = rospy.Publisher('/cmd_steer_front_right', Float64, queue_size=10)
+        self.back_left_steer_publisher = rospy.Publisher('/cmd_steer_back_left', Float64, queue_size=10)
+        self.back_right_steer_publisher = rospy.Publisher('/cmd_steer_back_right', Float64, queue_size=10)
+
+        # Subscribe to the global /cmd_vel topic
         self.cmd_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
-        
+
         self.active_keys = set()
         self.manual_control_active = False
 
@@ -25,6 +34,11 @@ class Control:
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
 
+        # Initialize steering angle messages for each wheel
+        self.front_left_steering_angle = Float64()
+        self.front_right_steering_angle = Float64()
+        self.back_left_steering_angle = Float64()
+        self.back_right_steering_angle = Float64()
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
@@ -35,46 +49,52 @@ class Control:
     def cmd_vel_callback(self, msg):
         """Handle /cmd_vel messages from move_base."""
 
+        # Define some variables
+        S = 0.5  # 0.5 m side length
+
         # Extract linear and angular velocities from the cmd_vel message
-        linear_velocity = msg.linear.x * 10
-        angular_velocity = msg.angular.z
+        v = msg.linear.x
+        w = msg.angular.z
 
-        # Threshold to prevent unnecessary rotation at goal
-        ANGULAR_THRESHOLD = 0.1
-        LINEAR_THRESHOLD = 0.1
-        MAX_ANGLE = math.pi / 2
-        
-        # Determine if the desired rotation angle exceeds the limit
-        if abs(angular_velocity) > MAX_ANGLE:
-            if angular_velocity > MAX_ANGLE:
-                angular_velocity -= math.pi
-            else: # angular_velocity < MAX_ANGLE
-                angular_velocity += math.pi
-                
-            linear_velocity = -linear_velocity
+        # Calculate turn radius
+        r = math.inf if w == 0 else v / w
 
-        # Decision logic for movement
-        if abs(linear_velocity) < LINEAR_THRESHOLD and abs(angular_velocity) < ANGULAR_THRESHOLD:
-            # **Stop the robot completely**
-            velocity = [0.0] * 4
-            angular_velocities = [0.0] * 4
-        elif abs(linear_velocity) < LINEAR_THRESHOLD:
-            # **Only rotate in place**
-            velocity = [0.0] * 4
-            angular_velocities = [angular_velocity] * 4
-        elif abs(angular_velocity) < ANGULAR_THRESHOLD:
-            # **Only move forward/backward without turning**
-            velocity = [linear_velocity] * 4
-            angular_velocities = [0.0] * 4
-        else:
-            # **Move and rotate at the same time**
-            velocity = [linear_velocity] * 4
-            angular_velocities = [angular_velocity] * 4
+        # Calculate left and right angles for steering joints
+        theta_l = math.atan2(S / 2, (r - S / 2))
+        theta_r = math.atan2(S / 2, (r + S / 2))
 
-        # Apply the computed velocities
-        self.set_velocity([velocity, angular_velocities])
+        # Calculate turn radii and wheel velocities
+        r_l = math.sqrt((S / 2) ** 2 + (r - S / 2) ** 2)
+        r_r = math.sqrt((S / 2) ** 2 + (r + S / 2) ** 2)
+        v_l = abs(w) * r_l
+        v_r = abs(w) * r_r
 
-        # Publish the updated velocities to each wheel
+        # Calculate hardware velocities for each wheel
+        v_l_hardware = v_l if abs(theta_l) <= math.pi / 2 else -v_l
+        v_r_hardware = v_r if abs(theta_r) <= math.pi / 2 else -v_r
+
+        def constrain_theta(theta):
+            if theta < -math.pi / 2:
+                return -math.pi / 2
+            elif theta > math.pi / 2:
+                return math.pi / 2
+            else:
+                return theta
+
+        # Constrain the steering angles for each wheel
+        theta_fl = constrain_theta(theta_l)
+        theta_fr = constrain_theta(theta_r)
+        theta_bl = -theta_fl
+        theta_br = -theta_fr
+
+        # Create velocity array for wheel speeds (linear velocities)
+        velocity = [v_l_hardware, v_r_hardware, v_l_hardware, v_r_hardware]
+
+        # Create angular velocities array (steering angles)
+        steering_angles = [theta_fl, theta_fr, theta_bl, theta_br]
+
+        # Publish the velocities for each wheel
+        self.set_velocity([velocity, steering_angles])
         self.publish_velocity()
 
     def publish_velocity(self):
@@ -84,19 +104,25 @@ class Control:
         self.back_left_velocity_publisher.publish(self.back_left_velocity)
         self.back_right_velocity_publisher.publish(self.back_right_velocity)
 
-    def set_velocity(self, vel):
-        """Set velocity for each individual wheel."""
+        # Publish the steering angles for each wheel
+        self.front_left_steer_publisher.publish(self.front_left_steering_angle)
+        self.front_right_steer_publisher.publish(self.front_right_steering_angle)
+        self.back_left_steer_publisher.publish(self.back_left_steering_angle)
+        self.back_right_steer_publisher.publish(self.back_right_steering_angle)
 
+    def set_velocity(self, vel):
+        """Set velocity for each individual wheel and the steering angles."""
         self.front_left_velocity.linear.x = vel[0][0]
         self.front_right_velocity.linear.x = vel[0][1]
         self.back_left_velocity.linear.x = vel[0][2]
         self.back_right_velocity.linear.x = vel[0][3]
 
-        self.front_left_velocity.angular.z = vel[1][0]
-        self.front_right_velocity.angular.z = vel[1][1]
-        self.back_left_velocity.angular.z = vel[1][2]
-        self.back_right_velocity.angular.z = vel[1][3]
-            
+        # Set steering angles for each wheel
+        self.front_left_steering_angle.data = vel[1][0]
+        self.front_right_steering_angle.data = vel[1][1]
+        self.back_left_steering_angle.data = vel[1][2]
+        self.back_right_steering_angle.data = vel[1][3]
+
     def on_press(self, key):
         """Handle key press events."""
         self.manual_control_active = True
@@ -134,7 +160,7 @@ class Control:
         """Handle key release events."""
         self.manual_control_active = False
         self.active_keys.discard(key.char)
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0]])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]])
         self.publish_velocity()
 
     def run(self):

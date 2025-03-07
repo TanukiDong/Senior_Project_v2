@@ -2,7 +2,6 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/Plugin.hh>
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
 #include <std_msgs/Float64.h>
 
 namespace gazebo {
@@ -46,51 +45,48 @@ public:
         // Create a ROS node handle
         this->rosNode.reset(new ros::NodeHandle("control_plugin"));
 
-        this->velFrontLeftSub = this->rosNode->subscribe<geometry_msgs::Twist>(
-            "/cmd_vel_front_left", 1, &ControlPlugin::OnReceived_VelFrontLeft, this);
-        this->velFrontRightSub = this->rosNode->subscribe<geometry_msgs::Twist>(
-            "/cmd_vel_front_right", 1, &ControlPlugin::OnReceived_VelFrontRight, this);
-        this->velBackLeftSub = this->rosNode->subscribe<geometry_msgs::Twist>(
-            "/cmd_vel_back_left", 1, &ControlPlugin::OnReceived_VelBackLeft, this);
-        this->velBackRightSub = this->rosNode->subscribe<geometry_msgs::Twist>(
-            "/cmd_vel_back_right", 1, &ControlPlugin::OnReceived_VelBackRight, this);
+        // Subscribe to position commands instead of velocity
+        this->steerFrontLeftSub = this->rosNode->subscribe<std_msgs::Float64>(
+            "/cmd_steer_front_left", 1, &ControlPlugin::OnReceived_SteerFrontLeft, this);
+        this->steerFrontRightSub = this->rosNode->subscribe<std_msgs::Float64>(
+            "/cmd_steer_front_right", 1, &ControlPlugin::OnReceived_SteerFrontRight, this);
+        this->steerBackLeftSub = this->rosNode->subscribe<std_msgs::Float64>(
+            "/cmd_steer_back_left", 1, &ControlPlugin::OnReceived_SteerBackLeft, this);
+        this->steerBackRightSub = this->rosNode->subscribe<std_msgs::Float64>(
+            "/cmd_steer_back_right", 1, &ControlPlugin::OnReceived_SteerBackRight, this);
 
         ROS_INFO("Control plugin loaded successfully.");
     }
 
-    void OnReceived_VelFrontLeft(const geometry_msgs::Twist::ConstPtr& msg) {
-        this->velFrontLeft_Linear = msg->linear.x;
-        this->velFrontLeft_Angular = msg->angular.z;
+    void OnReceived_SteerFrontLeft(const std_msgs::Float64::ConstPtr& msg) {
+        this->steerFrontLeft_Position = msg->data;
     }
 
-    void OnReceived_VelFrontRight(const geometry_msgs::Twist::ConstPtr& msg) {
-        this->velFrontRight_Linear = msg->linear.x;
-        this->velFrontRight_Angular = msg->angular.z;
+    void OnReceived_SteerFrontRight(const std_msgs::Float64::ConstPtr& msg) {
+        this->steerFrontRight_Position = msg->data;
     }
 
-    void OnReceived_VelBackLeft(const geometry_msgs::Twist::ConstPtr& msg) {
-        this->velBackLeft_Linear = msg->linear.x;
-        this->velBackLeft_Angular = msg->angular.z;
+    void OnReceived_SteerBackLeft(const std_msgs::Float64::ConstPtr& msg) {
+        this->steerBackLeft_Position = msg->data;
     }
 
-    void OnReceived_VelBackRight(const geometry_msgs::Twist::ConstPtr& msg) {
-        this->velBackRight_Linear = msg->linear.x;
-        this->velBackRight_Angular = msg->angular.z;
+    void OnReceived_SteerBackRight(const std_msgs::Float64::ConstPtr& msg) {
+        this->steerBackRight_Position = msg->data;
     }
 
     void OnUpdate() {
-        // Apply wheel velocities
+        // Apply wheel velocities (these are still in velocity control)
         this->joints[0]->SetVelocity(0, this->velFrontLeft_Linear);
         this->joints[1]->SetVelocity(0, this->velFrontRight_Linear);
         this->joints[2]->SetVelocity(0, this->velBackLeft_Linear);
         this->joints[3]->SetVelocity(0, this->velBackRight_Linear);
 
-        // Apply steering angles
-        this->joints[4]->SetVelocity(0, this->velFrontLeft_Angular);
-        this->joints[5]->SetVelocity(0, this->velFrontRight_Angular);
-        this->joints[6]->SetVelocity(0, this->velBackLeft_Angular);
-        this->joints[7]->SetVelocity(0, this->velBackRight_Angular);
-        }
+        // Apply steering positions (change to SetPosition for positional control)
+        this->joints[4]->SetPosition(0, this->steerFrontLeft_Position);
+        this->joints[5]->SetPosition(0, this->steerFrontRight_Position);
+        this->joints[6]->SetPosition(0, this->steerBackLeft_Position);
+        this->joints[7]->SetPosition(0, this->steerBackRight_Position);
+    }
 
 private:
     physics::ModelPtr model;
@@ -98,10 +94,10 @@ private:
     event::ConnectionPtr updateConnection;
     std::unique_ptr<ros::NodeHandle> rosNode;
 
-    ros::Subscriber velFrontLeftSub, velFrontRightSub, velBackLeftSub, velBackRightSub;
+    ros::Subscriber steerFrontLeftSub, steerFrontRightSub, steerBackLeftSub, steerBackRightSub;
 
     double velFrontLeft_Linear, velFrontRight_Linear, velBackLeft_Linear, velBackRight_Linear;
-    double velFrontLeft_Angular, velFrontRight_Angular, velBackLeft_Angular, velBackRight_Angular;
+    double steerFrontLeft_Position, steerFrontRight_Position, steerBackLeft_Position, steerBackRight_Position;
 };
 
 // Register the plugin with Gazebo

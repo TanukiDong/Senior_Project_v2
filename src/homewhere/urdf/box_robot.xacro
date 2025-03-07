@@ -135,7 +135,9 @@
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.25" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <limit lower="${-3 * pi/2}" upper="${3 * pi/2}" effort="1000.0" velocity="0.1" />
+      <!-- Updated to positional control -->
+      <limit lower="${-3 * pi / 2}" upper="${3 * pi / 2}" effort="1000.0" />
+      <!-- Removed velocity control, since it's not needed for position -->
     </joint>
 
     <!-- z = -leg/2 -->
