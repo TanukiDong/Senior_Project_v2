@@ -66,6 +66,7 @@ def odometry_publisher():
 
     # Initial position and orientation
     # TODO accumulate theta1-4 and tick14
+    # In the end this is function of tick_diff, rpm, theta
     x = y = theta = 0.0
     rate = rospy.Rate(10)
     last_time = rospy.Time.now()
