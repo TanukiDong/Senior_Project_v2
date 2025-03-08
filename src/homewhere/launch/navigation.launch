@@ -6,30 +6,11 @@
     <!-- Map server -->
     <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
 
-  <!-- AMCL -->
-  <include file="$(find homewhere)/launch/amcl.launch" />
+    <!-- AMCL -->
+    <include file="$(find homewhere)/launch/amcl.launch" />
 
     <!-- move_base -->
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-        <!-- Specify the global and local planners -->
-        <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-
-        <!-- Load costmap parameters -->
-        <rosparam file="$(find homewhere)/config/costmap_common_params.yaml" command="load"
-            ns="global_costmap" />
-        <rosparam file="$(find homewhere)/config/costmap_common_params.yaml" command="load"
-            ns="local_costmap" />
-        <rosparam file="$(find homewhere)/config/costmap_global_params.yaml" command="load" />
-        <rosparam file="$(find homewhere)/config/costmap_local_params.yaml" command="load" />
-
-        <!-- Load planner-specific parameters -->
-        <rosparam file="$(find homewhere)/config/global_planner_params.yaml" command="load" />
-        <rosparam file="$(find homewhere)/config/local_planner_dwa_params.yaml" command="load" />
-
-        <!-- Load move_base-specific parameters -->
-        <rosparam file="$(find homewhere)/config/move_base_params.yaml" command="load" />
-    </node>
+    <include file="$(find homewhere)/launch/move_base.launch" />
 
     <!-- RViz -->
     <node pkg="rviz" type="rviz" name="rviz" required="true"
