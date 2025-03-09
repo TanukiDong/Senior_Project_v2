@@ -90,6 +90,11 @@ class Control:
         # Constrain the steering angles for each wheel
         theta_fl = constrain_theta(theta_l)
         theta_fr = constrain_theta(theta_r)
+
+        if v < 0:
+            theta_fl *= -1
+            theta_fr *= -1
+
         theta_bl = -theta_fl
         theta_br = -theta_fr
 
