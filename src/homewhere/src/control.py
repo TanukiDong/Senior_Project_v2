@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import math
+from math import sqrt, atan2
 import rospy
 from geometry_msgs.msg import Twist
 from pynput import keyboard
@@ -19,6 +20,13 @@ class Control:
         self.active_keys = set()
         self.manual_control_active = False
 
+        # Robot geometry
+        self.wheelbase = 0.25   # front-to-back distance
+        self.trackwidth = 0.25  # left-to-right distance
+        self.L = self.wheelbase / 2.0
+        self.W = self.trackwidth / 2.0
+        self.R = math.sqrt(self.L**2 + self.W**2)
+
         # Initialize velocity messages for each wheel
         self.front_left_velocity = Twist()
         self.front_right_velocity = Twist()
@@ -35,14 +43,37 @@ class Control:
     def cmd_vel_callback(self, msg):
         """Handle /cmd_vel messages from move_base."""
 
-        # Extract linear and angular velocities from the cmd_vel message
-        linear_velocity = msg.linear.x * 10
-        angular_velocity = msg.angular.z
+        # Extract forward (x) and strafe (y)
+        x = msg.linear.x
+        y  = msg.linear.y
+
+        # We ignore rotation => rot = 0
+        # rot = 0.0
+
+        # # Swerve math: we only combine forward & strafe
+        # # y,y: side offsets, x,x: front offsets
+        # y = strafe #- rot * self.L / self.R  # but rot=0 => y=strafe
+        # y = strafe #+ rot * self.L / self.R  # => y=strafe
+        # x = forward # rot * self.W / self.R # => x=forward
+        # x = forward #+ rot * self.W / self.R # => x=forward
+
+        # Wheel speeds
+        front_right_speed = math.sqrt(y*y + x*x)
+        front_left_speed  = math.sqrt(y*y + x*x)
+        back_left_speed   = math.sqrt(y*y + x*x)
+        back_right_speed  = math.sqrt(y*y + x*x)
+
+        # Wheel angles
+        front_right_angle = math.atan2(y, x)
+        front_left_angle  = math.atan2(y, x)
+        back_left_angle   = math.atan2(y, x)
+        back_right_angle  = math.atan2(y, x)
+
 
         # Threshold to prevent unnecessary rotation at goal
-        ANGULAR_THRESHOLD = 0.0
-        LINEAR_THRESHOLD = 0.0
-        MAX_ANGLE = math.pi / 2
+        # ANGULAR_THRESHOLD = 0.0
+        # LINEAR_THRESHOLD = 0.0
+        # MAX_ANGLE = math.pi / 2
         
         # # Determine if the desired rotation angle exceeds the limit
         # if abs(angular_velocity) > MAX_ANGLE:
@@ -68,8 +99,8 @@ class Control:
         #     angular_velocities = [0.0] * 4
         # else:
         #     # **Move and rotate at the same time**
-        velocity = [linear_velocity] * 4
-        angular_velocities = [angular_velocity] * 4
+        velocity = [front_left_speed,front_right_speed,back_left_speed,back_right_speed]
+        angular_velocities = [front_left_angle,front_right_angle,back_left_angle,back_right_angle]
 
         # Apply the computed velocities
         self.set_velocity([velocity, angular_velocities])
