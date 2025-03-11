@@ -58,16 +58,19 @@ class Control:
         # x = forward #+ rot * self.W / self.R # => x=forward
 
         # Wheel speeds
-        front_right_speed = math.sqrt(y*y + x*x)
-        front_left_speed  = math.sqrt(y*y + x*x)
-        back_left_speed   = math.sqrt(y*y + x*x)
-        back_right_speed  = math.sqrt(y*y + x*x)
+        wheel_speed = math.sqrt(y*y + x*x)
+        wheel_angle = math.atan2(y, x)
+
+        front_right_speed = wheel_speed
+        front_left_speed  = wheel_speed
+        back_left_speed   = wheel_speed
+        back_right_speed  = wheel_speed
 
         # Wheel angles
-        front_right_angle = math.atan2(y, x)
-        front_left_angle  = math.atan2(y, x)
-        back_left_angle   = math.atan2(y, x)
-        back_right_angle  = math.atan2(y, x)
+        front_right_angle = wheel_angle
+        front_left_angle  = wheel_angle
+        back_left_angle   = wheel_angle
+        back_right_angle  = wheel_angle
 
 
         # Threshold to prevent unnecessary rotation at goal
