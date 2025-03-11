@@ -36,6 +36,7 @@
     <!-- Movement Publisher -->
     <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
 
+    <!-- Uncomment joint_state_publisher to use _odometry.py -->
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 

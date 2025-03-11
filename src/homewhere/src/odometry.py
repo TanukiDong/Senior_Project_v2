@@ -91,7 +91,7 @@ def odometry_publisher():
         )
         
         odom_broadcaster.sendTransform(
-            (0.0, 0.0, 0.0),
+            (0.0, 0.0, 2.0),
             tf.transformations.quaternion_from_euler(0, 0, -theta),
             current_time,
             "base_link",
@@ -118,9 +118,9 @@ def odometry_publisher():
 
         # Set the velocity
         odom.child_frame_id = "base_footprint"
-        odom.twist.twist.linear.x = v
-        odom.twist.twist.linear.y = 0.0
-        odom.twist.twist.angular.z = omega
+        odom.twist.twist.linear.x = vx
+        odom.twist.twist.linear.y = vy
+        odom.twist.twist.angular.z = 0.0
 
         # Publish the odometry message
         odom_pub.publish(odom)

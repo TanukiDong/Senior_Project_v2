@@ -5,3 +5,4 @@ GlobalPlanner:
   planner_costmap_width: 10.0   # Ensure wide enough costmap for smoother planning
   planner_costmap_height: 10.0
   default_tolerance: 0.5
+  visualize_potential: true

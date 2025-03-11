@@ -44,6 +44,7 @@ class Control:
         """Handle /cmd_vel messages from move_base."""
 
         # Extract forward (x) and strafe (y)
+        WHEEL_RADIUS = 0.07
         x = msg.linear.x
         y  = msg.linear.y
 
@@ -58,7 +59,7 @@ class Control:
         # x = forward #+ rot * self.W / self.R # => x=forward
 
         # Wheel speeds
-        wheel_speed = math.sqrt(y*y + x*x)
+        wheel_speed = math.sqrt(y*y + x*x) * 7
         wheel_angle = math.atan2(y, x)
 
         front_right_speed = wheel_speed
@@ -137,8 +138,8 @@ class Control:
 
         try:
             still = [0, 0, 0, 0]
-            forward = [5, 5, 5, 5]
-            backward = [-5, -5, -5, -5]
+            forward = [1, 1, 1, 1]
+            backward = [-1, -1, -1, -1]
             left_turn = [1, 1, 1, 1]
             right_turn = [-1, -1, -1, -1]
 
