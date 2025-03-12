@@ -18,5 +18,5 @@ scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: tru
 robot_base_frame: base_footprint
 
 transform_tolerance: 0.5
-update_frequency: 5.0
-publish_frequency: 2.0
+# update_frequency: 5.0
+# publish_frequency: 2.0
