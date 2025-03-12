@@ -58,7 +58,7 @@ class Control:
         # x = forward #+ rot * self.W / self.R # => x=forward
 
         # Wheel speeds
-        wheel_speed = math.sqrt(y*y + x*x) * 7
+        wheel_speed = math.sqrt(y*y + x*x)
         wheel_angle = math.atan2(y, x)
 
         front_right_speed = wheel_speed
