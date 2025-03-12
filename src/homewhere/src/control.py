@@ -44,7 +44,6 @@ class Control:
         """Handle /cmd_vel messages from move_base."""
 
         # Extract forward (x) and strafe (y)
-        WHEEL_RADIUS = 0.07
         x = msg.linear.x
         y  = msg.linear.y
 

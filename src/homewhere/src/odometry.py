@@ -91,7 +91,7 @@ def odometry_publisher():
         )
         
         odom_broadcaster.sendTransform(
-            (0.0, 0.0, 2.0),
+            (0.0, 0.0, 0.0),
             tf.transformations.quaternion_from_euler(0, 0, -theta),
             current_time,
             "base_link",

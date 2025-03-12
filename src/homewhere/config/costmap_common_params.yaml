@@ -6,8 +6,8 @@ raytrace_range: 3.0
 # # Exact Rectangle
 # footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]]
 # Test Square
-footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
-# robot_radius: 0.2
+# footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
+robot_radius: 0.2
 
 inflation_radius: 2.0
 cost_scaling_factor: 10.0
@@ -16,7 +16,8 @@ map_type: costmap
 observation_sources: scan
 scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
 robot_base_frame: base_footprint
+publish_footprint: true
 
 transform_tolerance: 0.5
-# update_frequency: 5.0
-# publish_frequency: 2.0
+update_frequency: 10.0
+publish_frequency: 10.0
