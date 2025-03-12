@@ -36,7 +36,7 @@ class Control:
         """Handle /cmd_vel messages from move_base."""
 
         # Extract linear and angular velocities from the cmd_vel message
-        linear_velocity = msg.linear.x * 10
+        linear_velocity = msg.linear.x * 5
         angular_velocity = msg.angular.z
 
         # Threshold to prevent unnecessary rotation at goal
