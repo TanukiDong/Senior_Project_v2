@@ -40,3 +40,17 @@ Run navigation in turtle world
 ```bash
 roslaunch homewhere main.launch mode:=nav world:=turtle
 ```
+
+# More Commands
+
+Change coniguration during runtime
+
+```bash
+rosrun rqt_reconfigure rqt_reconfigure
+```
+
+Open LiDAR in Rviz
+
+```bash
+roslaunch hls_lfcd_lds_driver view_hlds_laser.launch
+```
