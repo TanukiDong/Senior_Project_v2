@@ -6,8 +6,8 @@ DWAPlannerROS:
   acc_lim_th: 3.2
   max_vel_trans: 1.0
   min_vel_trans: 0.1
-  max_vel_x: 1.0
-  min_vel_x: 0.1
+  max_vel_x: 100.0
+  min_vel_x: 50.0
   max_vel_y: 0.0
   min_vel_y: 0.0
   max_vel_theta: 1.0
@@ -27,9 +27,12 @@ DWAPlannerROS:
   controller_frequency: 20.0
 
 # Trajectory Scoring Parameters
-  path_distance_bias: 32.0
-  goal_distance_bias: 16.0
-  occdist_scale: 0.1
+  path_distance_bias: 64.0  # Increase to make it prioritize longer but safer paths
+  goal_distance_bias: 24.0   # Increase to avoid direct obstacle crossings
+  occdist_scale: 0.5         # Reduce if it ignores obstacles
+  # path_distance_bias: 32.0
+  # goal_distance_bias: 16.0
+  # occdist_scale: 0.1
   forward_point_distance: 0.325
   stop_time_buffer: 0.2
   scaling_speed: 0.25

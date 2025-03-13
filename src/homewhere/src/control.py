@@ -4,6 +4,7 @@ import math
 import rospy
 from geometry_msgs.msg import Twist
 from pynput import keyboard
+from std_msgs.msg import Float32, Float32MultiArray
 
 class Control:
     def __init__(self):
@@ -15,6 +16,7 @@ class Control:
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
         self.cmd_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
+        self.theta_publisher = rospy.Publisher('/cmd_angle', Float32, queue_size=10)
         
         self.active_keys = set()
         self.manual_control_active = False
@@ -24,7 +26,8 @@ class Control:
         self.front_right_velocity = Twist()
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
-
+        self.angle = 90
+        self.manual_velocity = 0.05
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
@@ -84,6 +87,8 @@ class Control:
         self.back_left_velocity_publisher.publish(self.back_left_velocity)
         self.back_right_velocity_publisher.publish(self.back_right_velocity)
 
+        self.theta_publisher.publish(self.angle)
+
     def set_velocity(self, vel):
         """Set velocity for each individual wheel."""
 
@@ -92,39 +97,44 @@ class Control:
         self.back_left_velocity.linear.x = vel[0][2]
         self.back_right_velocity.linear.x = vel[0][3]
 
-        self.front_left_velocity.angular.z = vel[1][0]
-        self.front_right_velocity.angular.z = vel[1][1]
-        self.back_left_velocity.angular.z = vel[1][2]
-        self.back_right_velocity.angular.z = vel[1][3]
+        self.front_left_velocity.linear.y = vel[1][0]
+        self.front_right_velocity.linear.y = vel[1][1]
+        self.back_left_velocity.linear.y = vel[1][2]
+        self.back_right_velocity.linear.y = vel[1][3]
+
+        self.angle = vel[2]
             
     def on_press(self, key):
         """Handle key press events."""
         self.manual_control_active = True
 
         try:
-            still = [0, 0, 0, 0]
-            forward = [5, 5, 5, 5]
-            backward = [-5, -5, -5, -5]
-            left_turn = [1, 1, 1, 1]
-            right_turn = [-1, -1, -1, -1]
+            still = [0]*4
+            forward = [self.manual_velocity]*4
+            backward = [-self.manual_velocity]*4
+            left = [self.manual_velocity]*4
+            right = [-self.manual_velocity]*4
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)
 
             # Compute velocity and angular velocity based on active keys
-            velocity = still
-            angular_velocity = still
+            velocity_x = still
+            velocity_y = still
+            angle = 90
 
             if 'w' in self.active_keys:  # Forward
-                velocity = forward
+                velocity_x = forward
             if 's' in self.active_keys:  # Backward
-                velocity = backward
+                velocity_x = backward
             if 'a' in self.active_keys:  # Left turn
-                angular_velocity = left_turn
+                velocity_y = left
+                angle = 0
             if 'd' in self.active_keys:  # Right turn
-                angular_velocity = right_turn
+                velocity_y = right
+                angle = 0
 
-            self.set_velocity([velocity, angular_velocity])
+            self.set_velocity([velocity_x, velocity_y, angle])
             self.publish_velocity()
 
         except AttributeError:
@@ -134,7 +144,7 @@ class Control:
         """Handle key release events."""
         self.manual_control_active = False
         self.active_keys.discard(key.char)
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0]])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0],90])
         self.publish_velocity()
 
     def run(self):
