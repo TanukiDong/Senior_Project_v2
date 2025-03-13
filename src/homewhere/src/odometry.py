@@ -97,13 +97,14 @@ def odometry_publisher():
             "base_link",
             "base_footprint"
         )
-        # odom_broadcaster.sendTransform(
-        #     (0.0, 0.0, 0.0),
-        #     tf.transformations.quaternion_from_euler(0, 0, -theta),
-        #     current_time,
-        #     "base_scan",
-        #     "base_link"
-        # )
+        
+        odom_broadcaster.sendTransform(
+            (0.0, 0.0, 0.0),
+            tf.transformations.quaternion_from_euler(0, 0, 0),
+            current_time,
+            "laser",
+            "base_link"
+        )
 
         # Publish the odometry message
         odom = Odometry()
