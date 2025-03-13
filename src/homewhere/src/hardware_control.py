@@ -4,7 +4,7 @@ import rospy
 import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32, Float32MultiArray
+from std_msgs.msg import Float32MultiArray, UInt8
 
 class Hardware_Controller:
 
@@ -38,7 +38,7 @@ class Hardware_Controller:
         rospy.Subscriber("/cmd_vel_front_right", Twist, self.front_right_callback)
         rospy.Subscriber("/cmd_vel_back_left", Twist, self.back_left_callback)
         rospy.Subscriber("/cmd_vel_back_right", Twist, self.back_right_callback)
-        rospy.Subscriber("/cmd_angle", Float32, self.angle_callback)
+        rospy.Subscriber("/cmd_angle", UInt8, self.angle_callback)
 
         # Detect and connect hardware devices
         self.setup_hardware()

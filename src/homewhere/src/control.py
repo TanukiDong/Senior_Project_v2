@@ -4,7 +4,7 @@ import math
 import rospy
 from geometry_msgs.msg import Twist
 from pynput import keyboard
-from std_msgs.msg import Float32, Float32MultiArray
+from std_msgs.msg import UInt8
 
 class Control:
     def __init__(self):
@@ -16,7 +16,7 @@ class Control:
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
         self.cmd_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
-        self.theta_publisher = rospy.Publisher('/cmd_angle', Float32, queue_size=10)
+        self.theta_publisher = rospy.Publisher('/cmd_angle', UInt8, queue_size=10)
         
         self.active_keys = set()
         self.manual_control_active = False
@@ -42,10 +42,6 @@ class Control:
         linear_velocity = msg.linear.x * 5
         angular_velocity = msg.angular.z
 
-        # Threshold to prevent unnecessary rotation at goal
-        ANGULAR_THRESHOLD = 0.0
-        LINEAR_THRESHOLD = 0.0
-        MAX_ANGLE = math.pi / 2
         
         # # Determine if the desired rotation angle exceeds the limit
         # if abs(angular_velocity) > MAX_ANGLE:
