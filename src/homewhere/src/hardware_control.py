@@ -21,7 +21,6 @@ class Hardware_Controller:
         # Define class variables for velocity and angle
         self.velFrontLeft_Linear_x = 0.0
         self.velFrontLeft_Linear_y = 0.0
-        self.vel = 0.0
         self.velFrontRight_Linear_x = 0.0
         self.velFrontLeft_Linear_y = 0.0
         self.velBackLeft_Linear_x = 0.0
