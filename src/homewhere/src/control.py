@@ -6,6 +6,9 @@ from geometry_msgs.msg import Twist
 from pynput import keyboard
 from std_msgs.msg import UInt8
 
+import signal
+import sys
+
 class Control:
     def __init__(self):
         rospy.init_node('control')
@@ -34,6 +37,20 @@ class Control:
         self.listener.start()
 
         rospy.loginfo("Use WASD keys to control the rover. Press 'q' to quit.")
+
+        # Ctrl+C interceptor
+        signal.signal(signal.SIGINT, self.shutdown_handler)
+
+    def shutdown_handler(self, signum, frame):
+        """Handles Ctrl+C and stops the robot safely."""
+        rospy.loginfo("Shutdown initiated! Stopping the robot.")
+        self.stop_robot()
+        sys.exit(0)
+
+    def stop_robot(self):
+        """Stops the robot by publishing zero velocities."""
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0],90])
+        self.publish_velocity()
 
     def cmd_vel_callback(self, msg):
         """Handle /cmd_vel messages from move_base."""
