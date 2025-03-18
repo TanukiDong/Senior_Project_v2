@@ -53,7 +53,7 @@ class Control:
         self.publish_velocity()
 
     def rad2deg(self, rad, offset=90):
-        return int(offset + rad/math.pi*180)
+        return int(offset - rad/math.pi*180)
 
     def get_v_and_theta(self, vx, vy):
         v = (vx**2 + vy**2)**0.5
@@ -78,11 +78,18 @@ class Control:
         # Extract linear and angular velocities from the cmd_vel message
         vx = msg.linear.x
         vy = msg.linear.y
+
+        print("vx, vy",vx,vy)
         
         v, theta = self.get_v_and_theta(vx, vy)
 
+        print("v, theta",v,theta)
+
         real_v = self.real_velocity(v,theta)
         real_t = self.real_theta(theta)
+        real_t = self.rad2deg(theta)
+
+        print("Real",real_v,real_t)
 
         # Apply the computed velocities
         self.set_velocity([[real_v]*4, real_t])
