@@ -52,8 +52,8 @@ class Control:
         self.set_velocity([[0.0, 0.0, 0.0, 0.0],90])
         self.publish_velocity()
 
-    def rad2deg(self, rad, offset=90):
-        return int(offset - rad/math.pi*180)
+    def rad2deg(self, rad):
+        return int(rad/math.pi*180)
 
     def get_v_and_theta(self, vx, vy):
         v = (vx**2 + vy**2)**0.5
@@ -138,10 +138,10 @@ class Control:
                 velocity = backward
             if 'a' in self.active_keys:  # Left turn
                 velocity = forward
-                angle = 0
+                angle = 180
             if 'd' in self.active_keys:  # Right turn
                 velocity = backward
-                angle = 0
+                angle = 180
 
             self.set_velocity([velocity, angle])
             self.publish_velocity()

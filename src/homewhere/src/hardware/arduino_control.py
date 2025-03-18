@@ -86,6 +86,8 @@ class Arduino:
         # Servo 9: Top Left -> 98 degrees
         # angle += 90 (to make 0 degrees the center)
         center = {6:92, 7:90, 8:95, 9:98} 
+        # correct orientation
+        angle = 90 - angle
         for i in range(6, 10):
             # Calculate new local angle
             local_angle = angle - 90 + center[i]
@@ -138,32 +140,6 @@ def main():
         com = "/dev/ttyUSB0"
 
     arduino = Arduino(com=com)
-
-    # # Example logic
-    # for _ in range(30):
-
-    #     tilt = arduino.tilted()
-    #     distance = int(arduino.read_ultrasonic_distance())
-
-    #     print("Sensor Value: ", tilt)
-    #     print("UltraS Value: ", distance)
-
-    #     mode = distance < 30 and distance > 5 # in reular range => False, close => True
-
-    #     if mode:
-    #         if tilt:
-    #             print(arduino.control_servo_7(0))
-    #         else:
-    #             print(arduino.control_servo_7(90))
-
-    #     else:
-    #         if tilt:
-    #             print(arduino.control_servo_8(0))
-    #         else:
-    #             print(arduino.control_servo_8(90))
-
-        # time.sleep(1)
-        # print()
 
     dt = 0.5
 
