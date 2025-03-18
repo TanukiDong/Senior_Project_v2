@@ -28,6 +28,7 @@ class Hardware_Controller:
         self.velBackRight_Linear_x = 0.0
         self.velBackRight_Linear_y = 0.0
         self.theta = 0.0
+        self.vel_limit = 0.1
 
         # ROS Publisher
         self.reading_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
@@ -112,9 +113,12 @@ class Hardware_Controller:
             #     self.velBackRight_Linear,
             # ]
 
-            vel = (self.velFrontLeft_Linear_x**2 + self.velFrontLeft_Linear_y**2)**0.5
-            if self.velFrontLeft_Linear_x < 0 or self.velFrontLeft_Linear_y < 0:
-                vel *= -1
+            # vel = (self.velFrontLeft_Linear_x**2 + self.velFrontLeft_Linear_y**2)**0.5
+            vel = self.velFrontLeft_Linear_x
+            if vel > self.vel_limit:
+                vel = self.vel_limit
+            # if self.velFrontLeft_Linear_x < 0 or self.velFrontLeft_Linear_y < 0:
+            #     vel *= -1
 
             vel_list = [vel]*4
             
