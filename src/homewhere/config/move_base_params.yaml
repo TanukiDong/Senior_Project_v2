@@ -7,13 +7,5 @@ clearing_rotation_allowed: false
 shutdown_costmaps: false
 oscillation_timeout: 10.0
 oscillation_distance: 0.5
-planner_frequency: 0.0
+planner_frequency: 10.0
 max_planning_retries: -1
-# DWAPlannerROS:
-#   max_vel_x: 50.0  # Set to your desired speed
-#   min_vel_x: 10.0
-#   max_trans_vel: 50.0  # Controls overall max speed
-#   min_trans_vel: 10.0
-#   acc_lim_x: 100.0  # Acceleration limits should be high to match speed
-#   acc_lim_theta: 100.0
-#   vx_samples: 20  # Increase this for smoother velocity control
