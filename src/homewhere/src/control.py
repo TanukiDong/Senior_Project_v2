@@ -55,7 +55,7 @@ class Control:
     def rad2deg(self, rad, offset=90):
         return int(offset + rad/math.pi*180)
 
-    def get_v_and_theta(self, vx, vy, theta):
+    def get_v_and_theta(self, vx, vy):
         v = (vx**2 + vy**2)**0.5
         theta = math.atan2(vy, vx)
         return v, theta
@@ -82,10 +82,10 @@ class Control:
         v, theta = self.get_v_and_theta(vx, vy)
 
         real_v = self.real_velocity(v,theta)
-        real_theta = self.real_theta(theta)
+        real_t = self.real_theta(theta)
 
         # Apply the computed velocities
-        self.set_velocity([[real_v]*4, real_theta])
+        self.set_velocity([[real_v]*4, real_t])
 
         # Publish the updated velocities to each wheel
         self.publish_velocity()
@@ -97,7 +97,7 @@ class Control:
         self.back_left_velocity_publisher.publish(self.back_left_velocity)
         self.back_right_velocity_publisher.publish(self.back_right_velocity)
 
-        self.theta_publisher.publish(self.angle)
+        self.theta_publisher.publish(int(self.angle))
 
     def set_velocity(self, vel):
         """Set velocity for each individual wheel."""

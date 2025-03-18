@@ -1,8 +1,11 @@
 <launch>
     <arg name="mode" default="default" />
     <!-- Robot -->
-    <arg name="model" default="$(find homewhere)/urdf/box_robot.small.nolidar.xacro" />
+    <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+    <!-- world -->
+    <arg name="world" default="mi" />
+    <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
     <!-- LiDAR -->
     <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch" />
 
@@ -34,9 +37,15 @@
 
     <!-- Navigation -->
     <group if="$(eval arg('mode') == 'nav')">
-        <include file="$(find homewhere)/launch/navigation.launch">
-            <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
-        </include>
+        <!-- map server -->
+        <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
+        <!-- AMCL -->
+        <include file="$(find homewhere)/launch/amcl.launch" />
+        <!-- move_base -->
+        <include file="$(find homewhere)/launch/move_base.launch" />
+        <!-- RViz -->
+        <node pkg="rviz" type="rviz" name="rviz" required="true"
+            args="-d $(find homewhere)/rviz/navigation.rviz" />
     </group>
 
 </launch>
