@@ -4,7 +4,7 @@ import rospy
 import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray, UInt8
+from std_msgs.msg import Float32MultiArray, Int8
 
 class Hardware_Controller:
 
@@ -38,7 +38,7 @@ class Hardware_Controller:
         rospy.Subscriber("/cmd_vel_front_right", Twist, self.front_right_callback)
         rospy.Subscriber("/cmd_vel_back_left", Twist, self.back_left_callback)
         rospy.Subscriber("/cmd_vel_back_right", Twist, self.back_right_callback)
-        rospy.Subscriber("/cmd_angle", UInt8, self.angle_callback)
+        rospy.Subscriber("/cmd_angle", Int8, self.angle_callback)
 
         # Detect and connect hardware devices
         self.setup_hardware()
@@ -94,9 +94,11 @@ class Hardware_Controller:
     def read_sensor(self):
         """Get IMU and Encoder Data"""
         try:
-            encoder = self.motors.get_tick()
-            imu = self.arduino.get_tilt()
-            return [*encoder, *imu]  # Return as a list
+            dl_list = self.motors.get_delta_travelled()
+            rpm_list = self.motors.get_rpms()
+            # imu = self.arduino.get_tilt()
+            # return [*encoder, *imu]  # Return as a list
+            return [dl_list, rpm_list]
         except Exception as e:
             rospy.logerr(f"Sensor reading error: {e}")
             return [0.0, 0.0]  # Fail-safe default
@@ -105,20 +107,9 @@ class Hardware_Controller:
     def cmd_actuators(self):
         """Send Velocity and Steering Commands"""
         try:
-            # Set wheel velocities
-            # vel_list = [
-            #     self.velFrontLeft_Linear,
-            #     self.velFrontRight_Linear,
-            #     self.velBackLeft_Linear,
-            #     self.velBackRight_Linear,
-            # ]
-
-            # vel = (self.velFrontLeft_Linear_x**2 + self.velFrontLeft_Linear_y**2)**0.5
             vel = self.velFrontLeft_Linear_x
             if vel > self.vel_limit:
                 vel = self.vel_limit
-            # if self.velFrontLeft_Linear_x < 0 or self.velFrontLeft_Linear_y < 0:
-            #     vel *= -1
 
             vel_list = [vel]*4
             
@@ -135,17 +126,18 @@ class Hardware_Controller:
         """Runs periodically to get sensor readings and command actuators"""
         try:
             # Read sensor data (returns 4 encoder values + 2 IMU values)
-            # reading_list = self.read_sensor()
+            reading_list = self.read_sensor()
 
             # Ensure the list has exactly 6 elements
-            # if len(reading_list) != 6:
-            #     rospy.logerr("Sensor data length mismatch. Expected 6 values.")
-            #     return
+            if len(reading_list) != 2:
+                rospy.logerr("Sensor data length mismatch. Expected 6 values.")
+                return
 
             # Publish sensor readings
-            # msg = Float32MultiArray()
-            # msg.data = reading_list  # [enc1, enc2, enc3, enc4, imu1, imu2]
-            # self.reading_publisher.publish(msg)
+            msg = Float32MultiArray()
+            avg_reading = [sum(lst)/len(lst) for lst in reading_list]
+            msg.data = avg_reading  # [avg_dl, avg_rpm]
+            self.reading_publisher.publish(msg)
 
             # Command the actuators
             self.cmd_actuators()
