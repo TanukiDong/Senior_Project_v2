@@ -80,7 +80,9 @@ public:
 
     void OnUpdate() {
         // Define swerve steering constraints
+
         double max_steer_angle = 1.57;  // 90 degrees (Pi/2
+
         // Apply wheel linear velocities (independent swerve drive)
         this->joints[0]->SetVelocity(0, this->velFrontLeft_Linear);
         this->joints[1]->SetVelocity(0, this->velFrontRight_Linear);
@@ -102,7 +104,7 @@ public:
             }
         };
 
-        // Apply independent steering control for each swerve module
+        // Apply independent steering control for each swerve modules
         handleSteering(this->joints[4], this->velFrontLeft_Angular);
         handleSteering(this->joints[5], this->velFrontRight_Angular);
         handleSteering(this->joints[6], this->velBackLeft_Angular);

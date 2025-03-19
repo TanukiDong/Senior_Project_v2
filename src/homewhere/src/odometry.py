@@ -1,21 +1,25 @@
 #!/usr/bin/env python
+
 import rospy
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
+import traceback
 from sensor_msgs.msg import JointState
 
-# Constants
+# Wheel base distance
 WHEEL_RADIUS = 0.07
-MAX_STEER_ANGLE = math.pi / 2  # ±90 degrees
 
 # Initialize global variables for wheel velocities
-velFrontLeft_Linear = velFrontRight_Linear = velBackLeft_Linear = velBackRight_Linear = 0.0
-velFrontLeft_Angular = velFrontRight_Angular = velBackLeft_Angular = velBackRight_Angular = 0.0
-
-# Steering angles
-steer_front_left = steer_front_right = steer_rear_left = steer_rear_right = 0.0
+velFrontLeft_Linear = 0.0
+velFrontLeft_Angular = 0.0
+velFrontRight_Linear = 0.0
+velFrontRight_Angular = 0.0
+velBackLeft_Linear = 0.0
+velBackLeft_Angular = 0.0
+velBackRight_Linear = 0.0
+velBackRight_Angular = 0.0
 
 # Callback functions to update wheel velocities
 def front_left_callback(msg):
@@ -38,127 +42,151 @@ def back_right_callback(msg):
     velBackRight_Linear = msg.linear.x
     velBackRight_Angular = msg.angular.z
 
+def clamp_steering(angle, min_angle=-math.pi/2, max_angle=math.pi/2):
+    """Clamp steering angles to be within [-π/2, π/2]"""
+    return max(min(angle, max_angle), min_angle)
+
 def odometry_publisher():
     rospy.init_node('odometry')
     odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
     odom_broadcaster = tf.TransformBroadcaster()
-    joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
-    # ✅ **Re-adding missing Subscribers**
+    # Subscribe to each wheel's velocity topic
     rospy.Subscriber("/cmd_vel_front_left", Twist, front_left_callback)
     rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
     rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
     rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
+    
+    joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
     # Initial position and orientation
     x = y = theta = 0.0
     rate = rospy.Rate(10)
     last_time = rospy.Time.now()
 
-    global steer_front_left, steer_front_right, steer_rear_left, steer_rear_right
-
     while not rospy.is_shutdown():
-        current_time = rospy.Time.now()
-        dt = (current_time - last_time).to_sec()
-        last_time = current_time
+        try:
+            current_time = rospy.Time.now()
+            dt = (current_time - last_time).to_sec()
+            last_time = current_time
 
-        # Compute velocity from all four wheels
-        dv_x = (velFrontLeft_Linear + velFrontRight_Linear + velBackLeft_Linear + velBackRight_Linear) / 4.0 * WHEEL_RADIUS
-        omega = (velFrontLeft_Angular + velFrontRight_Angular + velBackLeft_Angular + velBackRight_Angular) / 4.0
+            # Calculation
+            v = velFrontLeft_Linear * WHEEL_RADIUS
+            vx = v * math.cos(theta)
+            vy = v * math.sin(theta)
+            omega = velFrontLeft_Angular
 
-        # Update position
-        dx = dv_x * math.cos(theta) * dt
-        dy = dv_x * math.sin(theta) * dt
-        dtheta = omega * dt
+            dx = vx * dt
+            dy = vy * dt
+            x += dx
+            y += dy
 
-        x += dx
-        y += dy
-        theta += dtheta
+            dtheta = omega * dt
 
-        # Update steering joint angles (clamping at ±90 degrees)
-        steer_front_left += velFrontLeft_Angular * dt
-        steer_front_right += velFrontRight_Angular * dt
-        steer_rear_left += velBackLeft_Angular * dt
-        steer_rear_right += velBackRight_Angular * dt
+            # Check if steering is at its limit
+            steering_angle = clamp_steering(theta)
+            at_limit = abs(steering_angle) >= (math.pi / 2)
 
-        steer_front_left = max(-MAX_STEER_ANGLE, min(MAX_STEER_ANGLE, steer_front_left))
-        steer_front_right = max(-MAX_STEER_ANGLE, min(MAX_STEER_ANGLE, steer_front_right))
-        steer_rear_left = max(-MAX_STEER_ANGLE, min(MAX_STEER_ANGLE, steer_rear_left))
-        steer_rear_right = max(-MAX_STEER_ANGLE, min(MAX_STEER_ANGLE, steer_rear_right))
+            if at_limit and ((theta > 0 and dtheta > 0) or (theta < 0 and dtheta < 0)):
+                # Stop rotation if trying to go further in the same direction
+                dtheta = 0
+            else:
+                # Allow instant switching if direction changes
+                theta += dtheta  
 
-        # Create a quaternion from theta
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
+            # Create a quaternion from theta
+            odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
 
-        # Publish transforms
-        odom_broadcaster.sendTransform(
-            (x, y, 0.0),
-            odom_quat,
-            current_time,
-            "base_footprint",
-            "odom"
-        )
-        
-        odom_broadcaster.sendTransform(
-            (0.0, 0.0, 0.0),
-            tf.transformations.quaternion_from_euler(0, 0, -theta),
-            current_time,
-            "base_link",
-            "base_footprint"
-        )
+            try:
+                odom_broadcaster.sendTransform(
+                    (x, y, 0.0),
+                    tf.transformations.quaternion_from_euler(0, 0, theta % (2 * math.pi)),  # Limit theta
+                    current_time,
+                    "base_footprint",
+                    "odom"
+                )
+            except Exception as e:
+                rospy.logerr("Error broadcasting transform (base_footprint -> odom): {}".format(e))
+                rospy.logerr(traceback.format_exc())
 
-        # ✅ **Fixed: Ensure `/odom` updates with velocity values**
-        odom = Odometry()
-        odom.header.stamp = current_time
-        odom.header.frame_id = "odom"
+            try:
+                odom_broadcaster.sendTransform(
+                    (0.0, 0.0, 0.0),
+                    tf.transformations.quaternion_from_euler(0, 0, -theta),
+                    current_time,
+                    "base_link",
+                    "base_footprint"
+                )
+            except Exception as e:
+                rospy.logerr("Error broadcasting transform (base_link -> base_footprint): {}".format(e))
+                rospy.logerr(traceback.format_exc())
 
-        odom.pose.pose.position.x = x
-        odom.pose.pose.position.y = y
-        odom.pose.pose.position.z = 0.0
-        odom.pose.pose.orientation = Quaternion(*odom_quat)
+            # Publish the odometry message
+            try:
+                odom = Odometry()
+                odom.header.stamp = current_time
+                odom.header.frame_id = "odom"
 
-        # ✅ **Ensure the odometry message contains the correct velocity values**
-        odom.child_frame_id = "base_footprint"
-        odom.twist.twist.linear.x = dv_x
-        odom.twist.twist.linear.y = 0.0
-        odom.twist.twist.angular.z = omega  # **Ensure the correct angular velocity is set**
+                # Set the position
+                odom.pose.pose.position.x = x
+                odom.pose.pose.position.y = y
+                odom.pose.pose.position.z = 0.0
+                odom.pose.pose.orientation = Quaternion(*odom_quat)
 
-        odom_pub.publish(odom)
+                # Set the velocity
+                odom.child_frame_id = "base_footprint"
+                odom.twist.twist.linear.x = vx
+                odom.twist.twist.linear.y = vy
+                odom.twist.twist.angular.z = omega if not at_limit else 0.0  # Stop rotation if at limit
 
-        # ✅ **Fixed: Ensure `/joint_states` updates correctly**
-        joint_state = JointState()
-        joint_state.header.stamp = current_time
+                # Publish the odometry message
+                odom_pub.publish(odom)
+            except Exception as e:
+                rospy.logerr("Error publishing odometry message: {}".format(e))
+                rospy.logerr(traceback.format_exc())
 
-        # Define joint names
-        joint_state.name = [
-            "wheel_front_left_joint", "wheel_front_right_joint",
-            "wheel_rear_left_joint", "wheel_rear_right_joint",
-            "steer_front_left_joint", "steer_front_right_joint",
-            "steer_rear_left_joint", "steer_rear_right_joint"
-        ]
+            # Create a JointState message
+            try:
+                joint_state = JointState()
+                joint_state.header.stamp = current_time
 
-        # ✅ **Update joint positions with clamped steering angles**
-        joint_state.position = [
-            0.0, 0.0,  # Wheel rotation
-            0.0, 0.0,
-            steer_front_left, steer_front_right,  # Clamped steering angles
-            steer_rear_left, steer_rear_right
-        ]
+                # Define joint names
+                joint_state.name = [
+                    "wheel_front_left_joint", "wheel_front_right_joint",
+                    "wheel_rear_left_joint", "wheel_rear_right_joint",
+                    "steer_front_left_joint", "steer_front_right_joint",
+                    "steer_rear_left_joint", "steer_rear_right_joint"
+                ]
 
-        # ✅ **Ensure `/joint_states` contains velocity values for better visualization**
-        joint_state.velocity = [
-            dv_x, dv_x,  # Wheel linear velocity
-            dv_x, dv_x,
-            velFrontLeft_Angular, velFrontRight_Angular,  # Angular velocity for steering
-            velBackLeft_Angular, velBackRight_Angular
-        ]
+                wheel_rotation = (x / WHEEL_RADIUS) % (2 * math.pi)  # Limit wheel rotation
 
-        # ✅ **Publish joint states so RViz updates correctly**
-        joint_pub.publish(joint_state)
+                joint_state.position = [
+                    wheel_rotation,  # Front left wheel rotation
+                    wheel_rotation,  # Front right wheel rotation
+                    wheel_rotation,  # Rear left wheel rotation
+                    wheel_rotation,  # Rear right wheel rotation
+                    clamp_steering(theta),  # Steering front left
+                    clamp_steering(theta),  # Steering front right
+                    clamp_steering(theta),  # Steering rear left
+                    clamp_steering(theta)   # Steering rear right
+                ]
 
-        rate.sleep()
+                # Publish joint states
+                joint_pub.publish(joint_state)
+            except Exception as e:
+                rospy.logerr("Error publishing joint states: {}".format(e))
+                rospy.logerr(traceback.format_exc())
+
+            rate.sleep()
+
+        except Exception as e:
+            pass
 
 if __name__ == '__main__':
     try:
         odometry_publisher()
     except rospy.ROSInterruptException:
-        pass
+        rospy.logwarn("ROS Node interrupted")
+    except Exception as e:
+        rospy.logerr("Unexpected error in main function: {}".format(e))
+        rospy.logerr(traceback.format_exc())
