@@ -94,11 +94,10 @@ class ZLAC8015D:
 		##############
 		## Odometry ##
 		##############
-		# TODO: calculate this value for 5.5 inch
 		## 8 inches wheel 
-		self.travel_in_one_rev = 0.4367
+		self.travel_in_one_rev = 0.43367
 		self.cpr = 16385
-		self.R_Wheel = 0.0695 # 0.139/2 #TODO (meter)
+		self.R_Wheel = 0.0695 # 0.139/2 
 
 	## Some time if read immediatly after write, it would show ModbusIOException when get data from registers
 	def modbus_fail_read_handler(self, ADDR, WORD):
@@ -369,10 +368,15 @@ class Motors:
         front_l_tick_i, front_r_tick_i = front.get_wheels_tick()
         rear_l_tick_i, rear_r_tick_i = rear.get_wheels_tick()
 
+        l_f_l, l_f_r = front.get_wheels_travelled()
+        l_r_l, l_r_r = rear.get_wheels_travelled()
+
         self.front = front
         self.rear = rear
         self.f_tick = [front_l_tick_i,front_r_tick_i]
         self.r_tick = [rear_l_tick_i,rear_r_tick_i]
+        self.l_f = [l_f_l, l_f_r]
+        self.l_r = [l_r_l, l_r_r]
         self.radius = 0.1397/2
 
     def set_vel(self, vel_list):
@@ -386,7 +390,7 @@ class Motors:
         self.front.set_rpm(-rpm_list[0],rpm_list[1])
         self.rear.set_rpm(-rpm_list[2],rpm_list[3])
 
-    def get_tick(self):
+    def get_delta_tick(self):
 
         # compare the current tick to the original tick
         front_l_tick_i, front_r_tick_i = self.front.get_wheels_tick()
@@ -395,9 +399,30 @@ class Motors:
         fld = front_l_tick_i - self.f_tick[0]
         frd = front_r_tick_i - self.f_tick[1]
         rld = rear_l_tick_i - self.r_tick[0]
-        rrd = rear_l_tick_i = self.r_tick[1]
+        rrd = rear_r_tick_i - self.r_tick[1]
 
-        return fld, frd, rld, rrd
+		# set the current value as the old value
+        self.f_tick = [fld, frd]
+        self.r_tick = [rld, rrd] 
+
+        return [fld, frd, rld, rrd]
+	
+    def get_delta_travelled(self):
+
+        # compare the current tick to the last travel
+        l_f_l, l_f_r = self.front.get_wheels_travelled()
+        l_r_l, l_r_r = self.rear.get_wheels_travelled()
+
+        dl_f_l = l_f_l - self.l_f[0]
+        dl_f_r = l_f_r - self.l_f[1]
+        dl_r_l = l_r_l - self.l_r[0]
+        dl_r_r = l_r_r - self.l_r[1]
+
+		# set the current value as the old value
+        self.l_f = [l_f_l, l_f_r]
+        self.l_r = [l_r_l, l_r_r]
+
+        return [dl_f_l, dl_f_r, dl_r_l, dl_r_r]
         
     def get_rpms(self):
 
@@ -405,7 +430,7 @@ class Motors:
         flrpm, frrpm = self.front.get_rpm()
         rlrpm, rrrpm = self.rear.get_rpm()
 
-        return (flrpm, frrpm, rlrpm, rrrpm)
+        return [flrpm, frrpm, rlrpm, rrrpm]
 	
     def get_speeds(self):
         return [0.10472*val*self.radius for val in self.get_rpm()]
