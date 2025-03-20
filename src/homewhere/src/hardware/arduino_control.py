@@ -27,15 +27,17 @@ class imu_reading:
 class Arduino:
 
     def __init__(self, com='/dev/ttyUSB3', baud=9600, timeout=1):
-        # Initialize serial connection
+        """Initialize serial connection"""
         ser = serial.Serial(com, baud, timeout=timeout)  # Update COM port as needed
         time.sleep(2)  # Allow time for Arduino to initialize
         self.ser = ser
 
     def write(self,string):
+        """Encode and Write the string to the Arduino"""
         self.ser.write(string.encode())
 
     def read(self):
+        """Decode and Read the string from the Arduino"""
         return self.ser.readline().decode().strip()
 
     def read_sensor_value(self): # button on Pin6
@@ -125,6 +127,7 @@ class Arduino:
         return None
 
     def tilted(self, threshold=10):
+        """Return whether the robot is tilted over a certain threshold"""
         read = self.read_mpu6050()
         if read is not None:
             tiltx, tilty = read.get_angle()

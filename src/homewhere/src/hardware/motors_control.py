@@ -343,10 +343,12 @@ class ZLAC8015D:
 
 		return l_tick, r_tick
 
+#? -------------------------------------------------------------------------------------------------------------------
 
 class Motors:
 	
     def __init__(self, front_port="/dev/ttyUSB1", rear_port="/dev/ttyUSB2"):
+        """Initialize the two pairs of wheels"""
 
         # initialize drivers
         front = ZLAC8015D(port=front_port)
@@ -355,7 +357,7 @@ class Motors:
         front.disable_motor()
         rear.disable_motor()
 
-        ad_time = 600
+        ad_time = 600 # 600ms seems to be good on the robot at 0.1 m/s 
         front.set_accel_time(ad_time,ad_time)
         front.set_decel_time(ad_time,ad_time)
         rear.set_accel_time(ad_time,ad_time)
@@ -381,7 +383,7 @@ class Motors:
         self.radius = 0.1397/2
 
     def set_vel(self, vel_list):
-        """vel_list = [ front_left, front_right, back_left, back_right]"""
+        """Set the velocity in the format of vel_list = [ front_left, front_right, back_left, back_right] (m/s)"""
 
         rpm_list = [int(vel*60/(self.radius*np.pi)) for vel in vel_list]
         print("RPM_LIST",rpm_list)
@@ -392,6 +394,7 @@ class Motors:
         self.rear.set_rpm(-rpm_list[2],rpm_list[3])
 
     def get_delta_tick(self):
+        """Get the ticks of the wheels relative to the last request"""
 
         # compare the current tick to the original tick
         front_l_tick_i, front_r_tick_i = self.front.get_wheels_tick()
@@ -409,6 +412,7 @@ class Motors:
         return [-fld, frd, -rld, rrd]
 	
     def get_delta_travelled(self):
+        """Get the distances traveled by the wheels relative to the last request"""
 
         # compare the current tick to the last travel
         l_f_l, l_f_r = self.front.get_wheels_travelled()
@@ -426,6 +430,7 @@ class Motors:
         return [-dl_f_l, dl_f_r, -dl_r_l, dl_r_r]
         
     def get_rpms(self):
+        """Get the current RPM of each wheel"""
 
         # get the rpm of teh four wheels
         flrpm, frrpm = self.front.get_rpm()
@@ -438,6 +443,7 @@ class Motors:
 
 
     def terminate(self):
+        """Disable both motors"""
 
         # end the motor
         self.front.disable_motor()

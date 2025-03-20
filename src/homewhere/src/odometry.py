@@ -47,7 +47,7 @@ def odometry_publisher():
 
     while not rospy.is_shutdown():
 
-        print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
+        # print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
         dx = dl*math.cos(servo_theta)
         dy = dl*math.sin(servo_theta)
         x += dx
@@ -61,7 +61,7 @@ def odometry_publisher():
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
-        print(f"x,y = ({x},{y})")
+        # print(f"x,y = ({x},{y})")
 
         # vx = vx_cmd
         # vy = vy_cmd

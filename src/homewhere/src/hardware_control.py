@@ -7,6 +7,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray, Int16
 
 class Hardware_Controller:
+    """A Class to Control Hardwares"""
 
     # Config Here
     ARDUINO_ADDR = "ttyUSB3"
