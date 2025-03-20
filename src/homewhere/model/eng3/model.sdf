@@ -7,7 +7,7 @@
         <geometry>
           <mesh>
             <scale>1.5 1.5 1.5</scale>
-            <uri>model://Building 3/eng3.stl</uri>
+            <uri>model://eng3/eng3.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -15,7 +15,7 @@
         <geometry>
           <mesh>
             <scale>1.5 1.5 1.5</scale>
-            <uri>model://Building 3/eng3.dae</uri>
+            <uri>model://eng3/eng3.dae</uri>
           </mesh>
         </geometry>
       </visual>
