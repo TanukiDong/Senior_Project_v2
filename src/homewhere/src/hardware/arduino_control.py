@@ -26,7 +26,7 @@ class imu_reading:
 
 class Arduino:
 
-    def __init__(self, com='/dev/ttyUSB1', baud=9600, timeout=1):
+    def __init__(self, com='/dev/ttyUSB3', baud=9600, timeout=1):
         # Initialize serial connection
         ser = serial.Serial(com, baud, timeout=timeout)  # Update COM port as needed
         time.sleep(2)  # Allow time for Arduino to initialize

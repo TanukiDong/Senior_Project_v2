@@ -346,7 +346,7 @@ class ZLAC8015D:
 
 class Motors:
 	
-    def __init__(self, front_port="/dev/ttyUSB2", rear_port="/dev/ttyUSB3"):
+    def __init__(self, front_port="/dev/ttyUSB1", rear_port="/dev/ttyUSB2"):
 
         # initialize drivers
         front = ZLAC8015D(port=front_port)
@@ -355,10 +355,11 @@ class Motors:
         front.disable_motor()
         rear.disable_motor()
 
-        front.set_accel_time(1000,1000)
-        front.set_decel_time(1000,1000)
-        rear.set_accel_time(1000,1000)
-        rear.set_decel_time(1000,1000)
+        ad_time = 600
+        front.set_accel_time(ad_time,ad_time)
+        front.set_decel_time(ad_time,ad_time)
+        rear.set_accel_time(ad_time,ad_time)
+        rear.set_decel_time(ad_time,ad_time)
 
         front.set_mode(3)
         front.enable_motor()

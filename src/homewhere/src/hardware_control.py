@@ -4,14 +4,14 @@ import rospy
 import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray, Int8
+from std_msgs.msg import Float32MultiArray, Int16
 
 class Hardware_Controller:
 
     # Config Here
-    ARDUINO_ADDR = "ttyUSB1"
-    FRONT_ADDR = "ttyUSB2"
-    REAR_ADDR = "ttyUSB3"
+    ARDUINO_ADDR = "ttyUSB3"
+    FRONT_ADDR = "ttyUSB1"
+    REAR_ADDR = "ttyUSB2"
     REFRESH_RATE = 0.1 # in second
 
     def __init__(self):
@@ -38,7 +38,7 @@ class Hardware_Controller:
         rospy.Subscriber("/cmd_vel_front_right", Twist, self.front_right_callback)
         rospy.Subscriber("/cmd_vel_back_left", Twist, self.back_left_callback)
         rospy.Subscriber("/cmd_vel_back_right", Twist, self.back_right_callback)
-        rospy.Subscriber("/cmd_angle", Int8, self.angle_callback)
+        rospy.Subscriber("/cmd_angle", Int16, self.angle_callback)
 
         # Detect and connect hardware devices
         self.setup_hardware()
@@ -96,12 +96,14 @@ class Hardware_Controller:
         try:
             dl_list = self.motors.get_delta_travelled()
             rpm_list = self.motors.get_rpms()
+
+            print("DL, RPM:", dl_list, rpm_list)
             # imu = self.arduino.get_tilt()
             # return [*encoder, *imu]  # Return as a list
             return [dl_list, rpm_list]
         except Exception as e:
             rospy.logerr(f"Sensor reading error: {e}")
-            return [0.0, 0.0]  # Fail-safe default
+            return [[0.0], [0.0]]  # Fail-safe default
 
     # ---- Actuator Commands ----
     def cmd_actuators(self):
