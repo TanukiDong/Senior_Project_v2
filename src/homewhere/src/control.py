@@ -4,7 +4,7 @@ import math
 import rospy
 from geometry_msgs.msg import Twist
 from pynput import keyboard
-from std_msgs.msg import Int8, Float32
+from std_msgs.msg import Int16, Float32
 
 import signal
 import sys
@@ -19,7 +19,7 @@ class Control:
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
         self.cmd_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
-        self.theta_publisher = rospy.Publisher('/cmd_angle', Int8, queue_size=10)
+        self.theta_publisher = rospy.Publisher('/cmd_angle', Int16, queue_size=10)
         
         self.active_keys = set()
         self.manual_control_active = False
