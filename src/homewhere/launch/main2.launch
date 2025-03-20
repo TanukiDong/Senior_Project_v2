@@ -4,7 +4,7 @@
     <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
     <!-- world -->
-    <arg name="world" default="mi" />
+    <arg name="world" default="mi_polcorner" />
     <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
     <!-- LiDAR -->
     <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch" />
