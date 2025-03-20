@@ -1,30 +1,24 @@
-<?xml version="1.0"?>
-<sdf version="1.5">
-  <model name="eng3">
-    <pose>0 0 0 0 0 0</pose>
+<?xml version="1.7" ?>
+<sdf version="1.7">
+  <model name="Building 3">
     <static>true</static>
-    <link name="body">
-      <visual name="visual">
-        <geometry>
-          <mesh>
-            <uri>model://eng3/media/eng3.dae</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <uri>model://eng3/media/scripts</uri>
-            <!-- <uri>model://eng3/media/Textures</uri> -->
-            <!-- <name>RepeatedGrass/Diffuse</name> -->
-          </script>
-        </material>
-      </visual>
+    <link name="link">
       <collision name="collision">
         <geometry>
           <mesh>
-            <uri>model://eng3/media/eng3.dae</uri>
+            <scale>1.5 1.5 1.5</scale>
+            <uri>model://Building 3/eng3.stl</uri>
           </mesh>
         </geometry>
       </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <scale>1.5 1.5 1.5</scale>
+            <uri>model://Building 3/eng3.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
     </link>
   </model>
 </sdf>
