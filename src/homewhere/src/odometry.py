@@ -2,7 +2,8 @@
 
 import rospy
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Twist, Quaternion, Float32MultiArray, UInt8
+from geometry_msgs.msg import Twist, Quaternion
+from std_msgs.msg import Float32MultiArray, Int16
 import tf
 import math
 from sensor_msgs.msg import JointState
@@ -37,7 +38,7 @@ def odometry_publisher():
     
     rospy.Subscriber('/cmd_vel', Twist, cmd_vel_callback)
     rospy.Subscriber('/cmd_hardware_reading', Float32MultiArray, cmd_hardware_callback)
-    rospy.Subscriber("/cmd_angle", UInt8, angle_callback)
+    rospy.Subscriber("/cmd_angle", Int16, angle_callback)
 
     # Initial position and orientation
     x = y = theta = 0.0
@@ -46,24 +47,29 @@ def odometry_publisher():
 
     while not rospy.is_shutdown():
 
-        print(f"dl={dl}, rpm={rpm}")
-        # dx = dl*math.cos(servo_theta)
-        # dy = dl*math.sin(servo_theta)
-        # x += dx
-        # y += dy
-        # v = rpm*2*math.pi/60*WHEEL_RADIUS
-        # vx = v*math.cos(servo_theta)
-        # vy = v*math.sin(servo_theta)
+        print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
+        dx = dl*math.cos(servo_theta)
+        dy = dl*math.sin(servo_theta)
+        x += dx
+        y += dy
+
+        v = rpm*2*math.pi/60*WHEEL_RADIUS
+        vx = v*math.cos(servo_theta)
+        vy = v*math.sin(servo_theta)
 
         current_time = rospy.Time.now()
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
-        vx = vx_cmd
-        vy = vy_cmd
+        print(f"x,y = ({x},{y})")
 
-        x += vx * dt
-        y += vy * dt
+        # vx = vx_cmd
+        # vy = vy_cmd
+
+        # print(vx*dt, vy*dt, (vx**2+vy**2)**0.5)
+
+        # x += vx * dt
+        # y += vy * dt
 
         # Create a quaternion from theta
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
