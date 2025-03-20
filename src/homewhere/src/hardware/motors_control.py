@@ -405,7 +405,7 @@ class Motors:
         self.f_tick = [fld, frd]
         self.r_tick = [rld, rrd] 
 
-        return [fld, frd, rld, rrd]
+        return [-fld, frd, -rld, rrd]
 	
     def get_delta_travelled(self):
 
@@ -422,7 +422,7 @@ class Motors:
         self.l_f = [l_f_l, l_f_r]
         self.l_r = [l_r_l, l_r_r]
 
-        return [dl_f_l, dl_f_r, dl_r_l, dl_r_r]
+        return [-dl_f_l, dl_f_r, -dl_r_l, dl_r_r]
         
     def get_rpms(self):
 
@@ -430,7 +430,7 @@ class Motors:
         flrpm, frrpm = self.front.get_rpm()
         rlrpm, rrrpm = self.rear.get_rpm()
 
-        return [flrpm, frrpm, rlrpm, rrrpm]
+        return [-flrpm, frrpm, -rlrpm, rrrpm]
 	
     def get_speeds(self):
         return [0.10472*val*self.radius for val in self.get_rpm()]
