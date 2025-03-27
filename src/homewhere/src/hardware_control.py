@@ -28,7 +28,10 @@ class Hardware_Controller:
         self.velBackLeft_Linear_y = 0.0
         self.velBackRight_Linear_x = 0.0
         self.velBackRight_Linear_y = 0.0
-        self.theta = 0.0
+        self.theta_fl = 0.0
+        self.theta_fr = 0.0
+        self.theta_bl = 0.0
+        self.theta_br = 0.0
         self.vel_limit = 0.1
 
         # ROS Publisher
@@ -77,31 +80,31 @@ class Hardware_Controller:
     # ---- ROS Subscriber Callbacks ----
     def front_left_callback(self, msg):
         self.velFrontLeft_Linear_x = msg.linear.x
-        self.velFrontLeft_Linear_y = msg.linear.y
+        # self.velFrontLeft_Linear_y = msg.linear.y
 
     def front_right_callback(self, msg):
         self.velFrontRight_Linear_x = msg.linear.x
-        self.velFrontRight_Linear_y = msg.linear.y
+        # self.velFrontRight_Linear_y = msg.linear.y
 
     def back_left_callback(self, msg):
         self.velBackLeft_Linear_x = msg.linear.x
-        self.velBackLeft_Linear_y = msg.linear.y
+        # self.velBackLeft_Linear_y = msg.linear.y
 
     def back_right_callback(self, msg):
         self.velBackRight_Linear_x = msg.linear.x
-        self.velBackRight_Linear_y = msg.linear.y
+        # self.velBackRight_Linear_y = msg.linear.y
 
     def angle_fl_callback(self, msg):
-        self.theta = msg.data  # Float32 contains data in `.data`
+        self.theta_fl = msg.data  # Float32 contains data in `.data`
 
     def angle_fr_callback(self, msg):
-        self.theta = msg.data  # Float32 contains data in `.data`
+        self.theta_fr = msg.data  # Float32 contains data in `.data`
 
     def angle_bl_callback(self, msg):
-        self.theta = msg.data  # Float32 contains data in `.data`
+        self.theta_bl = msg.data  # Float32 contains data in `.data`
 
     def angle_br_callback(self, msg):
-        self.theta = msg.data  # Float32 contains data in `.data`
+        self.theta_br = msg.data  # Float32 contains data in `.data`
 
     # ---- Sensor Reading ----
     def read_sensor(self):
@@ -113,26 +116,32 @@ class Hardware_Controller:
             print("DL, RPM:", dl_list, rpm_list)
             # imu = self.arduino.get_tilt()
             # return [*encoder, *imu]  # Return as a list
-            return [dl_list, rpm_list]
+            return [*dl_list, *rpm_list]
         except Exception as e:
             rospy.logerr(f"Sensor reading error: {e}")
-            return [[0.0], [0.0]]  # Fail-safe default
+            return [[0.0]*8]  # Fail-safe default
 
     # ---- Actuator Commands ----
     def cmd_actuators(self):
         """Send Velocity and Steering Commands"""
         try:
-            vel = self.velFrontLeft_Linear_x
-            if vel > self.vel_limit:
-                vel = self.vel_limit
+            vel_list = [self.velFrontLeft_Linear_x,
+                   self.velFrontRight_Linear_x,
+                   self.velBackLeft_Linear_x,
+                   self.velBackRight_Linear_x]
+            vel_list = [vel_i if vel_i < self.vel_limit else self.vel_limit for vel_i in vel_list] 
 
-            vel_list = [vel]*4
+            theta_list = [self.theta_fl,
+                          self.theta_fr,
+                          self.theta_bl,
+                          self.theta_br]   
+            theta_list = [int(theta_i) for theta_i in theta_list]
             
+            # set wheel velocities
             self.motors.set_vel(vel_list)
-            # Set steering angle
-            self.arduino.control_servos(int(self.theta))
+            # Set steering angles
+            self.arduino.control_servos(theta_list)
 
-            print(vel_list, self.theta)
         except Exception as e:
             rospy.logerr(f"Actuator command error: {e}")
 
@@ -150,8 +159,7 @@ class Hardware_Controller:
 
             # Publish sensor readings
             msg = Float32MultiArray()
-            avg_reading = [sum(lst)/len(lst) for lst in reading_list]
-            msg.data = avg_reading  # [avg_dl, avg_rpm]
+            msg.data = reading_list
             self.reading_publisher.publish(msg)
 
             # Command the actuators
