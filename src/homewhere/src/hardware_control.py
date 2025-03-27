@@ -39,7 +39,10 @@ class Hardware_Controller:
         rospy.Subscriber("/cmd_vel_front_right", Twist, self.front_right_callback)
         rospy.Subscriber("/cmd_vel_back_left", Twist, self.back_left_callback)
         rospy.Subscriber("/cmd_vel_back_right", Twist, self.back_right_callback)
-        rospy.Subscriber("/cmd_angle", Int16, self.angle_callback)
+        rospy.Subscriber("/cmd_angle_front_left", Int16, self.angle_fl_callback)
+        rospy.Subscriber("/cmd_angle_front_right", Int16, self.angle_fr_callback)
+        rospy.Subscriber("/cmd_angle_back_left", Int16, self.angle_bl_callback)
+        rospy.Subscriber("/cmd_angle_back_right", Int16, self.angle_br_callback)
 
         # Detect and connect hardware devices
         self.setup_hardware()
@@ -88,7 +91,16 @@ class Hardware_Controller:
         self.velBackRight_Linear_x = msg.linear.x
         self.velBackRight_Linear_y = msg.linear.y
 
-    def angle_callback(self, msg):
+    def angle_fl_callback(self, msg):
+        self.theta = msg.data  # Float32 contains data in `.data`
+
+    def angle_fr_callback(self, msg):
+        self.theta = msg.data  # Float32 contains data in `.data`
+
+    def angle_bl_callback(self, msg):
+        self.theta = msg.data  # Float32 contains data in `.data`
+
+    def angle_br_callback(self, msg):
         self.theta = msg.data  # Float32 contains data in `.data`
 
     # ---- Sensor Reading ----

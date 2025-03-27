@@ -19,7 +19,10 @@ class Control:
         self.back_left_velocity_publisher = rospy.Publisher('/cmd_vel_back_left', Twist, queue_size=10)
         self.back_right_velocity_publisher = rospy.Publisher('/cmd_vel_back_right', Twist, queue_size=10)
         self.cmd_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
-        self.theta_publisher = rospy.Publisher('/cmd_angle', Int16, queue_size=10)
+        self.theta_fl_publisher = rospy.Publisher('/cmd_angle_front_left', Int16, queue_size=10)
+        self.theta_fr_publisher = rospy.Publisher('/cmd_angle_front_right', Int16, queue_size=10)
+        self.theta_bl_publisher = rospy.Publisher('/cmd_angle_back_left', Int16, queue_size=10)
+        self.theta_br_publisher = rospy.Publisher('/cmd_angle_back_right', Int16, queue_size=10)
         
         self.active_keys = set()
         self.manual_control_active = False
