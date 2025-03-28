@@ -79,7 +79,7 @@ class Arduino:
         response = self.read()
         return response
     
-    def control_servos(self, angle, verbose=True):
+    def control_servos(self, angles, verbose=True):
         """Command all servos to move to a specific angle."""
         # Note:
         # Servo 6: Top Right (Red) -> 92 degrees
@@ -89,9 +89,10 @@ class Arduino:
         # angle += 90 (to make 0 degrees the center)
         center = {6:92, 7:90, 8:95, 9:98} 
         # correct orientation
-        angle = 90 - angle
+        angles = [90 - angle_i for angle_i in angles]
         for i in range(6, 10):
             # Calculate new local angle
+            angle = angles[i-6]
             local_angle = angle - 90 + center[i]
             if local_angle < 0:
                 local_angle = 0
