@@ -56,9 +56,6 @@ def odometry_publisher():
         v_list = [rpm_i*2*math.pi/60*WHEEL_RADIUS for rpm_i in rpm]
         v_avg = [(v_list[0]+v_list[2])/2,(v_list[1]+v_list[3])/2] 
 
-        w_parity = 1 if abs(dl_avg[0]) < abs(dl_avg[1]) else -1
-        v_parity = 1 if dl_avg[0] > dl_avg[2] else -1
-
         # Get the large and small values of movement and velocity
         dl_large = max([abs(dl_i) for dl_i in dl_avg])
         dl_small = min([abs(dl_i) for dl_i in dl_avg])
