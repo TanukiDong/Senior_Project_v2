@@ -82,24 +82,37 @@ class Control:
                 v: the speed of the CG in m/s
                 w: the angular velocity in the +z direction in rad/s
             return: tuple of four delta velocities and thetas ((4),(4))"""
-        r = 0
-        if v == 0 or w == 0:
+
+        if w == 0:
+            return ((v,v,v,v),(0,0,0,0))
+        
+        if v == 0:
             return ((0,0,0,0),(0,0,0,0))
+        
+        r = v/w
+        v_parity = 1 if v > 0 else -1
+
+        hor_fl = abs(r)-W
+        hor_fr = abs(r)+W
+        dtheta_large = math.atan(H/hor_fl)
+        dtheta_small = math.atan(H/hor_fr)
+
+        dv_small = abs(w)*(H**2 + (abs(r)-W)**2)**0.5
+        dv_large = abs(w)*(H**2 + (abs(r)+W)**2)**0.5
+
+        if w > 0:
+            dv_l = dv_small*v_parity
+            dv_r = dv_large*v_parity
+            dtheta_l = dtheta_large
+            dtheta_r = dtheta_small
         else:
-            r = v/w
+            dv_l = dv_large*v_parity
+            dv_r = dv_small*v_parity
+            dtheta_l = dtheta_small*-1
+            dtheta_r = dtheta_large*-1
+        
 
-        hor_fl = r-W if r > 0 else W-r
-        hor_fr = r+W if r > 0 else W+r
-
-        dtheta_fl = math.atan(H, hor_fl)
-        dtheta_fr = math.atan(H, hor_fr)
-        dtheta_bl = -dtheta_fl
-        dtheta_br = -dtheta_fr
-
-        dv_l = w*(H**2 + hor_fl)**0.5
-        dv_r = w*(H**2 + hor_fr)**0.5
-
-        return ((dv_l,dv_r,dv_l,dv_r),(dtheta_fl,dtheta_fr,dtheta_bl,dtheta_br))
+        return ((dv_l,dv_r,dv_l,dv_r),(dtheta_l,dtheta_r,-dtheta_l,-dtheta_r))
 
     def real_velocity(self, v, theta):
         if -math.pi/2 <= theta and theta <= math.pi/2:
