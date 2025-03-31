@@ -7,6 +7,7 @@ from std_msgs.msg import Float32MultiArray, Int16
 import tf
 import math
 from sensor_msgs.msg import JointState
+from control import H, W
 
 WHEEL_RADIUS = 0.0695
 
@@ -23,7 +24,8 @@ def cmd_vel_callback(msg):
 
 def cmd_hardware_callback(msg):
     global dl, rpm
-    dl, rpm = msg.data
+    dl = msg.data[:4]
+    rpm = msg.data[4:8]
 
 def angle_callback(msg):
     global servo_theta
