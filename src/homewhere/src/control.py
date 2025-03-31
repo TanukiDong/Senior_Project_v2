@@ -62,7 +62,7 @@ class Control:
 
     def stop_robot(self):
         """Stops the robot by publishing zero velocities."""
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0, 0])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0])
         self.publish_velocity()
 
     def rad2deg(self, rad):
@@ -117,14 +117,10 @@ class Control:
         """Handle /cmd_vel messages from move_base."""
 
         # Extract linear and angular velocities from the cmd_vel message
-        vx = msg.linear.x
-        vy = msg.linear.y
+        v = msg.linear.x
         w = msg.angular.z
-        
-        v, theta = self.get_v_and_theta(vx, vy)
-        dv_list, dtheta_list = self.get_delta_v_and_theta(v,w)
-        v_list = [v + dv for dv in dv_list]
-        theta_list = [theta + dtheta for dtheta in dtheta_list]
+    
+        v_list, theta_list = self.get_delta_v_and_theta(v,w)
 
         real_v = [self.real_velocity(v_i,theta_i) for v_i,theta_i in zip(v_list,theta_list)]
         real_t = [self.real_theta(theta_i) for theta_i in theta_list]
@@ -133,7 +129,7 @@ class Control:
         print("Real",real_v,real_t)
 
         # Apply the computed velocities
-        self.set_velocity([real_v, real_t, v, theta])
+        self.set_velocity([real_v, real_t, v])
 
         # Publish the updated velocities to each wheel
         self.publish_velocity()
@@ -164,7 +160,6 @@ class Control:
         self.angle_br = vel[1][3]
 
         self.velocity = vel[1]
-        self.angle = vel[2]
             
     def on_press(self, key):
         """Handle key press events."""
@@ -186,14 +181,13 @@ class Control:
                 velocity = forward
             if 's' in self.active_keys:  # Backward
                 velocity = backward
+            # TODO: add correct angle
             if 'a' in self.active_keys:  # Left turn
-                velocity = forward
                 angle = [90]*4
             if 'd' in self.active_keys:  # Right turn
-                velocity = backward
                 angle = [90]*4
 
-            self.set_velocity([velocity, angle, velocity[0], angle[0]])
+            self.set_velocity([velocity, angle, velocity[0]])
             self.publish_velocity()
 
         except AttributeError:
@@ -203,7 +197,7 @@ class Control:
         """Handle key release events."""
         self.manual_control_active = False
         self.active_keys.discard(key.char)
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0, 0])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0])
         self.publish_velocity()
 
     def run(self):
