@@ -49,29 +49,56 @@ def odometry_publisher():
 
     while not rospy.is_shutdown():
 
-        # print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
-        dx = dl*math.cos(servo_theta)
-        dy = dl*math.sin(servo_theta)
+        # Assuming that we never have to rotate beyond +-90 degrees, ie. no direction switching
+
+        # average wheels on the same side
+        dl_avg = [(dl[0]+dl[2])/2,(dl[1]+dl[3])/2] 
+        v_list = [rpm_i*2*math.pi/60*WHEEL_RADIUS for rpm_i in rpm]
+        v_avg = [(v_list[0]+v_list[2])/2,(v_list[1]+v_list[3])/2] 
+
+        w_parity = 1 if abs(dl_avg[0]) < abs(dl_avg[1]) else -1
+        v_parity = 1 if dl_avg[0] > dl_avg[2] else -1
+
+        # Get the large and small values of movement and velocity
+        dl_large = max([abs(dl_i) for dl_i in dl_avg])
+        dl_small = min([abs(dl_i) for dl_i in dl_avg])
+        v_large = max([abs(v_i) for v_i in v_avg])
+        v_small = min([abs(v_i) for v_i in v_avg])
+
+        # Get turning radius
+        r_from_dl = 2*H/(1-dl_small/dl_large) - H
+        r_from_v = 2*H/(1-v_small/v_large) - H
+        r = (r_from_dl + r_from_v)/2
+
+        # Calculate radii
+        r_small = (H**2+(r-W)**2)**2
+        r_large = (H**2+(r+W)**2)**2
+
+        # Get Omega
+        w_from_small = v_small/r_small
+        w_from_large = v_large/r_large
+        w = (w_from_small + w_from_large)/2
+
+        # Get delta theta
+        dtheta_from_small = dl_small/r_small
+        dtheta_from_large = dl_large/r_large
+        dtheta = (dtheta_from_small + dtheta_from_large)/2
+
+        # Variable settings
+        theta += dtheta
+
+        dx = dtheta*r*math.cos(theta)
+        dy = dtheta*r*math.sin(theta)
         x += dx
         y += dy
 
-        v = rpm*2*math.pi/60*WHEEL_RADIUS
+        v = w*r
         vx = v*math.cos(servo_theta)
         vy = v*math.sin(servo_theta)
 
         current_time = rospy.Time.now()
         dt = (current_time - last_time).to_sec()
         last_time = current_time
-
-        # print(f"x,y = ({x},{y})")
-
-        # vx = vx_cmd
-        # vy = vy_cmd
-
-        # print(vx*dt, vy*dt, (vx**2+vy**2)**0.5)
-
-        # x += vx * dt
-        # y += vy * dt
 
         # Create a quaternion from theta
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
@@ -116,6 +143,7 @@ def odometry_publisher():
         
         odom.twist.twist.linear.x = vx
         odom.twist.twist.linear.y = vy
+        odom.twist.twist.angular.z = w
 
         # Publish the odometry message
         odom_pub.publish(odom)
