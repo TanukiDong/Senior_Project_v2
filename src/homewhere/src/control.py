@@ -182,6 +182,8 @@ class Control:
             still = [0]*4
             forward = [self.manual_velocity]*4
             backward = [-self.manual_velocity]*4
+            left = [0.07, 0.17, 0.07, 0.17]
+            right = [0.17, 0.07, 0.17, 0.07]
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)
@@ -192,15 +194,20 @@ class Control:
 
             if 'w' in self.active_keys:  # Forward
                 velocity = forward
+                velocity_prime = forward[0]
             if 's' in self.active_keys:  # Backward
                 velocity = backward
-            # TODO: add correct angle
+                velocity_prime = backward[0]
             if 'a' in self.active_keys:  # Left turn
-                angle = [90]*4
+                velocity = left
+                angle = [30, 11, -30, -11]
+                velocity_prime = forward[0]
             if 'd' in self.active_keys:  # Right turn
-                angle = [90]*4
+                velocity = right
+                angle = [11, 30, -11, -30]
+                velocity_prime = forward[0]
 
-            self.set_velocity([velocity, angle, velocity[0]])
+            self.set_velocity([velocity, angle, velocity_prime])
             self.publish_velocity()
 
         except AttributeError:
