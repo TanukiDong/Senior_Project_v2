@@ -62,7 +62,7 @@ class Control:
 
     def stop_robot(self):
         """Stops the robot by publishing zero velocities."""
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0]])
         self.publish_velocity()
 
     def rad2deg(self, rad):
@@ -142,7 +142,7 @@ class Control:
         print("Real",real_v,real_t)
 
         # Apply the computed velocities
-        self.set_velocity([real_v, real_t, v])
+        self.set_velocity([real_v, real_t])
 
         # Publish the updated velocities to each wheel
         self.publish_velocity()
@@ -171,8 +171,6 @@ class Control:
         self.angle_fr = vel[1][1]
         self.angle_bl = vel[1][2]
         self.angle_br = vel[1][3]
-
-        self.velocity = vel[1]
             
     def on_press(self, key):
         """Handle key press events."""
@@ -194,20 +192,16 @@ class Control:
 
             if 'w' in self.active_keys:  # Forward
                 velocity = forward
-                velocity_prime = forward[0]
             if 's' in self.active_keys:  # Backward
                 velocity = backward
-                velocity_prime = backward[0]
             if 'a' in self.active_keys:  # Left turn
                 velocity = left
                 angle = [30, 11, -30, -11]
-                velocity_prime = forward[0]
             if 'd' in self.active_keys:  # Right turn
                 velocity = right
                 angle = [11, 30, -11, -30]
-                velocity_prime = forward[0]
 
-            self.set_velocity([velocity, angle, velocity_prime])
+            self.set_velocity([velocity, angle])
             self.publish_velocity()
 
         except AttributeError:
@@ -217,7 +211,7 @@ class Control:
         """Handle key release events."""
         self.manual_control_active = False
         self.active_keys.discard(key.char)
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0], 0])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0]])
         self.publish_velocity()
 
     def run(self):
