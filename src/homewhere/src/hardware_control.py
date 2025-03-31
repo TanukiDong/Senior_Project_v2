@@ -153,8 +153,8 @@ class Hardware_Controller:
             reading_list = self.read_sensor()
 
             # Ensure the list has exactly 6 elements
-            if len(reading_list) != 2:
-                rospy.logerr("Sensor data length mismatch. Expected 6 values.")
+            if len(reading_list) != 8:
+                rospy.logerr("Sensor data length mismatch. Expected 8 values.")
                 return
 
             # Publish sensor readings
