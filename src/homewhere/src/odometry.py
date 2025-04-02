@@ -13,8 +13,8 @@ WHEEL_RADIUS = 0.0695
 
 vx_cmd = 0.0
 vy_cmd = 0.0
-dl = 0.0
-rpm = 0.0
+dl = [0.1]*8
+rpm = [0.0]*8
 servo_theta = 0
 
 def cmd_vel_callback(msg):
@@ -24,6 +24,7 @@ def cmd_vel_callback(msg):
 
 def cmd_hardware_callback(msg):
     global dl, rpm
+    print("CMD_HARDWARE",msg.data)
     dl = msg.data[:4]
     rpm = msg.data[4:8]
 
