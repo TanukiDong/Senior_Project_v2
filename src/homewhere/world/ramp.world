@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <world name="default">
+
+    <!-- Keep your world settings (light, physics, etc.) -->
+    <light name="sun" type="directional">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <!-- etc... -->
+    </light>
+
+    <!-- If you want to use Gazebo’s built-in ground plane model instead of your own -->
+    <include>
+      <uri>model://ground_plane</uri>
+      <pose>0 0 0 0 0 0</pose>
+      <name>ground_plane</name>
+    </include>
+
+    <!-- Example: ramp (your custom model) -->
+    <include>
+      <uri>model://ramp</uri>
+      <pose>-5.94798 0.712759 2.18579 -0.00004 -1.02948 0.010062</pose>
+      <name>ramp</name>
+    </include>
+
+    <!-- Example: unit_box (your custom model) -->
+    <include>
+      <uri>model://unit_box</uri>
+      <pose>-9.87106 0.565318 2.08348 0 -0.015488 0.019266</pose>
+      <name>unit_box</name>
+    </include>
+
+    <!-- If you have more variants like “unit_box_clone_0”, “unit_box_clone_0_clone”, 
+         you can place them in their own folders or reuse the same model with different names -->
+    <include>
+      <uri>model://unit_box_clone_0</uri>
+      <pose>3.91712 10.0671 2.07592 0 0 0.019266</pose>
+      <name>unit_box_clone_0</name>
+    </include>
+
+    <include>
+      <uri>model://unit_box_clone_0_clone</uri>
+      <pose>-1.17817 -8.741 2.07592 0 0 1.54818</pose>
+      <name>unit_box_clone_0_clone</name>
+    </include>
+
+    <!-- GUI, physics, etc. remain unchanged -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>-8.82275 -26.4447 17.0976 0 0.528658 1.48658</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+  </world>
+</sdf>
