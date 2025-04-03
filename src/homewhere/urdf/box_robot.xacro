@@ -130,12 +130,12 @@
     </link>
     
     <!-- z = base_side/2 + leg/2 -->
-    <joint name="steer_${name}_joint" type="revolute">
+    <joint name="steer_${name}_joint" type="continuous">
       <parent link="body" />
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.25" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <limit lower="${-3 * pi/2}" upper="${3 * pi/2}" effort="1000.0" velocity="0.1" />
+      <!-- <limit lower="${-3 * pi/2}" upper="${3 * pi/2}" effort="1000.0" velocity="0.1" /> -->
     </joint>
 
     <!-- z = -leg/2 -->

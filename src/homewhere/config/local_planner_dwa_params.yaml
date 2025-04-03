@@ -29,12 +29,12 @@ DWAPlannerROS:
 # Trajectory Scoring Parameters
   path_distance_bias: 32.0
   goal_distance_bias: 16.0
-  occdist_scale: 0.1
+  occdist_scale: 0.05
   forward_point_distance: 0.325
   stop_time_buffer: 0.2
   scaling_speed: 0.25
   max_scaling_factor: 0.2
-  publish_cost_grid_pc: true
+  publish_cost_grid: true
 
 # Oscillation Prevention Parameters
   oscillation_reset_dist: 0.05

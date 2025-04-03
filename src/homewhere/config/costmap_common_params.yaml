@@ -11,10 +11,14 @@ footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
 
 inflation_radius: 3.0
 cost_scaling_factor: 15.0
+update_frequency: 5.0
+publish_frequency: 5.0
+transform_tolerance: 0.5
 
 map_type: costmap
 observation_sources: scan
 scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
 robot_base_frame: base_footprint
 
-transform_tolerance: 0.5
+
+

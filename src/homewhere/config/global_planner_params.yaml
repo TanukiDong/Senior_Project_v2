@@ -1,7 +1,7 @@
 GlobalPlanner:
-  use_quadratic: true           # Use quadratic cost scaling for smoother paths
-  use_dijkstra: true           # Use A* for faster and smoother path planning
-  allow_unknown: true           # Allow planning in unknown space
-  planner_costmap_width: 10.0   # Ensure wide enough costmap for smoother planning
+  use_quadratic: true
+  use_dijkstra: true
+  allow_unknown: false
+  planner_costmap_width: 10.0
   planner_costmap_height: 10.0
   default_tolerance: 0.5
