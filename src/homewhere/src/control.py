@@ -30,7 +30,7 @@ class Control:
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
         self.angle = 90
-        self.manual_velocity = 0.1
+        self.manual_velocity = 0.05
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
@@ -79,17 +79,17 @@ class Control:
         vx = msg.linear.x
         vy = msg.linear.y
 
-        print("vx, vy",vx,vy)
+        # rospy.loginfo(f"vx = {vx}, vy = {vy}")
         
         v, theta = self.get_v_and_theta(vx, vy)
 
-        print("v, theta",v,theta)
+        # rospy.loginfo(f"v = {v}, theta = {theta}")
 
         real_v = self.real_velocity(v,theta)
         real_t = self.real_theta(theta)
-        real_t = self.rad2deg(theta)
+        real_t = self.rad2deg(real_t)
 
-        print("Real",real_v,real_t)
+        # rospy.loginfo(f"v = {real_v}, theta = {real_t}")
 
         # Apply the computed velocities
         self.set_velocity([[real_v]*4, real_t])
