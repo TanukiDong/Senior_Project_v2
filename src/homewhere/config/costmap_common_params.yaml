@@ -11,7 +11,9 @@ footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
 
 inflation_radius: 0.55
 always_send_full_costmap: true
-cost_scaling_factor: 5.0
+cost_scaling_factor: 10.0
+update_frequency: 20.0
+publish_frequency: 20.0
 
 map_type: costmap
 observation_sources: scan
