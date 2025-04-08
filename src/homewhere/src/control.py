@@ -151,8 +151,8 @@ class Control:
             still = 0
             forward = 5
             backward = -5
-            left_turn = 3
-            right_turn = -3
+            left_turn = 10
+            right_turn = -10
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)

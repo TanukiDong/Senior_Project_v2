@@ -35,7 +35,7 @@ class ServoSim:
         self.pub_back_right_vel  = rospy.Publisher('/cmd_servo_vel_back_right',  Twist, queue_size=10)
 
         # Desired servo speed in rad/s (positive or negative)
-        self.servo_speed = 0.25  # Example max
+        self.servo_speed = 5.23  # Example max
 
         # Loop rate = 10 Hz
         self.rate = rospy.Rate(10)
