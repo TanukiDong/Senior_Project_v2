@@ -1,5 +1,5 @@
 obstacle_range: 2.5
-raytrace_range: 3.0
+raytrace_range: 5.0
 
 # Diagonal Rectangle
 # footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]]
@@ -21,3 +21,4 @@ scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: tru
 robot_base_frame: base_footprint
 
 transform_tolerance: 0.5
+
