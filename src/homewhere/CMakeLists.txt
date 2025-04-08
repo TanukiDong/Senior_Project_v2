@@ -16,6 +16,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
 )
+include_directories(/usr/local/include/sdformat-9)
 
 # Link against Gazebo and ROS libraries
 add_library(control_plugin src/control_plugin.cpp)

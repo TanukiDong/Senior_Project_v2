@@ -1,9 +1,15 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
+#include <gazebo/physics/Model.hh>
+#include <gazebo/physics/Joint.hh>
+#include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
+#include <sdf/sdf.hh>
+
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float64.h>
+
 
 namespace gazebo {
 

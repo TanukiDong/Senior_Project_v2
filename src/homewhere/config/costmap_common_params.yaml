@@ -1,15 +1,29 @@
 obstacle_range: 2.5
 raytrace_range: 3.0
 
-footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]]
+# Diagonal Rectangle
+# footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]]
+# # Exact Rectangle
+# footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]]
+# Test Square
+footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
 # robot_radius: 0.2
 
-inflation_radius: 1.0
+inflation_radius: 0.55
 cost_scaling_factor: 10.0
+update_frequency: 5.0
+publish_frequency: 5.0
+transform_tolerance: 0.5
 
 map_type: costmap
 observation_sources: scan
 scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
 robot_base_frame: base_footprint
 
-transform_tolerance: 0.5
+
+observation_sources: scan_flat
+scan_flat:
+  data_type: LaserScan
+  topic: scan_flat
+  marking: true
+  clearing: true

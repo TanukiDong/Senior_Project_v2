@@ -154,6 +154,24 @@
 
   </xacro:macro>
 
+    <!-- ============== -->
+    <!-- Imu link      -->
+    <!-- ============== -->
+    <link name="imu_link">
+      <visual>
+        <geometry>
+          <box size="0.02 0.02 0.02" />
+        </geometry>
+        <material name="red"/>
+      </visual>
+    </link>
+
+    <joint name="imu_joint" type="fixed">
+      <parent link="body"/>
+      <child link="imu_link"/>
+      <origin xyz="0 0 0.3" rpy="0 0 0"/> 
+    </joint>
+
   <!-- ============== -->
   <!-- 3) Lidar       -->
   <!-- ============== -->
@@ -171,7 +189,7 @@
   <joint name="scan_joint" type="fixed">
     <parent link="base_link" />
     <child link="base_scan" />
-    <origin xyz="0 0 0.15" rpy="0 0 0" />
+    <origin xyz="0 0 0.15" rpy="0 -0.1 0" />
   </joint>
 
   <xacro:steering_wheel name="front_left" x="0.1" y="0.1" />

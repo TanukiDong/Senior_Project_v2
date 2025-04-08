@@ -36,40 +36,40 @@ class Control:
         """Handle /cmd_vel messages from move_base."""
 
         # Extract linear and angular velocities from the cmd_vel message
-        linear_velocity = msg.linear.x * 10
+        linear_velocity = msg.linear.x * 5
         angular_velocity = msg.angular.z
 
         # Threshold to prevent unnecessary rotation at goal
-        ANGULAR_THRESHOLD = 0.1
-        LINEAR_THRESHOLD = 0.1
+        ANGULAR_THRESHOLD = 0.0
+        LINEAR_THRESHOLD = 0.0
         MAX_ANGLE = math.pi / 2
         
-        # Determine if the desired rotation angle exceeds the limit             
+        # # Determine if the desired rotation angle exceeds the limit
+        # if abs(angular_velocity) > MAX_ANGLE:
+        #     if angular_velocity > MAX_ANGLE:
+        #         angular_velocity -= math.pi
+        #     else: # angular_velocity < MAX_ANGLE
+        #         angular_velocity += math.pi
+                
         #     linear_velocity = -linear_velocity
-        if abs(angular_velocity) > MAX_ANGLE:
-            if angular_velocity > MAX_ANGLE:
-                angular_velocity = max(-MAX_ANGLE, min(MAX_ANGLE,angular_velocity))
-                linear_velocity = 0
-            else: # angular_velocity < MAX_ANGLE
-                angular_velocity += math.pi
-            
+
         # Decision logic for movement
-        if abs(linear_velocity) < LINEAR_THRESHOLD and abs(angular_velocity) < ANGULAR_THRESHOLD:
-            # **Stop the robot completely**
-            velocity = [0.0] * 4
-            angular_velocities = [0.0] * 4
-        elif abs(linear_velocity) < LINEAR_THRESHOLD:
-            # **Only rotate in place**
-            velocity = [0.0] * 4
-            angular_velocities = [angular_velocity] * 4
-        elif abs(angular_velocity) < ANGULAR_THRESHOLD:
-            # **Only move forward/backward without turning**
-            velocity = [linear_velocity] * 4
-            angular_velocities = [0.0] * 4
-        else:
-            # **Move and rotate at the same time**
-            velocity = [linear_velocity] * 4
-            angular_velocities = [angular_velocity] * 4
+        # if abs(linear_velocity) < LINEAR_THRESHOLD and abs(angular_velocity) < ANGULAR_THRESHOLD:
+        #     # **Stop the robot completely**
+        #     velocity = [0.0] * 4
+        #     angular_velocities = [0.0] * 4
+        # elif abs(linear_velocity) < LINEAR_THRESHOLD:
+        #     # **Only rotate in place**
+        #     velocity = [0.0] * 4
+        #     angular_velocities = [angular_velocity] * 4
+        # elif abs(angular_velocity) < ANGULAR_THRESHOLD:
+        #     # **Only move forward/backward without turning**
+        #     velocity = [linear_velocity] * 4
+        #     angular_velocities = [0.0] * 4
+        # else:
+        #     # **Move and rotate at the same time**
+        velocity = [linear_velocity] * 4
+        angular_velocities = [angular_velocity] * 4
 
         # Apply the computed velocities
         self.set_velocity([velocity, angular_velocities])
@@ -105,6 +105,8 @@ class Control:
             still = [0, 0, 0, 0]
             forward = [5, 5, 5, 5]
             backward = [-5, -5, -5, -5]
+            # forward = [10, 10, 10, 10]
+            # backward = [-10, -10, -10, -10]
             left_turn = [1, 1, 1, 1]
             right_turn = [-1, -1, -1, -1]
 

@@ -78,10 +78,10 @@ def odometry_publisher():
 
             dx = vx * dt
             dy = vy * dt
+            dtheta = omega * dt
+
             x += dx
             y += dy
-
-            dtheta = omega * dt
 
             # Check if steering is at its limit
             steering_angle = clamp_steering(theta)
@@ -135,8 +135,8 @@ def odometry_publisher():
 
                 # Set the velocity
                 odom.child_frame_id = "base_footprint"
-                odom.twist.twist.linear.x = vx
-                odom.twist.twist.linear.y = vy
+                odom.twist.twist.linear.x = v
+                odom.twist.twist.linear.y = 0.0
                 odom.twist.twist.angular.z = omega if not at_limit else 0.0  # Stop rotation if at limit
 
                 # Publish the odometry message
