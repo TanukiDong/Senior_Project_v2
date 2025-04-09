@@ -39,7 +39,7 @@ class ServoSim:
         self.servo_speed = 5.23  # Example max
 
         # Loop rate = 10 Hz
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(100)
 
         rospy.loginfo("ServoSim node started. Converting target angles to servo velocities.")
 
@@ -60,7 +60,7 @@ class ServoSim:
         # Each iteration, check if current angle is within some threshold of target.
         # If not, command ±servo_speed; else command 0.
         while not rospy.is_shutdown():
-            dt = 0.1  # Because we run at 10Hz
+            dt = 0.01  # Because we run at 10Hz
 
             # For each wheel, compute the needed velocity
             fl_vel = self.compute_steer_velocity('front_left',  dt)
@@ -81,8 +81,10 @@ class ServoSim:
         cur = self.current[name]
         tgt = self.target[name]
 
+        # print("Cur, Tar",cur, tgt)
+
         # If close enough, no movement
-        tolerance = 0.01
+        tolerance = 0.03
         diff = tgt - cur
 
         if abs(diff) < tolerance:
@@ -108,6 +110,7 @@ class ServoSim:
             self.pub_back_left_vel.publish(twist)
         elif name == 'back_right':
             self.pub_back_right_vel.publish(twist)
+        # print(vel)
 
 if __name__ == '__main__':
     try:

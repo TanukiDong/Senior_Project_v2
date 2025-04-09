@@ -9,7 +9,7 @@ from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64
 
 # Wheel base distance
-WHEEL_RADIUS = 0.07
+WHEEL_RADIUS = 0.0695
 # WHEEL_BASE = 0.5 / 2
 
 # Initialize global variables for wheel velocities
@@ -66,7 +66,7 @@ def odometry_publisher():
 
     # Initial position and orientation
     x = y = theta = 0.0
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(50)
     last_time = rospy.Time.now()
 
     while not rospy.is_shutdown():

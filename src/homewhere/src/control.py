@@ -94,7 +94,7 @@ class Control:
         theta_br = -theta_fr
 
         # Create velocity array for wheel speeds (linear velocities)
-        velocity = [v_l_hardware, v_r_hardware, v_l_hardware, v_r_hardware, v, w]
+        velocity = [v_i/0.0695 for v_i in [v_l_hardware, v_r_hardware, v_l_hardware, v_r_hardware]] + [v,w]
 
         # Create angular velocities array (steering angles)
         steering_angles = [theta_fl, theta_fr, theta_bl, theta_br]
@@ -149,10 +149,10 @@ class Control:
 
         try:
             still = 0
-            forward = 5
-            backward = -5
-            left_turn = 10
-            right_turn = -10
+            forward = 1
+            backward = -1
+            left_turn = 0.5
+            right_turn = -0.5
 
             # Add the pressed key to the active keys set
             self.active_keys.add(key.char)
