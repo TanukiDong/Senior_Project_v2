@@ -49,7 +49,7 @@ class Control:
 
     def stop_robot(self):
         """Stops the robot by publishing zero velocities."""
-        self.set_velocity([[0.0, 0.0, 0.0, 0.0],90])
+        self.set_velocity([[0.0, 0.0, 0.0, 0.0],0])
         self.publish_velocity()
 
     def rad2deg(self, rad):
@@ -138,10 +138,16 @@ class Control:
                 velocity = backward
             if 'a' in self.active_keys:  # Left turn
                 velocity = forward
-                angle = 90
+                angle = 45
             if 'd' in self.active_keys:  # Right turn
+                velocity = forward
+                angle = -45
+            if 'z' in self.active_keys:  # Left turn
                 velocity = backward
-                angle = 90
+                angle = -45
+            if 'x' in self.active_keys:  # Right turn
+                velocity = backward
+                angle = 45
 
             self.set_velocity([velocity, angle])
             self.publish_velocity()
