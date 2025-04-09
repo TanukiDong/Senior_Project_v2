@@ -1,5 +1,5 @@
 <launch>
-    <arg name="x" default="-2.0" />
+    <arg name="x" default="2.0" />
     <arg name="y" default="0.0" />
     <arg name="z" default="0.5" />
 
@@ -7,7 +7,7 @@
     <!-- -2 1 for house -->
     <!-- 50 -3 1 for eng3 -->
 
-    <arg name="world" default="rampnew" />
+    <arg name="world" default="rampsmall" />
     <!-- <arg name="world" default="empty"/> -->
     <!-- <arg name="world" default="gas_station"/> -->
 
