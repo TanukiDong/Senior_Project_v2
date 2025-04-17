@@ -15,6 +15,8 @@ vy_cmd = 0.0
 dl = 0.0
 rpm = 0.0
 servo_theta = 0
+# roll = 0.0
+# pitch = 0.0
 
 def cmd_vel_callback(msg):
     global vx_cmd, vy_cmd
@@ -24,6 +26,10 @@ def cmd_vel_callback(msg):
 def cmd_hardware_callback(msg):
     global dl, rpm
     dl, rpm = msg.data
+
+# def cmd_mpu_callback(msg):
+#     global roll, pitch
+#     roll, pitch = msg.data
 
 def angle_callback(msg):
     global servo_theta
@@ -38,6 +44,7 @@ def odometry_publisher():
     
     rospy.Subscriber('/cmd_vel', Twist, cmd_vel_callback)
     rospy.Subscriber('/cmd_hardware_reading', Float32MultiArray, cmd_hardware_callback)
+    # rospy.Subscriber('/cmd_mpu_reading', Float32MultiArray, cmd_mpu_callback)
     rospy.Subscriber("/cmd_angle", Int16, angle_callback)
 
     # Initial position and orientation
@@ -46,6 +53,8 @@ def odometry_publisher():
     last_time = rospy.Time.now()
 
     while not rospy.is_shutdown():
+
+        # print("Tilt from odom: ", roll, pitch)
 
         # print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
         dx = dl*math.cos(servo_theta)
