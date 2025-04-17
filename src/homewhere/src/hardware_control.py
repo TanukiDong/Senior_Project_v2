@@ -32,7 +32,8 @@ class Hardware_Controller:
         self.vel_limit = 0.1
 
         # ROS Publisher
-        self.reading_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
+        self.encoder_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
+        self.imu_publisher = rospy.Publisher('/cmd_mpu_reading', Float32MultiArray, queue_size=10)
 
         # ROS Subscribers
         rospy.Subscriber("/cmd_vel_front_left", Twist, self.front_left_callback)
@@ -93,7 +94,7 @@ class Hardware_Controller:
 
     # ---- Sensor Reading ----
     def read_sensor(self):
-        """Get IMU and Encoder Data"""
+        """Get Encoder Data"""
         try:
             dl_list = self.motors.get_delta_travelled()
             rpm_list = self.motors.get_rpms()
@@ -103,7 +104,17 @@ class Hardware_Controller:
             # return [*encoder, *imu]  # Return as a list
             return [dl_list, rpm_list]
         except Exception as e:
-            rospy.logerr(f"Sensor reading error: {e}")
+            rospy.logerr(f"Encoder reading error: {e}")
+            return [[0.0], [0.0]]  # Fail-safe default
+        
+    def read_mpu(self):
+        """Get IMU Data"""
+        try:
+            angles = self.arduino.read_mpu6050().get_angle()
+            print("tilts: ", angles)
+            return angles
+        except Exception as e:
+            rospy.logerr(f"MPU reading error: {e}")
             return [[0.0], [0.0]]  # Fail-safe default
 
     # ---- Actuator Commands ----
@@ -140,7 +151,12 @@ class Hardware_Controller:
             msg = Float32MultiArray()
             avg_reading = [sum(lst)/len(lst) for lst in reading_list]
             msg.data = avg_reading  # [avg_dl, avg_rpm]
-            self.reading_publisher.publish(msg)
+            self.encoder_publisher.publish(msg)
+
+            # Publish IMU
+            tilts = Float32MultiArray()
+            tilts.data = self.read_mpu()
+            self.imu_publisher.publish(tilts)
 
             # Command the actuators
             self.cmd_actuators()
