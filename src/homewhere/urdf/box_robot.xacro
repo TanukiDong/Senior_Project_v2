@@ -168,6 +168,19 @@
     <origin xyz="0 0 0.275" rpy="0 0 0" />
   </joint>
 
+  <!-- ============== -->
+  <!-- 4) Imu       -->
+  <!-- ============== -->
+
+  <link name="imu_link">
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
   <xacro:steering_wheel name="front_left" x="0.2" y="0.2" />
   <xacro:steering_wheel name="front_right" x="0.2" y="-0.2" />
   <xacro:steering_wheel name="rear_left" x="-0.2" y="0.2" />
