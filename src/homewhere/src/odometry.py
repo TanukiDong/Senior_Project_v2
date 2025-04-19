@@ -79,9 +79,6 @@ def odometry_publisher():
         y += dy
         theta += dtheta
 
-        # Create a quaternion from theta
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
-
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
             tf.transformations.quaternion_from_euler(0, 0, theta),
@@ -97,13 +94,8 @@ def odometry_publisher():
             "base_link",
             "base_footprint"
         )
-        # odom_broadcaster.sendTransform(
-        #     (0.0, 0.0, 0.0),
-        #     tf.transformations.quaternion_from_euler(0, 0, -theta),
-        #     current_time,
-        #     "base_scan",
-        #     "base_link"
-        # )
+        
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
 
         # Publish the odometry message
         odom = Odometry()

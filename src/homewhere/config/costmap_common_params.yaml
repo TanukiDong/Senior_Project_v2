@@ -2,12 +2,14 @@ obstacle_range: 2.5
 raytrace_range: 3.0
 
 # Diagonal Rectangle
-# footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]]
+# footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]] #small
+# footprint: [[0.35, 0.35], [0.35, -0.35], [-0.35, -0.35], [-0.35, 0.35]] #large
 # # Exact Rectangle
-# footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]]
-# Test Square
-footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
-# robot_radius: 0.2
+# footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]] #small
+# footprint: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]] #large
+# Circle
+# robot_radius: 0.2 #small
+robot_radius: 0.35 #large
 
 inflation_radius: 0.55
 cost_scaling_factor: 10.0

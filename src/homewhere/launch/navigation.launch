@@ -1,7 +1,6 @@
 <launch>
     <!-- Arguments -->
     <arg name="map_file" default="$(find homewhere)/map/turtle/map.yaml" />
-    <!-- <arg name="move_forward_only" default="true" /> -->
 
     <!-- Map server -->
     <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />

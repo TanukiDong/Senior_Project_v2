@@ -1,21 +1,28 @@
 <launch>
-    <arg name="x" default="-2.0" />
-    <arg name="y" default="1.0" />
+    <arg name="world" default="empty" />
+    <arg name="mode" default="default" />
+    <arg name="small" default="0"/>
+
+    <!-- Spawn coordinates decided by world -->
+    <arg name="x"
+         default="$(eval {'turtle': -2.0,
+                          'house' : -2.0,
+                          'eng3'  : 50.0}.get(arg('world'), 0.0))"/>
+
+    <arg name="y"
+         default="$(eval {'turtle':  0.0,
+                          'house' :  1.0,
+                          'eng3'  : -3.0}.get(arg('world'), 0.0))"/>
+
     <arg name="z" default="0.5" />
 
-    <!-- -2 0 for turtle -->
-    <!-- -2 1 for house -->
-    <!-- 50 -3 1 for eng3 -->
-
-    <arg name="world" default="turtle" />
-    <!-- <arg name="world" default="empty"/> -->
-    <!-- <arg name="world" default="gas_station"/> -->
-
-    <arg name="mode" default="default" />
-
-    <!-- Argument to pass the Xacro file path -->
-    <!-- <arg name="model" default="$(find homewhere)/urdf/box_robot.small.xacro" /> -->
-    <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
+    <!-- Robot Model -->
+    <arg name="robot_dir" default="$(find homewhere)/urdf"/>
+    <arg name="model"
+         default="$(eval arg('robot_dir') +
+                         ('/box_robot.small.xacro'
+                          if int(arg('small')) == 1
+                          else '/box_robot.xacro'))"/>
 
     <!-- Robot Description -->
     <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
@@ -37,8 +44,11 @@
     <!-- Movement Publisher -->
     <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
 
-    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
+    /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
 
     <!-- SLAM: Gmapping -->
     <group if="$(eval arg('mode') == 'slam')">
