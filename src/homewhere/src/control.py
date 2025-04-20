@@ -171,7 +171,7 @@ class Control:
                 angular_velocity = right_turn
 
             x = Control.calculate(velocity,angular_velocity)
-            print(x)
+            # print(x)
 
             self.set_velocity(x)
             self.publish_velocity()
