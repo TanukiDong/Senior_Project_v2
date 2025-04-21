@@ -39,6 +39,8 @@
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
+    <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
+
     <!-- SLAM: Gmapping -->
     <group if="$(eval arg('mode') == 'slam')">
         <include file="$(find homewhere)/launch/slam.launch" />

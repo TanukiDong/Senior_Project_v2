@@ -15,6 +15,8 @@
     <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
     <!-- Movement Publisher -->
     <node name="hwc" pkg="homewhere" type="hardware_control.py" output="screen" />
+    <!-- Rviz (x,y) -->
+    <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
 
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
     /> -->
