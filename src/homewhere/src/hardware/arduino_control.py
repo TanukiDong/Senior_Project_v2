@@ -87,7 +87,7 @@ class Arduino:
         # Servo 8: Bottom Left -> 95 degrees
         # Servo 9: Top Left -> 98 degrees
         # angle += 90 (to make 0 degrees the center)
-        center = {6:89, 7:92, 8:93, 9:84} 
+        center = {6:87, 7:90, 8:90, 9:82} 
         # correct orientation
         angle = 90 - angle
         for i in range(6, 10):
