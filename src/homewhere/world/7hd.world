@@ -1,0 +1,323 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="multi_level_3_room_world_fixed">
+
+    <!-- ground & sun -->
+    <include><uri>model://ground_plane</uri></include>
+    <include><uri>model://sun</uri></include>
+
+    <!-- ========== RIGHT ROOM ========== -->
+    <model name="room_right">
+      <static>true</static>
+
+      <!-- floor -->
+      <link name="floor">
+        <collision name="coll"><geometry><box><size>5 5 0.1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>5 5 0.1</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>   <!-- White -->
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+      </link>
+
+      <!-- back wall -->
+      <link name="wall_back">
+        <collision name="coll"><geometry><box><size>0.1 5 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 5 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>-2.5 0 0.5 0 0 0</pose>
+      </link>
+
+      <!-- left wall -->
+      <link name="wall_left_left">
+        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>-1.5 2.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_left_right">
+        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>1.5 2.5 0.5 0 0 0</pose>
+      </link>
+      <!-- right wall -->
+      <link name="wall_right">
+        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>5 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 -2.5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- front wall -->
+      <link name="wall_front_leftSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> 2.5 -1.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_front_rightSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> 2.5 1.5 0.5 0 0 0</pose>
+      </link>
+      <pose>0 0 0 0 0 0</pose>
+    </model>
+
+    <!-- ========== LEFT ROOM ========== -->
+    <model name="room_left">
+      <static>true</static>
+
+      <!-- floor -->
+      <link name="floor">
+        <collision name="coll"><geometry><box><size>5 5 0.1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 5 0.1</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>   <!-- White -->
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+      </link>
+
+      <!-- back wall -->
+      <link name="wall_back">
+        <collision name="coll"><geometry><box><size>0.1 5 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 5 1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>   <!-- Red -->
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>-2.5 0 0.5 0 0 0</pose>
+      </link>
+      <!-- left wall -->
+      <link name="wall_left">
+        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>5 0.1 1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>   <!-- Red -->
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 2.5 0.5 0 0 0</pose>
+      </link>
+      <!-- right wall -->
+      <link name="wall_right_left">
+        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>-1.5 -2.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_right_right">
+        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>   <!-- Red -->
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <pose>1.5 -2.5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- front wall -->
+      <link name="wall_front_leftSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>   <!-- Red -->
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> 2.5 -1.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_front_rightSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>   <!-- Red -->
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> 2.5 1.5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- whole room offset -->
+      <pose>0 10 2 0 0 0</pose>
+    </model>
+
+    <!-- ========== TOP ROOM ========== -->
+    <model name="room_top">
+      <static>true</static>
+
+      <!-- floor -->
+      <link name="floor">
+        <collision name="coll"><geometry><box><size>5 15 0.1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 15 0.1</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>   <!-- White -->
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+      </link>
+
+      <!-- back wall -->
+      <link name="wall_back">
+        <collision name="coll"><geometry><box><size>0.1 15 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 15 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>2.5 0 0.5 0 0 0</pose>
+      </link>
+      <!-- left wall -->
+      <link name="wall_left">
+        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 -7.5 0.5 0 0 0</pose>
+      </link>
+      <!-- right wall -->
+      <link name="wall_right">
+        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 7.5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- front wall -->
+      <link name="wall_front_leftSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> -2.5 -6.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_front_rightSeg">
+        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> -2.5 6.5 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_front_middleSeg">
+        <collision name="coll"><geometry><box><size>0.1 9 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 9 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> -2.5 0 0.5 0 0 0</pose>
+      </link>
+
+      <!-- whole room offset -->
+      <pose>10 5 1 0 0 0</pose>
+    </model>
+
+    <!-- ========== Ramp ========== -->
+    <model name="ramp_green_to_blue">
+      <static>true</static>
+      <link name="ramp">
+        <collision name="coll"><geometry><box><size>5.11 1 0.1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5.11 1 0.1</size></box></geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>   <!-- Cyan -->
+            <diffuse>0 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>5 0 0.5 0 -0.1974 0</pose>
+    </model>
+
+    <model name="ramp_blue_to_red">
+      <static>true</static>
+      <link name="ramp">
+        <collision name="coll"><geometry><box><size>5.11 1 0.1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5.11 1 0.1</size></box></geometry>
+          <material>
+            <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
+            <diffuse>1 0.75 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>5 10 1.5 0 0.1974 0</pose>
+    </model>
+
+    <model name="ramp_red_to_green">
+      <static>true</static>
+      <link name="ramp">
+        <collision name="coll"><geometry><box><size>1 5.43 0.1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>1 5.43 0.1</size></box></geometry>
+          <material>
+            <ambient>1 1 0 1</ambient>   <!-- Yellow -->
+            <diffuse>1 1 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0 5 1 0.3805 0 0</pose>
+    </model>
+
+  </world>
+</sdf>
