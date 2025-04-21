@@ -272,6 +272,68 @@
         <pose> -2.5 0 0.5 0 0 0</pose>
       </link>
 
+      <!-- obstacle -->
+      <link name="partition1">
+        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 2.5 0.5 0 0 0</pose>
+      </link>
+
+      <link name="partition2">
+        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 -2.5 0.5 0 0 0</pose>
+      </link>
+
+
+      <link name='cylinder'>
+        <collision name='collision'><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry></collision>
+        <visual name='visual'><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 -5 0.5 0 0 0</pose>
+      </link>
+
+      <link name="cross1">
+        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 0 0.5 0 0 0.7854</pose>
+      </link>
+
+      <link name="cross2">
+        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 0 0.5 0 0 -0.7854</pose>
+      </link>
+
+
+
+
+
+
       <!-- whole room offset -->
       <pose>10 5 1 0 0 0</pose>
     </model>
