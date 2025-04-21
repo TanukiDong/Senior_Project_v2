@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import rospy, math
-from nav_msgs.msg import Odometry
+import rospy
+import tf
 from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseStamped
 
 # ────────────── parameters you might tweak ──────────────
 FRAME_ID   = "map"   
@@ -31,7 +32,13 @@ def make_text(ns, id):
     return m
 
 def cb(msg):
-    rx, ry = msg.pose.pose.position.x, msg.pose.pose.position.y
+    # Transform robot's position (base_link) from the map frame
+    try:
+        (trans, rot) = listener.lookupTransform(FRAME_ID, "base_link", rospy.Time(0))
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        return
+    
+    rx, ry, _ = trans  # Get the x, y coordinates of the robot's position
     
     ox, oy, oz = OFFSET
     cx, cy, cz = rx + ox, ry + oy, oz
@@ -40,32 +47,32 @@ def cb(msg):
 
     hdr = msg.header
     hdr.frame_id = FRAME_ID
-    hdr.stamp    = rospy.Time.now()
+    hdr.stamp = rospy.Time.now()
 
     # ---------- background rectangle ----------
     bg = make_cube("xy_bg", 0)
     bg.header = hdr
-    bg.scale.x = BG_W          
-    bg.scale.y = BG_H            
+    bg.scale.x = BG_W
+    bg.scale.y = BG_H
     bg.scale.z = THICK
-
     bg.pose.position.x = cx
     bg.pose.position.y = cy
-    bg.pose.position.z = cz + THICK/2.0 
+    bg.pose.position.z = cz + THICK / 2.0 
 
     # ---------- foreground text ----------
     fg = make_text("xy_fg", 0)
-    fg.header           = hdr
-    fg.text             = label
-    fg.pose.position.x  = cx
-    fg.pose.position.y  = cy
-    fg.pose.position.z  = cz + THICK
+    fg.header = hdr
+    fg.text = label
+    fg.pose.position.x = cx
+    fg.pose.position.y = cy
+    fg.pose.position.z = cz + THICK
 
     pub.publish(bg)
     pub.publish(fg)
 
-# ————————— ROS boiler‑plate —————————
+# ───────────── ROS boilerplate ─────────────
 rospy.init_node("xy_label_node")
 pub = rospy.Publisher(TOPIC, Marker, queue_size=2)
-rospy.Subscriber("/odom", Odometry, cb)
+listener = tf.TransformListener()  # TF listener to track robot's position
+rospy.Subscriber("/amcl_pose", PoseStamped, cb)  # You can subscribe to amcl_pose here
 rospy.spin()
