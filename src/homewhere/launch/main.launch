@@ -2,19 +2,20 @@
     <arg name="world" default="empty" />
     <arg name="mode" default="default" />
     <arg name="small" default="0"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.5"/>
 
     <!-- Spawn coordinates decided by world -->
-    <arg name="x"
+    <arg name="x_"
          default="$(eval {'turtle': -2.0,
                           'house' : -2.0,
-                          'eng3'  : 50.0}.get(arg('world'), 0.0))"/>
+                          'eng3'  : 50.0}.get(arg('world'), arg('x')))"/>
 
-    <arg name="y"
+    <arg name="y_"
          default="$(eval {'turtle':  0.0,
                           'house' :  1.0,
-                          'eng3'  : -3.0}.get(arg('world'), 0.0))"/>
-
-    <arg name="z" default="0.5" />
+                          'eng3'  : -3.0}.get(arg('world'), arg('y')))"/>
 
     <!-- Robot Model -->
     <arg name="robot_dir" default="$(find homewhere)/urdf"/>
@@ -36,7 +37,7 @@
 
     <!-- Spawn the robot into Gazebo -->
     <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
-        args="-urdf -param robot_description -model homewhere -x $(arg x) -y $(arg y) -z $(arg z)"
+        args="-urdf -param robot_description -model homewhere -x $(arg x_) -y $(arg y_) -z $(arg z)"
         output="screen" />
 
     <!-- Launch Control Node -->
