@@ -1,5 +1,6 @@
 <launch>
     <arg name="world" default="empty" />
+    <arg name="map" default="$(arg world)" />
     <arg name="mode" default="default" />
     <arg name="small" default="0"/>
     <arg name="x" default="0"/>
@@ -10,12 +11,24 @@
     <arg name="x_"
          default="$(eval {'turtle': -2.0,
                           'house' : -2.0,
-                          'eng3'  : 50.0}.get(arg('world'), arg('x')))"/>
+                          'eng3'  : 50.0,
+                          '7hd/7hd_2' : 10,
+                          '7hd/7hd_3' : 0,
+                          }.get(arg('map'), arg('x')))"/>
 
     <arg name="y_"
          default="$(eval {'turtle':  0.0,
                           'house' :  1.0,
-                          'eng3'  : -3.0}.get(arg('world'), arg('y')))"/>
+                          'eng3'  : -3.0,
+                          '7hd/7hd_2' : 0,
+                          '7hd/7hd_3' : 10,
+                          }.get(arg('map'), arg('y')))"/>
+
+    <arg name="z_"
+    default="$(eval {
+                    '7hd/7hd_2' : 1.5,
+                    '7hd/7hd_3' : 2.5,
+                    }.get(arg('map'), arg('z')))"/>
 
     <!-- Robot Model -->
     <arg name="robot_dir" default="$(find homewhere)/urdf"/>
@@ -37,7 +50,7 @@
 
     <!-- Spawn the robot into Gazebo -->
     <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
-        args="-urdf -param robot_description -model homewhere -x $(arg x_) -y $(arg y_) -z $(arg z)"
+        args="-urdf -param robot_description -model homewhere -x $(arg x_) -y $(arg y_) -z $(arg z_)"
         output="screen" />
 
     <!-- Launch Control Node -->
@@ -50,6 +63,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
+    <node name="slope_detector" pkg="homewhere" type="slope_detector.py" output="screen" />
 
     <!-- SLAM: Gmapping -->
     <group if="$(eval arg('mode') == 'slam')">
@@ -59,7 +73,7 @@
     <!-- Navigation -->
     <group if="$(eval arg('mode') == 'nav')">
         <include file="$(find homewhere)/launch/navigation.launch">
-            <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
+            <arg name="map_file" value="$(find homewhere)/map/$(arg map)/map.yaml" />
         </include>
     </group>
 
