@@ -20,7 +20,7 @@
          default="$(eval {'turtle':  0.0,
                           'house' :  1.0,
                           'eng3'  : -3.0,
-                          '7hd/7hd_2' : 0,
+                          '7hd/7hd_2' : -2,
                           '7hd/7hd_3' : 10,
                           }.get(arg('map'), arg('y')))"/>
 
