@@ -54,3 +54,17 @@ Open LiDAR in Rviz
 ```bash
 roslaunch hls_lfcd_lds_driver view_hlds_laser.launch
 ```
+
+# Multimap commands
+
+Terminal 1
+
+```bash
+roslaunch homewhere main.launch mode:=multi start_room:=1 world:=7hd
+```
+
+Terminal 2
+
+```bash
+rostopic pub -1 /move_base_simple/goal geometry_msgs/PoseStamped "{header: {frame_id: 'map'}, pose: {position: {x: 8.0, y: 0.0, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}}"
+```
