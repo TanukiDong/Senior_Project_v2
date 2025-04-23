@@ -1,39 +1,41 @@
+# a = ascending | d = descending
+
 ramps:
   - id: "ramp1_a"
     from: "1"
     to:   "2"
-    entry_pose: [ 2.25, 0.00, 0.0 ]
-    exit_pose:  [ -2.25, -5.00, 0.0 ]
+    entry_pose: [ 2.50, 0.00, 0.0 ]
+    exit_pose:  [ -2.50, -5.00, 0.0 ]
     blind_len:  5.2
   - id: "ramp1_d"
     from: "2"
     to:   "1"
-    entry_pose: [ -2.25, -5.00, 180 ]
-    exit_pose:  [ 2.25, 0.00, 180 ]
+    entry_pose: [ -2.50, -5.00, 180 ]
+    exit_pose:  [ 2.50, 0.00, 180 ]
     blind_len:  5.2
 
   - id: "ramp2_a"
     from: "2"
     to:   "3"
-    entry_pose: [ 5.00, -2.25, 180 ] 
-    exit_pose:  [ 0.00, 2.25, 180 ]
+    entry_pose: [ 5.00, -2.50, 180 ] 
+    exit_pose:  [ 0.00, 2.50, 180 ]
     blind_len:  5.2
   - id: "ramp2_d"
     from: "3"
     to:   "2"
-    entry_pose: [ 0.00, 2.25, 0.0 ]
-    exit_pose:  [ 5.00, -2.25, 0.0 ]
+    entry_pose: [ 0.00, 2.50, 0.0 ]
+    exit_pose:  [ 5.00, -2.50, 0.0 ]
     blind_len:  5.2
 
   - id: "ramp3_a"
     from: "1"
     to:   "3"
-    entry_pose: [ 0.00, 2.25, 90.0 ]
-    exit_pose:  [ 0.00, -2.25, 90.0 ]
+    entry_pose: [ 0.00, 2.50, 90.0 ]
+    exit_pose:  [ 0.00, -2.50, 90.0 ]
     blind_len:  5.5
   - id: "ramp3_d"
     from: "3"
     to:   "1"
-    entry_pose: [ 0.00, -2.25, -90 ]
-    exit_pose:  [ 0.00, 2.25, -90 ]
+    entry_pose: [ 0.00, -2.50, -90 ]
+    exit_pose:  [ 0.00, 2.50, -90 ]
     blind_len:  5.5

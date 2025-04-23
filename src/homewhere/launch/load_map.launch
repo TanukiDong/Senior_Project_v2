@@ -1,10 +1,13 @@
 <launch>
-    <arg name="map_file"      default="$(find homewhere)/maps/7hd/7hd_1/map.yaml"/>
-  
-    <node pkg="map_server" name="map_server" type="map_server"
-          args="$(arg map_file)" />
-  
-    <!-- AMCL -->
-    <include file="$(find homewhere)/launch/amcl.launch" />
-  </launch>
+      <arg name="map_file" default="$(find homewhere)/maps/7hd/7hd_1/map.yaml" />
+
+      <node pkg="map_server" name="map_server" type="map_server"
+            args="$(arg map_file)" />
+
+      <!-- AMCL -->
+      <include file="$(find homewhere)/launch/amcl.launch" />
+
+      <!-- Move Base -->
+      <include file="$(find homewhere)/launch/move_base.launch" />
+</launch>
   

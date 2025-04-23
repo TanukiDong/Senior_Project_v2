@@ -513,8 +513,32 @@
             <diffuse>0 1 1 1</diffuse>
           </material>
         </visual>
+        <pose>0 0 0 0 -0.1974 0</pose>
       </link>
-      <pose>5 0 0.5 0 -0.1974 0</pose>
+
+      <link name="wall_left">
+        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>   <!-- Cyan -->
+            <diffuse>0 1 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 0.5 0.5 0 0 0</pose>
+      </link>
+
+      <link name="wall_right">
+        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>   <!-- Cyan -->
+            <diffuse>0 1 1 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 -0.5 0.5 0 0 0</pose>
+      </link>
+
+      <pose>5 0 0.5 0 0 0</pose>
     </model>
 
     <model name="ramp_blue_to_red">
@@ -527,8 +551,32 @@
             <diffuse>1 0.75 0.8 1</diffuse>
           </material>
         </visual>
+        <pose>0 0 0 0 0.1974 0</pose>
       </link>
-      <pose>5 10 1.5 0 0.1974 0</pose>
+
+      <link name="wall_left">
+        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+          <material>
+            <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
+            <diffuse>1 0.75 0.8 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 0.5 0.5 0 0 0</pose>
+      </link>
+
+      <link name="wall_right">
+        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+          <material>
+            <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
+            <diffuse>1 0.75 0.8 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0 -0.5 0.5 0 0 0</pose>
+      </link>
+
+      <pose>5 10 1.5 0 0 0</pose>
     </model>
 
     <model name="ramp_red_to_green">
@@ -541,8 +589,32 @@
             <diffuse>1 1 0 1</diffuse>
           </material>
         </visual>
+        <pose>0 0 0 0.3805 0 0</pose>
       </link>
-      <pose>0 5 1 0.3805 0 0</pose>
+
+      <link name="wall_left">
+        <collision name="coll"><geometry><box><size>0.1 5 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 5 2</size></box></geometry>
+          <material>
+            <ambient>1 1 0 1</ambient>   <!-- Yellow -->
+            <diffuse>1 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> -0.5 0 0 0 0 0</pose>
+      </link>
+
+      <link name="wall_right">
+        <collision name="coll"><geometry><box><size>0.1 5 2</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 5 2</size></box></geometry>
+          <material>
+            <ambient>1 1 0 1</ambient>   <!-- Yellow -->
+            <diffuse>1 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> 0.5 0 0 0 0 0</pose>
+      </link>
+
+      <pose>0 5 1 0 0 0</pose>
     </model>
 
   </world>

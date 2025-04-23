@@ -1,0 +1,15 @@
+# bound : min_x, max_x, min_y, max_y
+
+map_table:
+  "1":
+    file: map/7hd/7hd_1/map.yaml
+    bounds: [ -2.5,  2.5,  -2.5,   2.5 ]
+    center: [0,0]
+  "2":
+    file: map/7hd/7hd_2/map.yaml
+    bounds: [  7.5,  12.5, -2.5,  12.5 ]
+    center: [10,5]
+  "3":
+    file: map/7hd/7hd_3/map.yaml
+    bounds: [ -2.5,  2.5,   7.5,  12.5 ]
+    center: [0,10]

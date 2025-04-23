@@ -1,0 +1,24 @@
+<launch>
+    <!-- 0  Map & localisation for starting room (room 1) -->
+    <include file="$(find homewhere)/launch/load_map.launch">
+        <arg name="map_file" value="$(find homewhere)/map/7hd/7hd_1/map.yaml" />
+    </include>
+
+    <!-- 1  IMU-based slope detector -->
+    <node pkg="homewhere" type="slope_detector.py" name="slope_detector"
+        output="screen">
+        <param name="pitch_threshold_deg" value="5.0" />
+    </node>
+
+    <!-- 2  Multilevel navigation manager -->
+    <node pkg="homewhere" type="multilevel_nav_manager.py"
+        name="multilevel_nav_manager" output="screen">
+        <!-- where the YAML is -->
+        <param name="ramp_config"
+            value="$(find homewhere)/config/ramps.yaml" />
+
+        <rosparam file="$(find homewhere)/config/map_table.yaml" command="load" />
+
+    </node>
+</launch>
+  
