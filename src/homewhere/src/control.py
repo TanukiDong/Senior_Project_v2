@@ -61,12 +61,12 @@ class Control:
         return v, theta
 
     def real_velocity(self, v, theta):
-        if -math.pi/2 <= theta and theta <= math.pi/2:
+        if -math.pi/2 <= theta and theta < math.pi/2:
             return v
         return -v  
     
     def real_theta(self, theta):
-        if theta > math.pi/2:
+        if theta >= math.pi/2:
             return theta - math.pi
         elif theta < -math.pi/2:
             return theta + math.pi
