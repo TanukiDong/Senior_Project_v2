@@ -30,7 +30,7 @@ class Control:
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
         self.angle = 90
-        self.manual_velocity = 0.05
+        self.manual_velocity = 0.2
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)

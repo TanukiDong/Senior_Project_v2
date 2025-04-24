@@ -29,7 +29,7 @@ class Hardware_Controller:
         self.velBackRight_Linear_x = 0.0
         self.velBackRight_Linear_y = 0.0
         self.theta = 0.0
-        self.vel_limit = 0.1
+        self.vel_limit = 0.4
 
         # ROS Publisher
         self.encoder_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
@@ -122,10 +122,11 @@ class Hardware_Controller:
         """Send Velocity and Steering Commands"""
         try:
             vel = self.velFrontLeft_Linear_x
-            if vel > self.vel_limit:
-                vel = self.vel_limit
+            if abs(vel) > self.vel_limit:
+                vel = self.vel_limit*(1 if vel > 0 else -1)
 
             vel_list = [vel]*4
+            print("Vel:", vel)
             
             self.motors.set_vel(vel_list)
             # Set steering angle
