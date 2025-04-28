@@ -1,15 +1,10 @@
 #!/usr/bin/env python
-import rospy
-import yaml
-import os
-import sys
-import subprocess
-import math
-import roslib.packages
+import rospy, yaml, os, sys, subprocess, math, roslib.packages
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from actionlib_msgs.msg import GoalID
+from move_base_msgs.msg import MoveBaseActionResult
 
 # ──── State labels ─────────────────────────────────────────────
 STATE_IDLE        = 0
@@ -49,6 +44,7 @@ class MultiLevelNavManager:
         self.finish_timer  = None
         self.warmup_done   = False
         self.on_slope      = False
+        self.ramp_done     = False
 
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
@@ -57,8 +53,9 @@ class MultiLevelNavManager:
         rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.goal_cb)
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, self.amcl_cb)
         rospy.Subscriber("/on_slope", Bool, self.slope_cb)
+        rospy.Subscriber("/move_base/result",       MoveBaseActionResult,      self.result_cb)
 
-        rospy.loginfo("\033[92m MultilevelNavManager ready in room %s \033[0m", self.start_room)
+        rospy.loginfo("\033[92m MultilevelNavManager started in room %s \033[0m", self.start_room)
         rospy.spin()
 
     # ───────────────── Callbacks ────────────────────────────────
@@ -66,10 +63,12 @@ class MultiLevelNavManager:
         if self.state == STATE_IDLE or self.state == STATE_MAP_SWITCH:
             if not self.goal_original:
                 self.goal_original = msg
+                rospy.loginfo("\033[92m Goal Received \033[0m")
                 
             desired_room = self.determine_room(self.goal_original)
 
             if desired_room == self.current_room and self.state != STATE_TO_RAMP:
+                rospy.loginfo("\033[92m Goal is in current room \033[0m")
                 self.state = STATE_NORMAL_NAV
                 return
             
@@ -81,44 +80,79 @@ class MultiLevelNavManager:
                 return
             self.active_ramp = self.ramp_table[key]
             self.state       = STATE_TO_RAMP
+            rospy.loginfo("\033[92m Moving toward ramp..... \033[0m")
+            self.warmup_done   = False
+            self.ramp_done     = False
             self.send_goal(self.active_ramp["entry_pose"])
 
     def amcl_cb(self, msg: PoseWithCovarianceStamped):
         if self.state == STATE_TO_RAMP:
             ex, ey, _ = self.active_ramp["entry_pose"]
             d = math.hypot(msg.pose.pose.position.x - ex, msg.pose.pose.position.y - ey)
+            rospy.loginfo("\033[93m Distance toward ramp : %.2f > %.2f \033[0m", d, DIST_TO_RAMP_TH)
             if d < DIST_TO_RAMP_TH:
                 self.state = STATE_ENTER_RAMP
+                rospy.loginfo("\033[92m Entering ramp..... \033[0m")
                 self.cancel_move_base()
 
     def slope_cb(self, msg: Bool):
         self.on_slope = msg.data
 
         if self.state == STATE_ENTER_RAMP:
-            rospy.loginfo("\033[92m ENTER_RAMP → blind warm‑up \033[0m")
+            rospy.loginfo("\033[92m Moving up ramp..... \033[0m")
             subprocess.call(["rosnode", "kill", "/move_base", "/amcl","/map_server"])
-            self.state       = STATE_UP_RAMP
-            self.warmup_done = False
             
-            self.blind_timer = rospy.Timer(rospy.Duration(1.0 / RAMP_RATE), self.blind_move,oneshot=False)
-            self.warmup_timer= rospy.Timer(rospy.Duration(1.0), self.start_blind_move, oneshot=True)
+            self.state       = STATE_UP_RAMP
+            
+            self.warmup_timer= rospy.Timer(rospy.Duration(3.0), self.start_blind_move, oneshot=True)
+            # self.blind_timer = rospy.Timer(rospy.Duration(1.0 / RAMP_RATE), self.blind_move,oneshot=False)
+            self.blind_timer = rospy.Timer(rospy.Duration(1.0), self.blind_move,oneshot=False)
             return
 
-        if self.state == STATE_UP_RAMP and self.warmup_done and not self.on_slope and self.finish_timer is None:
-            rospy.loginfo("\033[92m Slope ↓ → finish‑drive \033[0m")
+        if self.state == STATE_UP_RAMP and self.warmup_done and not self.on_slope and not self.ramp_done:
+            rospy.loginfo("\033[92m Finish Drive \033[0m")
             self.finish_timer = rospy.Timer(rospy.Duration(1.0), self.finish_blind_move, oneshot=True)
+            self.ramp_done     = True
             self.state == STATE_MAP_SWITCH
+            rospy.loginfo("\033[92m Switching map....... \033[0m")
             self.switch_map()
+            
+    def result_cb(self, msg: MoveBaseActionResult):
+        """
+        Called whenever move_base finishes a goal.
+        Puts the FSM back to IDLE iff
+        (a) the goal really succeeded (status == 3) **and**
+        (b) the robot is in the same logical room as the
+            originally requested goal.
+        """
+        SUCCEEDED = 3
+        if msg.status.status != SUCCEEDED:
+            return                                    # ignore ABORTED / PREEMPTED …
 
+        if not self.goal_original:                   # nothing pending → ignore
+            return
+
+        # We're sure we're on the right map/floor?
+        target_room = self.determine_room(self.goal_original)
+        if self.current_room != target_room:
+            # Reached an intermediate or ramp goal – keep working
+            return
+
+        # --- All conditions satisfied: finish up ---
+        rospy.loginfo("\033[92m Original goal reached – switching to IDLE \033[0m")
+        self.goal_original = None
+        self.state         = STATE_IDLE
+        self.active_ramp   = None
+            
     # ─────────────────── Helpers ────────────────────────────────
     def determine_room(self, ps: PoseStamped):
         x, y = ps.pose.position.x, ps.pose.position.y
         for room_id, info in self.map_table.items():
             xmin, xmax, ymin, ymax = info["bounds"]
             if xmin <= x <= xmax and ymin <= y <= ymax:
-                rospy.loginfo("\033[92m Goal (%.2f,%.2f) → room %s \033[0m", x, y, room_id)
+                rospy.loginfo("\033[92m Goal (%.2f,%.2f) is in room %s \033[0m", x, y, room_id)
                 return room_id
-        rospy.logwarn("Goal (%.2f,%.2f) not in any bounds; staying in %s", x, y, self.current_room)
+        rospy.logwarn("\033[91m Goal (%.2f,%.2f) is not in any bounds \033[0m", x, y)
         return "0"
 
     def send_goal(self, xyzr):
@@ -127,28 +161,29 @@ class MultiLevelNavManager:
         goal.pose.position.x, goal.pose.position.y = xyzr[0], xyzr[1]
         goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w = quaternion_from_euler(0,0, math.radians(xyzr[2]))
         rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=1, latch=True).publish(goal)
+        rospy.loginfo("\033[92m Goal sent \033[0m")
 
     def cancel_move_base(self):
         rospy.Publisher("/move_base/cancel", GoalID, queue_size=1).publish(GoalID())
         rospy.loginfo("\033[91m move_base cancel sent \033[0m")
 
-    def blind_move(self, _):
+    def blind_move(self, event=None):
         t = Twist(); t.linear.x = RAMP_SPEED; self.cmd_pub.publish(t)
-
-    def start_blind_move(self, _):
+        
+    def start_blind_move(self, event=None):
+        self.blind_move()
+        rospy.sleep(1.0)
         self.warmup_done = True
+        rospy.loginfo("\033[92m Blind move start \033[0m")
 
-    def finish_blind_move(self, _):
+    def finish_blind_move(self, event=None):
         if self.blind_timer: self.blind_timer.shutdown(); self.blind_timer=None
         if self.warmup_timer: self.warmup_timer.shutdown(); self.warmup_timer=None
         if self.finish_timer: self.finish_timer.shutdown(); self.finish_timer=None
+        t = Twist(); t.linear.x = 0.0; self.cmd_pub.publish(t)
 
     # ───────── Map switching ─────────
     def switch_map(self):
-        t = Twist()
-        t.linear.x = 0
-        self.cmd_pub.publish(t)
-            
         new_room = self.active_ramp["to"]
         map_file = os.path.join(roslib.packages.get_pkg_dir("homewhere"), self.map_table[new_room]["file"]) # Not hard code!
         rospy.loginfo("\033[92m Loading new map of room %s \033[0m", new_room)
@@ -217,3 +252,9 @@ if __name__ == "__main__":
         MultiLevelNavManager()
     except rospy.ROSInterruptException:
         pass
+    
+    
+    # TODOO
+    # Fix goal positioning global/local
+    # Switch to idle when reach goal
+    # Search algorithm
