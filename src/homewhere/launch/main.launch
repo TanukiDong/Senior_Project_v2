@@ -61,6 +61,8 @@
     <node name="control" pkg="homewhere" type="control.py" output="screen" />
     <!-- Movement Publisher -->
     <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
+    <!-- Servo sim -->
+    <node name="servo_sim" pkg="homewhere" type="servo_sim.py" output="screen" />
 
     <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
     /> -->

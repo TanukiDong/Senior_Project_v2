@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64
 
 # Wheel base distance
 WHEEL_RADIUS = 0.07
@@ -20,6 +21,7 @@ velBackLeft_Linear = 0.0
 velBackLeft_Angular = 0.0
 velBackRight_Linear = 0.0
 velBackRight_Angular = 0.0
+steer_angle = 0.0
 
 # Callback functions to update wheel velocities
 def front_left_callback(msg):
@@ -42,6 +44,10 @@ def back_right_callback(msg):
     velBackRight_Linear = msg.linear.x
     velBackRight_Angular = msg.angular.z
 
+def steer_callback(msg):
+    global steer_angle
+    steer_angle = msg.data
+
 def odometry_publisher():
     rospy.init_node('odometry')
     odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
@@ -52,6 +58,7 @@ def odometry_publisher():
     rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
     rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
     rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
+    rospy.Subscriber("/cmd_steer", Float64, steer_callback)
     
     joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
@@ -67,17 +74,14 @@ def odometry_publisher():
 
         # Calculation
         v = velFrontLeft_Linear * WHEEL_RADIUS
-        vx = v * math.cos(theta)
-        vy = v * math.sin(theta)
-        omega = velFrontLeft_Angular
+        vx = v * math.cos(steer_angle)
+        vy = v * math.sin(steer_angle)
 
         dx = vx * dt
         dy = vy * dt
-        dtheta = omega * dt
         
         x += dx
         y += dy
-        theta += dtheta
 
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
@@ -110,9 +114,9 @@ def odometry_publisher():
 
         # Set the velocity
         odom.child_frame_id = "base_footprint"
-        odom.twist.twist.linear.x = v
-        odom.twist.twist.linear.y = 0.0
-        odom.twist.twist.angular.z = omega
+        odom.twist.twist.linear.x = vx
+        odom.twist.twist.linear.y = vy
+        odom.twist.twist.angular.z = 0.0
 
         # Publish the odometry message
         odom_pub.publish(odom)
