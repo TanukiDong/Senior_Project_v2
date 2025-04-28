@@ -1,6 +1,6 @@
 image: /home/europazas/Desktop/Code/Senior_Project_v2/src/homewhere/map/7hd/7hd_3/map.pgm
 resolution: 0.050000
-origin: [-10.000000, -10.000000, 0.000000]
+origin: [-12.000000, -10.000000, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

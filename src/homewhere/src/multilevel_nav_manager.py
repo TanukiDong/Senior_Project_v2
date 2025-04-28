@@ -36,6 +36,7 @@ class MultiLevelNavManager:
 
         # ── vars ────────────────────────────────────────────────
         self.current_room  = self.start_room
+        self.goal_room     = 0
         self.state         = STATE_IDLE
         self.goal_original = None
         self.active_ramp   = None
@@ -60,14 +61,18 @@ class MultiLevelNavManager:
 
     # ───────────────── Callbacks ────────────────────────────────
     def goal_cb(self, msg: PoseStamped):
+        
         if self.state == STATE_IDLE or self.state == STATE_MAP_SWITCH:
+            
+            goal_room = self.determine_room(msg)
+            
+            # Set Original Goal
             if not self.goal_original:
                 self.goal_original = msg
-                rospy.loginfo("\033[92m Goal Received at (%.2f, %.2f) \033[0m", msg.pose.position.x, msg.pose.position.y)
+                self.goal_room = goal_room
+                rospy.loginfo("\033[92m Global Goal Received at (%.2f, %.2f) located in room %s \033[0m", msg.pose.position.x, msg.pose.position.y, goal_room)
                 
-            desired_room = self.determine_room(self.goal_original)
-
-            if desired_room == self.current_room and self.state != STATE_TO_RAMP:
+            if goal_room == self.current_room and self.state != STATE_TO_RAMP:
                 rospy.loginfo("\033[92m Goal is in current room \033[0m")
                 self.state = STATE_NORMAL_NAV
                 local_goal = self.adjust_goal(self.goal_original, self.current_room)
@@ -76,7 +81,7 @@ class MultiLevelNavManager:
             
             # Goal on different floor
             self.cancel_move_base()
-            key = (self.current_room, desired_room)
+            key = (self.current_room, goal_room)
             if key not in self.ramp_table:
                 rospy.logerr("No ramp defined for %s → %s", *key)
                 return
@@ -91,8 +96,8 @@ class MultiLevelNavManager:
         if self.state == STATE_TO_RAMP:
             ex, ey, _ = self.active_ramp["entry_pose"]
             d = math.hypot(msg.pose.pose.position.x - ex, msg.pose.pose.position.y - ey)
-            rospy.loginfo("\033[93m Distance toward ramp : %.2f > %.2f \033[0m", d, DIST_TO_RAMP_TH)
-            if d < DIST_TO_RAMP_TH:
+            rospy.loginfo("\033[93m Distance toward ramp : %.2f >= %.2f \033[0m", d, DIST_TO_RAMP_TH)
+            if d <= DIST_TO_RAMP_TH:
                 self.state = STATE_ENTER_RAMP
                 rospy.loginfo("\033[92m Entering ramp..... \033[0m")
                 self.cancel_move_base()
@@ -122,7 +127,7 @@ class MultiLevelNavManager:
         
         SUCCEEDED = 3
         
-        if msg.status.status == SUCCEEDED and self.current_room == target_room:
+        if msg.status.status == SUCCEEDED and self.current_room == self.goal_room:
     
             # --- All conditions satisfied: finish up ---
             rospy.loginfo("\033[92m Original goal reached – switching to IDLE \033[0m")
