@@ -135,20 +135,8 @@ class MultiLevelNavManager:
         SUCCEEDED = 3
         
         if msg.status.status == SUCCEEDED and self.current_room == self.goal_room:
-    
-            # --- All conditions satisfied: finish up ---
             rospy.loginfo("\033[92m Original goal reached – switching to IDLE \033[0m")
-            self.goal_original = None
-            self.goal_room     = None
-            self.state         = STATE_IDLE
-            self.active_ramp   = None
-            self.blind_timer   = None
-            self.warmup_timer  = None
-            self.finish_timer  = None
-            self.warmup_done   = False
-            self.on_slope      = False
-            self.ramp_done     = False
-            rospy.loginfo("\033[92m ROBOT RESET \033[0m")
+            self.reset()
             
     # ─────────────────── Helpers ────────────────────────────────
     def local_to_global(self, x_local, y_local, room):
@@ -196,7 +184,6 @@ class MultiLevelNavManager:
         if self.finish_timer: self.finish_timer.shutdown(); self.finish_timer=None
         t = Twist(); t.linear.x = 0.0; self.cmd_pub.publish(t)
 
-    # ───────── Map switching ─────────
     def switch_map(self):
         new_room = self.active_ramp["to"]
         map_file = os.path.join(roslib.packages.get_pkg_dir("homewhere"), self.map_table[new_room]["file"]) # Not hard code!
@@ -207,7 +194,7 @@ class MultiLevelNavManager:
         self.relocalize()
         self.current_room = new_room
         
-        # Wait for /amcl_pose to appear (AMCL ready)
+        # Wait for /amcl_pose to appear
         try:
             rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped, timeout=10.0)
         except rospy.ROSException:
@@ -217,10 +204,10 @@ class MultiLevelNavManager:
         
         # Reproject goal & send
         if self.goal_original:
-            # new_goal = self.adjust_goal(self.goal_original, self.current_room)
+            rospy.loginfo("\033[92m Reproject goal \033[0m")
             new_goal = self.adjust_goal(self.goal_original, self.current_room)
             self.send_goal(new_goal)
-            rospy.loginfo("\033[92m Reprojected goal → (%.2f, %.2f) \033[0m", new_goal[0], new_goal[1])
+            
             
         self.active_ramp  = None
         self.state        = STATE_NORMAL_NAV
@@ -244,7 +231,7 @@ class MultiLevelNavManager:
         ip.pose.pose.orientation.z = quat[2]
         ip.pose.pose.orientation.w = quat[3]
 
-        # Set covariance — matching what you used in `rostopic pub`
+        # Set covariance
         ip.pose.covariance = [
             0.25, 0,    0, 0, 0, 0,
             0,    0.25, 0, 0, 0, 0,
@@ -256,11 +243,24 @@ class MultiLevelNavManager:
 
         self.init_pub.publish(ip)
 
-    # ───────── Goal reprojection ─────────
     def adjust_goal(self, goal_ps, room_to):
         gx, gy = goal_ps.pose.position.x, goal_ps.pose.position.y
         lx, ly = self.global_to_local(gx, gy, room_to)
         return [lx, ly, 0]
+        
+    def reset(self):
+        self.goal_original = None
+        self.goal_room     = None
+        self.state         = STATE_IDLE
+        self.active_ramp   = None
+        self.blind_timer   = None
+        self.warmup_timer  = None
+        self.finish_timer  = None
+        self.warmup_done   = False
+        self.on_slope      = False
+        self.ramp_done     = False
+        rospy.loginfo("\033[92m ROBOT RESET \033[0m")
+
 
 if __name__ == "__main__":
     try:
