@@ -48,9 +48,9 @@ class Control:
         if math.pi/2 < theta or theta < -math.pi/2:
             v *= -1
 
-        if theta < -math.pi/2 - 0.3:
+        if theta < -math.pi/2:
             theta += math.pi
-        elif theta > math.pi/2 + 0.3:
+        elif theta > math.pi/2:
             theta -= math.pi
 
         # Apply the computed velocities

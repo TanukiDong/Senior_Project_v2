@@ -14,7 +14,7 @@ STATE_ENTER_RAMP  = 3
 STATE_UP_RAMP     = 4
 STATE_MAP_SWITCH  = 5
 
-DIST_TO_RAMP_TH       = 0.25
+DIST_TO_RAMP_TH       = 0.3
 RAMP_SPEED            = 1.00
 RAMP_RATE             = 10
 
@@ -46,6 +46,8 @@ class MultiLevelNavManager:
         self.warmup_done   = False
         self.on_slope      = False
         self.ramp_done     = False
+
+        self.orientation = 0.0
 
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
@@ -98,6 +100,7 @@ class MultiLevelNavManager:
             self.warmup_done   = False
             self.ramp_done     = False
             self.send_goal(self.active_ramp["entry_pose"])
+            self.orientation = self.active_ramp["orientation"]
 
     def amcl_cb(self, msg: PoseWithCovarianceStamped):
         if self.state == STATE_TO_RAMP:
@@ -170,7 +173,8 @@ class MultiLevelNavManager:
         rospy.loginfo("\033[91m move_base cancel sent \033[0m")
 
     def blind_move(self, event=None):
-        t = Twist(); t.linear.x = RAMP_SPEED; self.cmd_pub.publish(t)
+        angle = self.orientation * math.pi / 180
+        t = Twist(); t.linear.x = RAMP_SPEED*math.cos(angle); t.linear.y = RAMP_SPEED*math.sin(angle); self.cmd_pub.publish(t)
         
     def start_blind_move(self, event=None):
         self.blind_move()

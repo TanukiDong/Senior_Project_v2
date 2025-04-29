@@ -11,7 +11,7 @@ footprint: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]] #large
 # robot_radius: 0.2 #small
 # robot_radius: 0.35 #large
 
-inflation_radius: 0.5
+inflation_radius: 0.4
 cost_scaling_factor: 10.0
 update_frequency: 5.0
 publish_frequency: 5.0
