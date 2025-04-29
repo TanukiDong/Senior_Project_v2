@@ -32,11 +32,11 @@ class Arduino:
         time.sleep(2)  # Allow time for Arduino to initialize
         self.ser = ser
 
-        # wheels
+        # steer characteristic of each servos 6-9
         y = [(12,76,150),
             (22,92,163),
             (13,86,150),
-            (24,94,160)]
+            (24,94,160)] # 0deg, 90deg, 180deg
         self.coefs = [self.calculate_piecewise_linear_params(y_points=tup) for tup in y]
 
     def calculate_piecewise_linear_params(self,y_points, x_points=[0,90,180]):
@@ -103,15 +103,16 @@ class Arduino:
     def control_servos(self, angle, verbose=True):
         """Command all servos to move to a specific angle."""
         # Note:
-        # Servo 6: Top Right (Red) -> 92 degrees
-        # Servo 7: Bottom Right -> 90 degrees
-        # Servo 8: Bottom Left -> 95 degrees
-        # Servo 9: Top Left -> 98 degrees
-        # angle += 90 (to make 0 degrees the center)
+        # Servo 6: Top Right (Red)
+        # Servo 7: Bottom Right
+        # Servo 8: Bottom Left
+        # Servo 9: Top Left (yellow)
+        
+        angle = 90 - angle # change units to match with the Arduino's
         new_angles = [coef1[0]*angle + coef1[1] 
                       if angle < 90 
                       else coef2[0]*angle + coef2[1] 
-                      for coef1, coef2 in self.coefs]
+                      for coef1, coef2 in self.coefs] # transform angles
         for i in range(6, 10):
             # Calculate new local angle
             local_angle = new_angles[i-6]
