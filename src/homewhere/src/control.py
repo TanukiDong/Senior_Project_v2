@@ -138,10 +138,10 @@ class Control:
                 velocity = backward
             if 'a' in self.active_keys:  # Left turn
                 velocity = forward
-                angle = 45
+                angle = 90
             if 'd' in self.active_keys:  # Right turn
                 velocity = forward
-                angle = -45
+                angle = -90
             if 'z' in self.active_keys:  # Left turn
                 velocity = backward
                 angle = -45

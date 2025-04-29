@@ -33,10 +33,10 @@ class Arduino:
         self.ser = ser
 
         # steer characteristic of each servos 6-9
-        y = [(12,76,150),
-            (22,92,163),
-            (13,86,150),
-            (24,94,160)] # 0deg, 90deg, 180deg
+        y = [(8,76,144),
+            (20,92,163),
+            (20,86,155),
+            (25,94,162)] # 0deg, 90deg, 180deg
         self.coefs = [self.calculate_piecewise_linear_params(y_points=tup) for tup in y]
 
     def calculate_piecewise_linear_params(self,y_points, x_points=[0,90,180]):
