@@ -45,13 +45,13 @@ class Control:
         v = (vx**2 + vy**2)**0.5
         theta = math.atan2(vy,vx)
 
-        if theta < -math.pi/2:
-            theta += math.pi
-        elif theta > math.pi/2:
-            theta -= math.pi
-
-        if theta > math.pi/2 or theta < -math.pi/2:
+        if math.pi/2 < theta or theta < -math.pi/2:
             v *= -1
+
+        if theta < -math.pi/2 - 0.3:
+            theta += math.pi
+        elif theta > math.pi/2 + 0.3:
+            theta -= math.pi
 
         # Apply the computed velocities
         self.set_velocity(v, theta)
