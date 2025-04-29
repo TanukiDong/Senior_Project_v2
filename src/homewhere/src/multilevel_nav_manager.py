@@ -14,7 +14,7 @@ STATE_ENTER_RAMP  = 3
 STATE_UP_RAMP     = 4
 STATE_MAP_SWITCH  = 5
 
-DIST_TO_RAMP_TH       = 0.2
+DIST_TO_RAMP_TH       = 0.25
 RAMP_SPEED            = 1.00
 RAMP_RATE             = 10
 
@@ -36,6 +36,7 @@ class MultiLevelNavManager:
 
         # ── vars ────────────────────────────────────────────────
         self.current_room  = self.start_room
+        self.goal_room     = 0
         self.state         = STATE_IDLE
         self.goal_original = None
         self.active_ramp   = None
@@ -60,14 +61,24 @@ class MultiLevelNavManager:
 
     # ───────────────── Callbacks ────────────────────────────────
     def goal_cb(self, msg: PoseStamped):
-        if self.state == STATE_IDLE or self.state == STATE_MAP_SWITCH:
+        
+        # self.cancel_move_base()
+        
+        if self.state == STATE_IDLE:
+            
+            self.cancel_move_base()
+            rospy.sleep(2.0)
+            
+            goal_room = self.determine_room(msg)
+                
+            # Set Original Goal
             if not self.goal_original:
                 self.goal_original = msg
-                rospy.loginfo("\033[92m Goal Received at (%.2f, %.2f) \033[0m", msg.pose.position.x, msg.pose.position.y)
-                
-            desired_room = self.determine_room(self.goal_original)
-
-            if desired_room == self.current_room and self.state != STATE_TO_RAMP:
+                self.goal_room = goal_room
+                rospy.loginfo("\033[92m Global Goal Received at (%.2f, %.2f) located in room %s \033[0m", msg.pose.position.x, msg.pose.position.y, goal_room)
+            
+            # Goal on same floor
+            if goal_room == self.current_room and self.state != STATE_TO_RAMP:
                 rospy.loginfo("\033[92m Goal is in current room \033[0m")
                 self.state = STATE_NORMAL_NAV
                 local_goal = self.adjust_goal(self.goal_original, self.current_room)
@@ -75,14 +86,15 @@ class MultiLevelNavManager:
                 return
             
             # Goal on different floor
-            self.cancel_move_base()
-            key = (self.current_room, desired_room)
+            # self.cancel_move_base()
+            key = (self.current_room, goal_room)
             if key not in self.ramp_table:
                 rospy.logerr("No ramp defined for %s → %s", *key)
                 return
             self.active_ramp = self.ramp_table[key]
+            rospy.loginfo("\033[92m Set active ramp to %s \033[0m", self.active_ramp["id"])
             self.state       = STATE_TO_RAMP
-            rospy.loginfo("\033[92m Moving toward ramp..... \033[0m")
+            rospy.loginfo("\033[92m Moving toward ramp at %s ..... \033[0m", self.active_ramp["entry_pose"])
             self.warmup_done   = False
             self.ramp_done     = False
             self.send_goal(self.active_ramp["entry_pose"])
@@ -91,8 +103,8 @@ class MultiLevelNavManager:
         if self.state == STATE_TO_RAMP:
             ex, ey, _ = self.active_ramp["entry_pose"]
             d = math.hypot(msg.pose.pose.position.x - ex, msg.pose.pose.position.y - ey)
-            rospy.loginfo("\033[93m Distance toward ramp : %.2f > %.2f \033[0m", d, DIST_TO_RAMP_TH)
-            if d < DIST_TO_RAMP_TH:
+            rospy.loginfo("\033[93m Distance toward ramp : %.2f >= %.2f \033[0m", d, DIST_TO_RAMP_TH)
+            if d <= DIST_TO_RAMP_TH:
                 self.state = STATE_ENTER_RAMP
                 rospy.loginfo("\033[92m Entering ramp..... \033[0m")
                 self.cancel_move_base()
@@ -122,20 +134,9 @@ class MultiLevelNavManager:
         
         SUCCEEDED = 3
         
-        if msg.status.status == SUCCEEDED and self.current_room == target_room:
-    
-            # --- All conditions satisfied: finish up ---
+        if msg.status.status == SUCCEEDED and self.current_room == self.goal_room:
             rospy.loginfo("\033[92m Original goal reached – switching to IDLE \033[0m")
-            self.goal_original = None
-            self.state         = STATE_IDLE
-            self.active_ramp   = None
-            self.blind_timer   = None
-            self.warmup_timer  = None
-            self.finish_timer  = None
-            self.warmup_done   = False
-            self.on_slope      = False
-            self.ramp_done     = False
-            rospy.loginfo("\033[92m ROBOT RESET \033[0m")
+            self.reset()
             
     # ─────────────────── Helpers ────────────────────────────────
     def local_to_global(self, x_local, y_local, room):
@@ -183,7 +184,6 @@ class MultiLevelNavManager:
         if self.finish_timer: self.finish_timer.shutdown(); self.finish_timer=None
         t = Twist(); t.linear.x = 0.0; self.cmd_pub.publish(t)
 
-    # ───────── Map switching ─────────
     def switch_map(self):
         new_room = self.active_ramp["to"]
         map_file = os.path.join(roslib.packages.get_pkg_dir("homewhere"), self.map_table[new_room]["file"]) # Not hard code!
@@ -194,20 +194,20 @@ class MultiLevelNavManager:
         self.relocalize()
         self.current_room = new_room
         
-        # Wait for /amcl_pose to appear (AMCL ready)
+        # Wait for /amcl_pose to appear
         try:
             rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped, timeout=10.0)
         except rospy.ROSException:
             rospy.logwarn("\033[91m Timed‑out waiting for /amcl_pose – continuing anyway \033[0m")
             
-        rospy.sleep(2.0)
+        rospy.sleep(5.0)
         
         # Reproject goal & send
         if self.goal_original:
-            # new_goal = self.adjust_goal(self.goal_original, self.current_room)
+            rospy.loginfo("\033[92m Reproject goal \033[0m")
             new_goal = self.adjust_goal(self.goal_original, self.current_room)
             self.send_goal(new_goal)
-            rospy.loginfo("\033[92m Reprojected goal → (%.2f, %.2f) \033[0m", new_goal[0], new_goal[1])
+            
             
         self.active_ramp  = None
         self.state        = STATE_NORMAL_NAV
@@ -231,7 +231,7 @@ class MultiLevelNavManager:
         ip.pose.pose.orientation.z = quat[2]
         ip.pose.pose.orientation.w = quat[3]
 
-        # Set covariance — matching what you used in `rostopic pub`
+        # Set covariance
         ip.pose.covariance = [
             0.25, 0,    0, 0, 0, 0,
             0,    0.25, 0, 0, 0, 0,
@@ -243,11 +243,24 @@ class MultiLevelNavManager:
 
         self.init_pub.publish(ip)
 
-    # ───────── Goal reprojection ─────────
     def adjust_goal(self, goal_ps, room_to):
         gx, gy = goal_ps.pose.position.x, goal_ps.pose.position.y
         lx, ly = self.global_to_local(gx, gy, room_to)
         return [lx, ly, 0]
+        
+    def reset(self):
+        self.goal_original = None
+        self.goal_room     = None
+        self.state         = STATE_IDLE
+        self.active_ramp   = None
+        self.blind_timer   = None
+        self.warmup_timer  = None
+        self.finish_timer  = None
+        self.warmup_done   = False
+        self.on_slope      = False
+        self.ramp_done     = False
+        rospy.loginfo("\033[92m ROBOT RESET \033[0m")
+
 
 if __name__ == "__main__":
     try:

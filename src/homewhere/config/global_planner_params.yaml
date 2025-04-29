@@ -2,6 +2,6 @@ GlobalPlanner:
   use_quadratic: true
   use_dijkstra: true
   allow_unknown: false
-  planner_costmap_width: 10.0
-  planner_costmap_height: 10.0
+  planner_costmap_width: 20.0
+  planner_costmap_height: 20.0
   default_tolerance: 0.5

@@ -21,7 +21,6 @@ class SlopeDetector:
         rate = rospy.Rate(10)  # 10 Hz
         while not rospy.is_shutdown():
             self.pub.publish(Bool(data=self.on_slope))
-            # rospy.loginfo_throttle(1.0, "Pitch: %.2f°, On Slope: %s", self.latest_pitch, str(self.on_slope))
             rate.sleep()
 
     def imu_callback(self, msg):
@@ -29,10 +28,14 @@ class SlopeDetector:
         quaternion = [q.x, q.y, q.z, q.w]
 
         try:
-            (_, pitch, _) = tf.transformations.euler_from_quaternion(quaternion)
+            (roll, pitch, _) = tf.transformations.euler_from_quaternion(quaternion)
+            roll_deg  = math.degrees(roll)
             pitch_deg = math.degrees(pitch)
+            
+            self.latest_roll  = roll_deg
             self.latest_pitch = pitch_deg
-            self.on_slope = abs(pitch_deg) > self.slope_th
+            
+            self.on_slope = abs(pitch_deg) > self.slope_th or abs(roll_deg) > self.slope_th
         except Exception as e:
             rospy.logwarn("Error converting quaternion: %s", str(e))
             self.on_slope = False
