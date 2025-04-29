@@ -5,6 +5,8 @@ import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray, Int16
+from kalman_filter import KalmanFilter
+import numpy as np
 
 class Hardware_Controller:
     """A Class to Control Hardwares"""
@@ -45,6 +47,19 @@ class Hardware_Controller:
         # Detect and connect hardware devices
         self.setup_hardware()
 
+        self.kf = KalmanFilter(
+            R=np.diag(
+                [5e-4]*4+
+                [2e-2]*4
+            ),
+            Q=np.diag([
+                0.1, 0.1
+            ]),
+            dt=Hardware_Controller.REFRESH_RATE
+        )
+
+        self.current_theoretical_velocity = 0.0
+
         # Start periodic update loop
         rospy.Timer(rospy.Duration(Hardware_Controller.REFRESH_RATE), self.update)  # Runs update every 0.1 sec
 
@@ -76,6 +91,7 @@ class Hardware_Controller:
     def front_left_callback(self, msg):
         self.velFrontLeft_Linear_x = msg.linear.x
         self.velFrontLeft_Linear_y = msg.linear.y
+        self.current_theoretical_velocity = msg.linear.x*60/2/np.pi/0.0695 # for KF
 
     def front_right_callback(self, msg):
         self.velFrontRight_Linear_x = msg.linear.x
@@ -94,18 +110,24 @@ class Hardware_Controller:
 
     # ---- Sensor Reading ----
     def read_sensor(self):
-        """Get Encoder Data"""
         try:
-            dl_list = self.motors.get_delta_travelled()
-            rpm_list = self.motors.get_rpms()
+            dl_list = self.motors.get_delta_travelled()  # [dl1, dl2, dl3, dl4]
+            rpm_list = self.motors.get_rpms()            # [rpm1, rpm2, rpm3, rpm4]
 
-            print("DL, RPM:", dl_list, rpm_list)
-            # imu = self.arduino.get_tilt()
-            # return [*encoder, *imu]  # Return as a list
-            return [dl_list, rpm_list]
+            # Stack all into one big measurement vector
+            z = np.array(dl_list + rpm_list).reshape(8, 1)
+            u = np.array([[self.current_theoretical_velocity]])
+
+            self.kf.predict(u)
+            filtered_dl, filtered_rpm = self.kf.update(z)
+
+            rospy.loginfo(f"dl: {dl_list}, v: {self.current_theoretical_velocity}, rpm: {rpm_list}")
+            rospy.loginfo(f"Filtered: dl={filtered_dl:.4f}, rpm={filtered_rpm:.2f}")
+            return [filtered_dl, filtered_rpm]
+
         except Exception as e:
             rospy.logerr(f"Encoder reading error: {e}")
-            return [[0.0], [0.0]]  # Fail-safe default
+            return [0.0, 0.0]
         
     def read_mpu(self):
         """Get IMU Data"""
@@ -145,13 +167,13 @@ class Hardware_Controller:
 
             # Ensure the list has exactly 6 elements
             if len(reading_list) != 2:
-                rospy.logerr("Sensor data length mismatch. Expected 6 values.")
+                rospy.logerr("Sensor data length mismatch. Expected 2 values.")
                 return
 
             # Publish sensor readings
             msg = Float32MultiArray()
-            avg_reading = [sum(lst)/len(lst) for lst in reading_list]
-            msg.data = avg_reading  # [avg_dl, avg_rpm]
+            msg.data = reading_list
+            print("Reading list: ", reading_list)
             self.encoder_publisher.publish(msg)
 
             # Publish IMU
