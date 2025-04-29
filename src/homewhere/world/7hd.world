@@ -6,6 +6,15 @@
     <include><uri>model://ground_plane</uri></include>
     <include><uri>model://sun</uri></include>
 
+  <!-- camera 1.5708 -->
+  <gui fullscreen='0'>
+    <camera name='user_camera'>
+      <pose>-4 0 1.5 0 0 0</pose>
+      <view_controller>orbit</view_controller>
+    </camera>
+  </gui>
+
+
     <!-- ========== RIGHT ROOM ========== -->
     <model name="room_right">
       <static>true</static>
@@ -330,11 +339,11 @@
       </link>
 
       <!-- obstacle -->
-      <link name="partition1">
+      <!-- <link name="partition1">
         <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
         <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
           <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <ambient>0 0 1 1</ambient> 
             <diffuse>0 0 1 1</diffuse>
           </material>
         </visual>
@@ -345,12 +354,12 @@
         <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
         <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
           <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
+            <ambient>0 0 1 1</ambient>
             <diffuse>0 0 1 1</diffuse>
           </material>
         </visual>
         <pose> 0 -2.5 0.5 0 0 0</pose>
-      </link>
+      </link> -->
 
 
       <link name='cylinder1'>
@@ -593,25 +602,25 @@
       </link>
 
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>0.1 5 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 5 2</size></box></geometry>
+        <collision name="coll"><geometry><box><size>0.1 5 3</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 5 3</size></box></geometry>
           <material>
             <ambient>1 1 0 1</ambient>   <!-- Yellow -->
             <diffuse>1 1 0 1</diffuse>
           </material>
         </visual>
-        <pose> -0.5 0 0 0 0 0</pose>
+        <pose> -0.5 0 0.5 0 0 0</pose>
       </link>
 
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>0.1 5 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 5 2</size></box></geometry>
+        <collision name="coll"><geometry><box><size>0.1 5 3</size></box></geometry></collision>
+        <visual   name="vis"><geometry><box><size>0.1 5 3</size></box></geometry>
           <material>
             <ambient>1 1 0 1</ambient>   <!-- Yellow -->
             <diffuse>1 1 0 1</diffuse>
           </material>
         </visual>
-        <pose> 0.5 0 0 0 0 0</pose>
+        <pose> 0.5 0 0.5 0 0 0</pose>
       </link>
 
       <pose>0 5 1 0 0 0</pose>
