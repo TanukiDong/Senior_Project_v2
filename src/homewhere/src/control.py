@@ -31,6 +31,8 @@ class Control:
         self.back_right_velocity = Twist()
         self.angle = 90
         self.manual_velocity = 0.2
+        self.hemisphere = "front"
+        self.angle_tolerance = 0.2
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
@@ -85,14 +87,42 @@ class Control:
 
         # rospy.loginfo(f"v = {v}, theta = {theta}")
 
-        real_v = self.real_velocity(v,theta)
-        real_t = self.real_theta(theta)
-        real_t = self.rad2deg(real_t)
+        # real_v = self.real_velocity(v,theta)
+        # real_t = self.real_theta(theta)
+        # real_t = self.rad2deg(real_t)
+        if self.hemisphere == "front":
+            # Beyond the boundaries
+            if theta < -math.pi/2 - self.angle_tolerance:
+                real_t = theta + math.pi
+                real_v = v * -1
+                self.hemisphere = "back"
+            elif theta > math.pi/2 + self.angle_tolerance:
+                real_t = theta - math.pi
+                real_v = v * -1
+                self.hemisphere = "back"
+            else:
+                real_t = theta
+                real_v = v
 
-        # rospy.loginfo(f"v = {real_v}, theta = {real_t}")
+        else:
+            # Beyond the boundaries
+            if theta < -math.pi/2 + self.angle_tolerance:
+                real_t = theta + math.pi
+                real_v = v * -1
+            elif theta > math.pi/2 - self.angle_tolerance:
+                real_t = theta - math.pi
+                real_v = v * -1
+            else:
+                real_t = theta
+                real_v = v
+                self.hemisphere = "front"
+
+        # print(f"Hemisphere: {self.hemisphere}")
+
+        # rospy.loginfo(f"real_v = {real_v}, real_theta = {real_t}")
 
         # Apply the computed velocities
-        self.set_velocity([[real_v]*4, real_t])
+        self.set_velocity([[real_v]*4, self.rad2deg(real_t)])
 
         # Publish the updated velocities to each wheel
         self.publish_velocity()
