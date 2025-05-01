@@ -154,7 +154,7 @@ class Hardware_Controller:
             # Set steering angle
             self.arduino.control_servos_new(int(self.theta))
 
-            print(vel_list, self.theta)
+            # print(vel_list, self.theta)
         except Exception as e:
             rospy.logerr(f"Actuator command error: {e}")
 
@@ -173,7 +173,7 @@ class Hardware_Controller:
             # Publish sensor readings
             msg = Float32MultiArray()
             msg.data = reading_list
-            print("Reading list: ", reading_list)
+            # print("Reading list: ", reading_list)
             self.encoder_publisher.publish(msg)
 
             # Publish IMU
