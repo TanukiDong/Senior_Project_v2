@@ -1,155 +1,148 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import rospy
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist, Quaternion
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64
 
-# Wheel base distance
-WHEEL_RADIUS = 0.07
-# WHEEL_BASE = 0.5 / 2
+# ─── Constants ────────────────────────────────────────────────
+WHEEL_RADIUS = 0.07  # (m)
 
-# Initialize global variables for wheel velocities
-velFrontLeft_Linear = 0.0
-velFrontLeft_Angular = 0.0
-velFrontRight_Linear = 0.0
-velFrontRight_Angular = 0.0
-velBackLeft_Linear = 0.0
-velBackLeft_Angular = 0.0
-velBackRight_Linear = 0.0
-velBackRight_Angular = 0.0
-steer_angle = 0.0
+class OdometryPublisher(object):
+    def __init__(self):
+        rospy.init_node('odometry')
 
-# Callback functions to update wheel velocities
-def front_left_callback(msg):
-    global velFrontLeft_Linear, velFrontLeft_Angular
-    velFrontLeft_Linear = msg.linear.x
-    velFrontLeft_Angular = msg.angular.z
+        # ── Wheel-velocity variables ────────────
+        self.velFrontLeft_Linear   = 0.0
+        self.velFrontLeft_Angular  = 0.0
+        self.velFrontRight_Linear  = 0.0
+        self.velFrontRight_Angular = 0.0
+        self.velBackLeft_Linear    = 0.0
+        self.velBackLeft_Angular   = 0.0
+        self.velBackRight_Linear   = 0.0
+        self.velBackRight_Angular  = 0.0
+        self.steer_angle           = 0.0
 
-def front_right_callback(msg):
-    global velFrontRight_Linear, velFrontRight_Angular
-    velFrontRight_Linear = msg.linear.x
-    velFrontRight_Angular = msg.angular.z
+        # ── Pose state ────────────────────────────────────────
+        self.x = 0.0
+        self.y = 0.0
+        self.theta = 0.0
+        self.last_time = rospy.Time.now()
 
-def back_left_callback(msg):
-    global velBackLeft_Linear, velBackLeft_Angular
-    velBackLeft_Linear = msg.linear.x
-    velBackLeft_Angular = msg.angular.z
+        # ── Publishers / TF ───────────────────────────────────
+        self.odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
+        self.joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
+        self.odom_broadcaster = tf.TransformBroadcaster()
 
-def back_right_callback(msg):
-    global velBackRight_Linear, velBackRight_Angular
-    velBackRight_Linear = msg.linear.x
-    velBackRight_Angular = msg.angular.z
+        # ── Subscribers ───────────────────────────────────────
+        rospy.Subscriber('/cmd_vel_front_left',  Twist,  self.front_left_callback)
+        rospy.Subscriber('/cmd_vel_front_right', Twist,  self.front_right_callback)
+        rospy.Subscriber('/cmd_vel_back_left',   Twist,  self.back_left_callback)
+        rospy.Subscriber('/cmd_vel_back_right',  Twist,  self.back_right_callback)
+        rospy.Subscriber('/cmd_steer',           Float64, self.steer_callback)
 
-def steer_callback(msg):
-    global steer_angle
-    steer_angle = msg.data
+        # ── Main update loop (10 Hz) ──────────────────────────
+        self.timer = rospy.Timer(rospy.Duration(0.1), self.update)
+        rospy.on_shutdown(self.shutdown)
 
-def odometry_publisher():
-    rospy.init_node('odometry')
-    odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
-    odom_broadcaster = tf.TransformBroadcaster()
+    # ── Callbacks to update wheel velocities ──────────────────
+    def front_left_callback(self, msg):
+        self.velFrontLeft_Linear  = msg.linear.x
+        self.velFrontLeft_Angular = msg.angular.z
 
-    # Subscribe to each wheel's velocity topic
-    rospy.Subscriber("/cmd_vel_front_left", Twist, front_left_callback)
-    rospy.Subscriber("/cmd_vel_front_right", Twist, front_right_callback)
-    rospy.Subscriber("/cmd_vel_back_left", Twist, back_left_callback)
-    rospy.Subscriber("/cmd_vel_back_right", Twist, back_right_callback)
-    rospy.Subscriber("/cmd_steer", Float64, steer_callback)
-    
-    joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
+    def front_right_callback(self, msg):
+        self.velFrontRight_Linear  = msg.linear.x
+        self.velFrontRight_Angular = msg.angular.z
 
-    # Initial position and orientation
-    x = y = theta = 0.0
-    rate = rospy.Rate(10)
-    last_time = rospy.Time.now()
+    def back_left_callback(self, msg):
+        self.velBackLeft_Linear  = msg.linear.x
+        self.velBackLeft_Angular = msg.angular.z
 
-    while not rospy.is_shutdown():
+    def back_right_callback(self, msg):
+        self.velBackRight_Linear  = msg.linear.x
+        self.velBackRight_Angular = msg.angular.z
+
+    def steer_callback(self, msg):
+        self.steer_angle = msg.data
+
+    # ── Periodic update (publishes TF, Odometry, JointState) ──
+    def update(self, _event):
         current_time = rospy.Time.now()
-        dt = (current_time - last_time).to_sec()
-        last_time = current_time
+        dt = (current_time - self.last_time).to_sec()
+        self.last_time = current_time
 
-        # Calculation
-        v = velFrontLeft_Linear * WHEEL_RADIUS
-        vx = v * math.cos(steer_angle)
-        vy = v * math.sin(steer_angle)
+        # Basic planar kinematics (uses front-left wheel only, as in original)
+        v  = self.velFrontLeft_Linear * WHEEL_RADIUS
+        vx = v * math.cos(self.steer_angle)
+        vy = v * math.sin(self.steer_angle)
 
-        dx = vx * dt
-        dy = vy * dt
+        self.x += vx * dt
+        self.y += vy * dt
+
+        # ─ TF: odom → base_footprint and base_footprint → base_link
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.theta)
+        odom_quat_reverse = tf.transformations.quaternion_from_euler(0, 0, -self.theta)
         
-        x += dx
-        y += dy
-
-        odom_broadcaster.sendTransform(
-            (x, y, 0.0),
-            tf.transformations.quaternion_from_euler(0, 0, theta),
+        self.odom_broadcaster.sendTransform(
+            (self.x, self.y, 0.0),
+            odom_quat,
             current_time,
-            "base_footprint",
-            "odom"
+            'base_footprint',
+            'odom'
         )
-        
-        odom_broadcaster.sendTransform(
+        self.odom_broadcaster.sendTransform(
             (0.0, 0.0, 0.0),
-            tf.transformations.quaternion_from_euler(0, 0, -theta),
+            odom_quat_reverse,
             current_time,
-            "base_link",
-            "base_footprint"
+            'base_link',
+            'base_footprint'
         )
-        
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
 
-        # Publish the odometry message
+        # ─ Odometry message
         odom = Odometry()
         odom.header.stamp = current_time
-        odom.header.frame_id = "odom"
+        odom.header.frame_id = 'odom'
+        odom.child_frame_id = 'base_footprint'
 
-        # Set the position
-        odom.pose.pose.position.x = x
-        odom.pose.pose.position.y = y
+        odom.pose.pose.position.x = self.x
+        odom.pose.pose.position.y = self.y
         odom.pose.pose.position.z = 0.0
         odom.pose.pose.orientation = Quaternion(*odom_quat)
 
-        # Set the velocity
-        odom.child_frame_id = "base_footprint"
         odom.twist.twist.linear.x = vx
         odom.twist.twist.linear.y = vy
         odom.twist.twist.angular.z = 0.0
 
-        # Publish the odometry message
-        odom_pub.publish(odom)
-        
-        
-        # Create a JointState message
+        self.odom_pub.publish(odom)
+
+        # ─ JointState ──
         joint_state = JointState()
         joint_state.header.stamp = current_time
-
-        # Define joint names
         joint_state.name = [
-            "wheel_front_left_joint", "wheel_front_right_joint",
-            "wheel_rear_left_joint", "wheel_rear_right_joint",
-            "steer_front_left_joint", "steer_front_right_joint",
-            "steer_rear_left_joint", "steer_rear_right_joint"
+            'wheel_front_left_joint', 'wheel_front_right_joint',
+            'wheel_rear_left_joint',  'wheel_rear_right_joint',
+            'steer_front_left_joint', 'steer_front_right_joint',
+            'steer_rear_left_joint',  'steer_rear_right_joint'
         ]
-
-        # Define joint positions
         joint_state.position = [
             0.0, 0.0,
             0.0, 0.0,
-            theta, theta, theta, theta
-            # 0.0, 0.0,
-            # 0.0, 0.0,
+            self.theta, self.theta, self.theta, self.theta
         ]
+        self.joint_pub.publish(joint_state)
 
-        # Publish joint states
-        joint_pub.publish(joint_state)
+    # ── Shutdown ───────────────────────────────────
+    def shutdown(self):
+        rospy.loginfo('Odometry node shutting down.')
 
-        rate.sleep()
-
+# ──── Main ────────────────────────────────────────────────────
 if __name__ == '__main__':
     try:
-        odometry_publisher()
+        OdometryPublisher()
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
