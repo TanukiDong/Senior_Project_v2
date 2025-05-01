@@ -7,6 +7,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray, Int16
 from kalman_filter import KalmanFilter
 import numpy as np
+import time
 
 class Hardware_Controller:
     """A Class to Control Hardwares"""
@@ -183,6 +184,8 @@ class Hardware_Controller:
 
             # Command the actuators
             self.cmd_actuators()
+
+            # print(f"Time: {time.time()}")
 
         except Exception as e:
             rospy.logerr(f"Update error: {e}")
