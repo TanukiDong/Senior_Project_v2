@@ -194,7 +194,7 @@ class Hardware_Controller:
         rospy.logwarn("Emergency Stop Activated!")
         try:
             self.motors.terminate()
-            self.arduino.control_servo_8(0)
+            self.arduino.control_servos_new(0)
         except Exception as e:
             rospy.logerr(f"Fail-safe error: {e}")
 
