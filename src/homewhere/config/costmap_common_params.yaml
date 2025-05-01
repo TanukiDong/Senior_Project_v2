@@ -1,26 +1,34 @@
-obstacle_range: 2.5
-raytrace_range: 3.0
+# ─── Robot footprint ──────────────────────────────────────────
+footprint:  [[ 0.25,  0.25],
+             [ 0.25, -0.25],
+             [-0.25, -0.25],
+             [-0.25,  0.25]]
+# max_obstacle_height: 0.60   # uncomment if you must filter tall hits
 
-# Diagonal Rectangle
-# footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]] #small
-# footprint: [[0.35, 0.35], [0.35, -0.35], [-0.35, -0.35], [-0.35, 0.35]] #large
-# # Exact Rectangle
-# footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]] #small
-footprint: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]] #large
-# Circle
-# robot_radius: 0.2 #small
-# robot_radius: 0.35 #large
+# ─── Obstacle layer (2-D LiDAR) ───────────────────────────────
+obstacle_layer:
+  enabled:              true
+  combination_method:   1            # keep highest cost when merging
+  track_unknown_space:  true         # planner avoids grey cells
+  obstacle_range:       2.5
+  raytrace_range:       3.0
 
-inflation_radius: 0.4
-cost_scaling_factor: 10.0
-update_frequency: 5.0
-publish_frequency: 5.0
-transform_tolerance: 0.5
+  observation_sources:  scan
+  scan:
+    data_type:          LaserScan
+    topic:              scan
+    marking:            true
+    clearing:           true
+    # min_obstacle_height: 0.25      # ignore floor echoes
+    # max_obstacle_height: 0.35      # ignore anything above base
 
-map_type: costmap
-observation_sources: scan
-scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
-robot_base_frame: base_footprint
+# ─── Inflation layer ──────────────────────────────────────────
+inflation_layer:
+  enabled:              true
+  inflation_radius:     0.55
+  cost_scaling_factor:  10.0
 
-
-
+# ─── Static layer ─────────────────────────────────────────────
+static_layer:
+  enabled:              true
+  subscribe_to_updates: true         # accept /map incrementals

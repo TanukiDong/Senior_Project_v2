@@ -71,7 +71,7 @@ class Control:
             else:
                 self.hemisphere = "front"
 
-        print(f"Hemisphere: {self.hemisphere}")
+        # print(f"Hemisphere: {self.hemisphere}")
 
         # Apply the computed velocities
         self.set_velocity(v, theta)

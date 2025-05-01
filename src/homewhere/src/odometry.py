@@ -85,7 +85,7 @@ class OdometryPublisher(object):
 
         # ─ TF: odom → base_footprint and base_footprint → base_link
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.theta)
-        odom_quat_reverse = tf.transformations.quaternion_from_euler(0, 0, -self.theta)
+        # odom_quat_reverse = tf.transformations.quaternion_from_euler(0, 0, -self.theta)
         
         self.odom_broadcaster.sendTransform(
             (self.x, self.y, 0.0),
@@ -94,13 +94,13 @@ class OdometryPublisher(object):
             'base_footprint',
             'odom'
         )
-        self.odom_broadcaster.sendTransform(
-            (0.0, 0.0, 0.0),
-            odom_quat_reverse,
-            current_time,
-            'base_link',
-            'base_footprint'
-        )
+        # self.odom_broadcaster.sendTransform(
+        #     (0.0, 0.0, 0.0),
+        #     odom_quat_reverse,
+        #     current_time,
+        #     'base_link',
+        #     'base_footprint'
+        # )
 
         # ─ Odometry message
         odom = Odometry()
