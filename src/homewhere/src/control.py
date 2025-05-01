@@ -27,6 +27,7 @@ class Control:
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
         self.angle = 0.0
+        self.hemisphere = "front" # front or back for the servo
 
         # Set up keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
@@ -41,17 +42,36 @@ class Control:
         vx = msg.linear.x * 5
         vy = msg.linear.y * 5
 
-        # Threshold to prevent unnecessary rotation at goal
+        # Get actual v, and theta
         v = (vx**2 + vy**2)**0.5
         theta = math.atan2(vy,vx)
 
-        if math.pi/2 < theta or theta < -math.pi/2:
-            v *= -1
+        # Tolerances
+        if self.hemisphere == "front":
+            # Beyond the boundaries
+            if theta < -math.pi/2 - 0.2:
+                theta += math.pi
+                v *= -1
+                self.hemisphere = "back"
+            elif theta > math.pi/2 + 0.2:
+                theta -= math.pi
+                v *= -1
+                self.hemisphere = "back"
+            else:
+                pass
 
-        if theta < -math.pi/2:
-            theta += math.pi
-        elif theta > math.pi/2:
-            theta -= math.pi
+        else:
+            # Beyond the boundaries
+            if theta < -math.pi/2 + 0.2:
+                theta += math.pi
+                v *= -1
+            elif theta > math.pi/2 - 0.2:
+                theta -= math.pi
+                v *= -1
+            else:
+                self.hemisphere = "front"
+
+        print(f"Hemisphere: {self.hemisphere}")
 
         # Apply the computed velocities
         self.set_velocity(v, theta)
