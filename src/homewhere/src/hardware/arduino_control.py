@@ -33,7 +33,7 @@ class Arduino:
         self.ser = ser
 
         # steer characteristic of each servos 6-9
-        y = [(8,80,144),
+        y = [(26,94,160),
             (22,92,163),
             (20,88,155),
             (25,94,162)] # 0deg, 90deg, 180deg
