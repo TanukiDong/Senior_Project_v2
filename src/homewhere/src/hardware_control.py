@@ -53,7 +53,7 @@ class Hardware_Controller:
                 [2e-2]*4
             ),
             Q=np.diag([
-                0.1, 0.1
+                0.5, 0.5
             ]),
             dt=Hardware_Controller.REFRESH_RATE
         )
@@ -152,7 +152,7 @@ class Hardware_Controller:
             
             self.motors.set_vel(vel_list)
             # Set steering angle
-            self.arduino.control_servos(int(self.theta))
+            self.arduino.control_servos_new(int(self.theta))
 
             print(vel_list, self.theta)
         except Exception as e:

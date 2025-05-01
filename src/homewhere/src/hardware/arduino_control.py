@@ -124,10 +124,25 @@ class Arduino:
             # command the servo to move to the new angle
             command = f'SERVO{i}:{local_angle}\n'
             self.write(command)
-            time.sleep(0.001)
+            time.sleep(0.001) # TODO: change this
             response = self.read()
             if verbose:
                 print(response)
+
+    def control_servos_new(self, angle, verbose=True):
+        angle = 90 - angle
+        new_angles = [coef1[0]*angle + coef1[1] 
+                      if angle < 90 
+                      else coef2[0]*angle + coef2[1] 
+                      for coef1, coef2 in self.coefs]
+        new_angles = [angle_i if angle_i > 0 else 0 for angle_i in new_angles]
+        new_angles = [angle_i if angle_i < 180 else 180 for angle_i in new_angles]
+        command = f'SERVOS:{new_angles[0]},{new_angles[1]},{new_angles[2]},{new_angles[3]}\n'
+        self.write(command)
+        time.sleep(0.01)
+        if verbose:
+            response = self.read()
+            print(response)
 
     def read_ultrasonic_distance(self):
         """Read the distance from the ultrasonic sensor in centimeters."""
