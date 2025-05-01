@@ -15,8 +15,8 @@
         <rosparam file="$(find homewhere)/config/costmap_local_params.yaml" command="load" />
 
         <!-- Load planner-specific parameters -->
-        <rosparam file="$(find homewhere)/config/global_planner_params.yaml" command="load" />
-        <rosparam file="$(find homewhere)/config/local_planner_dwa_params.yaml" command="load" />
+        <rosparam file="$(find homewhere)/config/planner_global_params.yaml" command="load" />
+        <rosparam file="$(find homewhere)/config/planner_local_dwa_params.yaml" command="load" />
 
         <!-- Load move_base-specific parameters -->
         <rosparam file="$(find homewhere)/config/move_base_params.yaml" command="load" />

@@ -15,7 +15,7 @@ local_costmap:
     - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
 
-  # -- Local-only tweaks --------------------------------------
-  obstacle_layer:
-    obstacle_range:  2.5          # may tighten for higher fps
-    raytrace_range:  3.0
+  # # -- Local-only tweaks --------------------------------------
+  # obstacle_layer:
+  #   obstacle_range:  2.5          # may tighten for higher fps
+  #   raytrace_range:  3.0

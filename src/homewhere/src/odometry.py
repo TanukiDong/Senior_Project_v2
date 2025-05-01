@@ -94,6 +94,7 @@ class OdometryPublisher(object):
             'base_footprint',
             'odom'
         )
+        
         # self.odom_broadcaster.sendTransform(
         #     (0.0, 0.0, 0.0),
         #     odom_quat_reverse,
@@ -119,21 +120,21 @@ class OdometryPublisher(object):
 
         self.odom_pub.publish(odom)
 
-        # ─ JointState ──
-        joint_state = JointState()
-        joint_state.header.stamp = current_time
-        joint_state.name = [
-            'wheel_front_left_joint', 'wheel_front_right_joint',
-            'wheel_rear_left_joint',  'wheel_rear_right_joint',
-            'steer_front_left_joint', 'steer_front_right_joint',
-            'steer_rear_left_joint',  'steer_rear_right_joint'
-        ]
-        joint_state.position = [
-            0.0, 0.0,
-            0.0, 0.0,
-            self.theta, self.theta, self.theta, self.theta
-        ]
-        self.joint_pub.publish(joint_state)
+        # # ─ JointState ──
+        # joint_state = JointState()
+        # joint_state.header.stamp = current_time
+        # joint_state.name = [
+        #     'wheel_front_left_joint', 'wheel_front_right_joint',
+        #     'wheel_rear_left_joint',  'wheel_rear_right_joint',
+        #     'steer_front_left_joint', 'steer_front_right_joint',
+        #     'steer_rear_left_joint',  'steer_rear_right_joint'
+        # ]
+        # joint_state.position = [
+        #     0.0, 0.0,
+        #     0.0, 0.0,
+        #     self.theta, self.theta, self.theta, self.theta
+        # ]
+        # self.joint_pub.publish(joint_state)
 
     # ── Shutdown ───────────────────────────────────
     def shutdown(self):
