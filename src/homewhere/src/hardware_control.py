@@ -5,7 +5,7 @@ import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray, Int16, Bool
-from kalman_filter import KalmanFilter
+from algo.kalman_filter import KalmanFilter
 import numpy as np
 import time
 
