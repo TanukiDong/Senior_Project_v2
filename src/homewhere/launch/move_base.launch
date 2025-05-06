@@ -4,8 +4,8 @@
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
         <!-- Specify the global and local planners -->
         <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-        <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /> -->
-        <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/> -->
 
 
 
@@ -19,8 +19,8 @@
 
         <!-- Load planner-specific parameters -->
         <rosparam file="$(find homewhere)/config/planner_global_params.yaml" command="load" />
-        <!-- <rosparam file="$(find homewhere)/config/planner_local_dwa_params.yaml" command="load" /> -->
-        <rosparam file="$(find homewhere)/config/planner_local_teb_params.yaml" command="load"/>
+        <rosparam file="$(find homewhere)/config/planner_local_dwa_params.yaml" command="load" />
+        <!-- <rosparam file="$(find homewhere)/config/planner_local_teb_params.yaml" command="load"/> -->
 
         <!-- Load move_base-specific parameters -->
         <rosparam file="$(find homewhere)/config/move_base_params.yaml" command="load" />
