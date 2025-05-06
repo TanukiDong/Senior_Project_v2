@@ -1,53 +1,71 @@
 <launch>
-    <arg name="mode" default="default" />
-    <!-- Robot -->
+    <!-- ───────────────────────────────
+         ❶ Common, unchanged arguments
+    ─────────────────────────────── -->
+    <arg name="mode"  default="default" />
     <arg name="model" default="$(find homewhere)/urdf/box_robot.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
-    <!-- world -->
-    <arg name="world" default="mi_polcorner" />
+
+    <!-- Map used when running in normal nav mode -->
+    <arg name="world"    default="mi_polcorner" />
     <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
-    <!-- LiDAR -->
+
+    <!-- ───────────────────────────────
+         ❷ NEW:  multi‑map parameters
+    ─────────────────────────────── -->
+    <arg name="start_room" default="1"  />   <!-- ADDED ❷‑1: initial floor / room id -->
+    <arg name="slope_th"   default="5"  />   <!-- ADDED ❷‑2: IMU‑based slope threshold (deg) -->
+
+    <!-- ───────────────────────────────
+         ❸ Hardware / sensor stack
+    ─────────────────────────────── -->
     <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch" />
 
-    <!-- Launch Control Node -->
-    <node name="control" pkg="homewhere" type="control.py" output="screen" />
-    <!-- Movement Publisher -->
-    <node name="odometry" pkg="homewhere" type="odometry.py" output="screen" />
-    <!-- Movement Publisher -->
-    <node name="hwc" pkg="homewhere" type="hardware_control.py" output="screen" />
-    <!-- Rviz (x,y) -->
-    <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
+    <node name="control"   pkg="homewhere" type="control.py"   output="screen" />
+    <node name="odometry"  pkg="homewhere" type="odometry.py"  output="screen" />
+    <node name="hwc"       pkg="homewhere" type="hardware_control.py" output="screen" />
+    <node name="marker"    pkg="homewhere" type="marker.py"    output="screen" />
 
-    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
-    /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-    <!-- SLAM: Gmapping -->
+    <!-- ───────────────────────────────
+         ❹ SLAM branch (unchanged)
+    ─────────────────────────────── -->
     <group if="$(eval arg('mode') == 'slam')">
-        <!-- Gmapping -->
         <node pkg="gmapping" type="slam_gmapping" name="turtlebot3_slam_gmapping" output="screen">
             <param name="base_frame" value="base_link" />
             <param name="odom_frame" value="odom" />
-            <param name="map_frame" value="map" />
+            <param name="map_frame"  value="map" />
             <rosparam command="load" file="$(find homewhere)/config/gmapping_params.yaml" />
         </node>
 
-        <!-- Launch RViz for visualization -->
         <node name="rviz" pkg="rviz" type="rviz" required="true" output="screen"
-            args="-d $(find homewhere)/rviz/slam.rviz" />
+              args="-d $(find homewhere)/rviz/slam.rviz" />
     </group>
 
-    <!-- Navigation -->
+    <!-- ───────────────────────────────
+         ❺ Navigation branch (unchanged)
+    ─────────────────────────────── -->
     <group if="$(eval arg('mode') == 'nav')">
-        <!-- map server -->
         <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
-        <!-- AMCL -->
         <include file="$(find homewhere)/launch/amcl.launch" />
-        <!-- move_base -->
         <include file="$(find homewhere)/launch/move_base.launch" />
-        <!-- RViz -->
         <node pkg="rviz" type="rviz" name="rviz" required="true"
-            args="-d $(find homewhere)/rviz/navigation.rviz" />
+              args="-d $(find homewhere)/rviz/navigation.rviz" />
     </group>
 
+    <!-- ───────────────────────────────
+         ❻ NEW:  Multi‑level branch
+    ─────────────────────────────── -->
+    <group if="$(eval arg('mode') == 'multi')">             <!-- ADDED ❻‑1 -->
+        <!-- Dynamic map switching & blind‑ramp traversal -->
+        <include file="$(find homewhere)/launch/multilevel.launch">  <!-- ADDED ❻‑2 -->
+            <arg name="slope_th"   value="$(arg slope_th)"   />      <!-- ADDED ❻‑3 -->
+            <arg name="start_room" value="$(arg start_room)" />      <!-- ADDED ❻‑4 -->
+        </include>
+
+        <!-- Optional visualisation for multi‑map workflow -->
+        <node pkg="rviz" type="rviz" name="rviz_multi" required="true"  <!-- ADDED ❻‑5 -->
+              args="-d $(find homewhere)/rviz/multilevel.rviz" />
+    </group>
 </launch>
