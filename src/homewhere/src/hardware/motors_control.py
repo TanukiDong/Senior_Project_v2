@@ -386,7 +386,7 @@ class Motors:
         """Set the velocity in the format of vel_list = [ front_left, front_right, back_left, back_right] (m/s)"""
 
         rpm_list = [int(vel*30/(self.radius*np.pi)) for vel in vel_list]
-        print("RPM_LIST",rpm_list)
+        # print("RPM_LIST",rpm_list)
 
         # set velocity
 		# We invert the left wheel cuz opposite orientation

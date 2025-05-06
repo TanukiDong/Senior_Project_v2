@@ -129,7 +129,7 @@ class Arduino:
             if verbose:
                 print(response)
 
-    def control_servos_new(self, angle, verbose=True):
+    def control_servos_new(self, angle, verbose=False):
         angle = 90 - angle
         new_angles = [coef1[0]*angle + coef1[1] 
                       if angle < 90 
