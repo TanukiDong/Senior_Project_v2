@@ -4,7 +4,7 @@ import rospy
 import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray, Int16
+from std_msgs.msg import Float32MultiArray, Int16, Bool
 from kalman_filter import KalmanFilter
 import numpy as np
 import time
@@ -17,6 +17,7 @@ class Hardware_Controller:
     FRONT_ADDR = "ttyUSB1"
     REAR_ADDR = "ttyUSB2"
     REFRESH_RATE = 0.1 # in second
+    THRESHOLD = 6 # in degrees
 
     def __init__(self):
         """Initialize ROS Node and Hardware Connections"""
@@ -37,6 +38,7 @@ class Hardware_Controller:
         # ROS Publisher
         self.encoder_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
         self.imu_publisher = rospy.Publisher('/cmd_mpu_reading', Float32MultiArray, queue_size=10)
+        self.on_slope_publisher = rospy.Publisher("/on_slope", Bool, queue_size=10)
 
         # ROS Subscribers
         rospy.Subscriber("/cmd_vel_front_left", Twist, self.front_left_callback)
@@ -182,8 +184,15 @@ class Hardware_Controller:
             tilts.data = self.read_mpu()
             self.imu_publisher.publish(tilts)
 
+            # Publish on_slope
+            on_slope = self.arduino.tilted(threshold=Hardware_Controller.THRESHOLD)
+            on_slope_bool = Bool(data=on_slope)
+            self.on_slope_publisher.publish(on_slope_bool)
+
             # Command the actuators
             self.cmd_actuators()
+
+            print(tilts, on_slope)
 
             # print(f"Time: {time.time()}")
 
