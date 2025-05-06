@@ -6,6 +6,7 @@
     <arg name="x" default="0" />
     <arg name="y" default="0" />
     <arg name="z" default="0.5" />
+    <arg name="a" default="0" />
 
     <!-- Multi Map Params -->
     <arg name="start_room" default="1"/>
@@ -64,7 +65,7 @@
     <!-- Servo sim -->
     <node name="servo_sim" pkg="homewhere" type="servo_sim.py" output="screen" />
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/> -->
     
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
@@ -80,6 +81,9 @@
     <group if="$(eval arg('mode') == 'nav')">
         <include file="$(find homewhere)/launch/navigation.launch">
             <arg name="map_file" value="$(find homewhere)/map/$(arg map)/map.yaml" />
+            <arg name="initial_pose_x" value="$(arg x_)"/>
+            <arg name="initial_pose_y" value="$(arg y_)"/>
+            <arg name="initial_pose_a" value="$(arg a)"/>
         </include>
     </group>
 

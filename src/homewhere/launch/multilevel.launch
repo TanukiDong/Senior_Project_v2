@@ -34,11 +34,6 @@
         <param name="start_room" value="$(arg start_room)" />
     </node>
 
-    <!-- ─────────  Navigation stack (move_base etc.) ─────────────── -->
-    <!-- <include file="$(find homewhere)/launch/navigation.launch"/> -->
-    <!-- move_base -->
-    
-
     <!-- RViz -->
     <node pkg="rviz" type="rviz" name="rviz" required="true"
         args="-d $(find homewhere)/rviz/navigation.rviz" />

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="box_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find homewhere)/urdf/color.xacro" />
+  <xacro:include filename="$(find homewhere)/urdf/color.rviz.xacro" />
   <xacro:include filename="$(find homewhere)/urdf/color.gazebo.xacro" />
   <xacro:include filename="$(find homewhere)/urdf/plugin.xacro" />
 
@@ -66,7 +66,7 @@
   <!-- 2) Wheel       -->
   <!-- ============== -->
 
-  <xacro:macro name="steering_wheel" params="name x y">
+  <xacro:macro name="steering_wheel" params="name color:='green' x y">
 
     <!-- roll = 1.57 to rotate the wheel upright-->
     <link name="wheel_${name}">
@@ -75,7 +75,7 @@
           <cylinder length="${wheel_length}" radius="${wheel_radius}" />
         </geometry>
         <origin xyz="0 0 0" rpy="1.57 0 0" />
-        <material name="grey" />
+        <material name="black" />
       </visual>
 
       <collision>
@@ -101,24 +101,9 @@
           <box size="${steer_size}" />
         </geometry>
         <origin xyz="0 0 0" rpy="0 0 0" />
-        <material name="green" />
+        <material name="${color}" />
       </visual>
 
-      <!-- <collision>
-        <geometry>
-          <box size="${steer_size}" />
-        </geometry>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-      </collision> -->
-
-      <!-- <inertial>
-        <mass value="${steer_mass}" />
-        <origin xyz="0 0 0" />
-        <inertia
-          ixx="0.0021" ixy="0.0" ixz="0.0"
-          iyy="0.0021" iyz="0.0"
-          izz="0.0008"/>
-      </inertial> -->
       <inertial>
         <mass value="${steer_mass}" />
         <origin xyz="0 0 0" />
@@ -135,7 +120,6 @@
       <child link="steer_${name}" />
       <origin xyz="${x} ${y} -0.25" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <!-- <limit lower="${-3 * pi/2}" upper="${3 * pi/2}" effort="1000.0" velocity="0.1" /> -->
     </joint>
 
     <!-- z = -leg/2 -->
@@ -154,7 +138,6 @@
 
   <link name="base_scan">
     <visual>
-      <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
       <geometry>
         <cylinder length="0.05" radius="0.02" />
       </geometry>
@@ -182,7 +165,7 @@
   </joint>
 
   <xacro:steering_wheel name="front_left" x="0.2" y="0.2" />
-  <xacro:steering_wheel name="front_right" x="0.2" y="-0.2" />
+  <xacro:steering_wheel name="front_right" color="red" x="0.2" y="-0.2" />
   <xacro:steering_wheel name="rear_left" x="-0.2" y="0.2" />
   <xacro:steering_wheel name="rear_right" x="-0.2" y="-0.2" />
 

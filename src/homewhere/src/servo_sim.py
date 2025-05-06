@@ -26,7 +26,7 @@ class ServoSim:
         self.servo_speed = math.pi/3/0.2  # Example max
 
         # Loop rate = 10 Hz
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
 
         rospy.loginfo("ServoSim node started. Converting target angles to servo velocities.")
 
@@ -37,30 +37,26 @@ class ServoSim:
     def run(self):
         # Each iteration, check if current angle is within some threshold of target.
         # If not, command ±servo_speed; else command 0.
+        last_time = rospy.Time.now()
+        
         while not rospy.is_shutdown():
-            dt = 0.01  # Because we run at 10Hz
+            now = rospy.Time.now()
+            dt = (now - last_time).to_sec()
+            last_time = now
 
             # For each wheel, compute the needed velocity
             vel = self.compute_steer_velocity(dt)
 
             # Publish a Twist with angular.z = velocity
-            self.publish_vel('front_left',  vel)
-            self.publish_vel('front_right', vel)
-            self.publish_vel('back_left',   vel)
-            self.publish_vel('back_right',  vel)
+            self.publish_velocity(vel)
 
             self.rate.sleep()
 
     def compute_steer_velocity(self, dt):
         """Calculate the velocity needed to get from current angle to target angle."""
-        cur = self.current
-        tgt = self.target
-
-        # print("Cur, Tar",cur, tgt)
-
         # If close enough, no movement
         tolerance = 0.04
-        diff = tgt - cur
+        diff = self.target - self.current
 
         if abs(diff) < tolerance:
             # Already near target
@@ -73,19 +69,15 @@ class ServoSim:
         self.current += vel * dt
         return vel
 
-    def publish_vel(self, name, vel):
+    def publish_velocity(self, vel):
         """Publish a Twist msg with angular.z = vel for the given joint's servo topic."""
         twist = Twist()
         twist.angular.z = vel
-        if name == 'front_left':
-            self.pub_front_left_vel.publish(twist)
-        elif name == 'front_right':
-            self.pub_front_right_vel.publish(twist)
-        elif name == 'back_left':
-            self.pub_back_left_vel.publish(twist)
-        elif name == 'back_right':
-            self.pub_back_right_vel.publish(twist)
-        # print(vel)
+
+        self.pub_front_left_vel.publish(twist)
+        self.pub_front_right_vel.publish(twist)
+        self.pub_back_left_vel.publish(twist)
+        self.pub_back_right_vel.publish(twist)
 
 if __name__ == '__main__':
     try:

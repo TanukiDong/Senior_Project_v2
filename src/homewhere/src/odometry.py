@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import rospy
 import tf
@@ -18,19 +17,14 @@ class OdometryPublisher(object):
 
         # ── Wheel-velocity variables ────────────
         self.velFrontLeft_Linear   = 0.0
-        self.velFrontLeft_Angular  = 0.0
         self.velFrontRight_Linear  = 0.0
-        self.velFrontRight_Angular = 0.0
         self.velBackLeft_Linear    = 0.0
-        self.velBackLeft_Angular   = 0.0
         self.velBackRight_Linear   = 0.0
-        self.velBackRight_Angular  = 0.0
         self.steer_angle           = 0.0
 
         # ── Pose state ────────────────────────────────────────
         self.x = 0.0
         self.y = 0.0
-        self.theta = 0.0
         self.last_time = rospy.Time.now()
 
         # ── Publishers / TF ───────────────────────────────────
@@ -52,19 +46,15 @@ class OdometryPublisher(object):
     # ── Callbacks to update wheel velocities ──────────────────
     def front_left_callback(self, msg):
         self.velFrontLeft_Linear  = msg.linear.x
-        self.velFrontLeft_Angular = msg.angular.z
 
     def front_right_callback(self, msg):
         self.velFrontRight_Linear  = msg.linear.x
-        self.velFrontRight_Angular = msg.angular.z
 
     def back_left_callback(self, msg):
         self.velBackLeft_Linear  = msg.linear.x
-        self.velBackLeft_Angular = msg.angular.z
 
     def back_right_callback(self, msg):
         self.velBackRight_Linear  = msg.linear.x
-        self.velBackRight_Angular = msg.angular.z
 
     def steer_callback(self, msg):
         self.steer_angle = msg.data
@@ -84,24 +74,17 @@ class OdometryPublisher(object):
         self.y += vy * dt
 
         # ─ TF: odom → base_footprint and base_footprint → base_link
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.theta)
+        # odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.steer_angle)
         # odom_quat_reverse = tf.transformations.quaternion_from_euler(0, 0, -self.theta)
         
         self.odom_broadcaster.sendTransform(
             (self.x, self.y, 0.0),
-            odom_quat,
+            (0.0, 0.0, 0.0, 1.0),
+            # odom_quat,
             current_time,
             'base_footprint',
             'odom'
         )
-        
-        # self.odom_broadcaster.sendTransform(
-        #     (0.0, 0.0, 0.0),
-        #     odom_quat_reverse,
-        #     current_time,
-        #     'base_link',
-        #     'base_footprint'
-        # )
 
         # ─ Odometry message
         odom = Odometry()
@@ -112,7 +95,8 @@ class OdometryPublisher(object):
         odom.pose.pose.position.x = self.x
         odom.pose.pose.position.y = self.y
         odom.pose.pose.position.z = 0.0
-        odom.pose.pose.orientation = Quaternion(*odom_quat)
+        # odom.pose.pose.orientation = Quaternion(*odom_quat)
+        odom.pose.pose.orientation = Quaternion(0.0, 0.0, 0.0, 1.0)
 
         odom.twist.twist.linear.x = vx
         odom.twist.twist.linear.y = vy
@@ -120,21 +104,20 @@ class OdometryPublisher(object):
 
         self.odom_pub.publish(odom)
 
-        # # ─ JointState ──
-        # joint_state = JointState()
-        # joint_state.header.stamp = current_time
-        # joint_state.name = [
-        #     'wheel_front_left_joint', 'wheel_front_right_joint',
-        #     'wheel_rear_left_joint',  'wheel_rear_right_joint',
-        #     'steer_front_left_joint', 'steer_front_right_joint',
-        #     'steer_rear_left_joint',  'steer_rear_right_joint'
-        # ]
-        # joint_state.position = [
-        #     0.0, 0.0,
-        #     0.0, 0.0,
-        #     self.theta, self.theta, self.theta, self.theta
-        # ]
-        # self.joint_pub.publish(joint_state)
+        # ─ JointState ──
+        joint_state = JointState()
+        joint_state.header.stamp = current_time
+        joint_state.name = [
+            'wheel_front_left_joint', 'wheel_front_right_joint',
+            'wheel_rear_left_joint',  'wheel_rear_right_joint',
+            'steer_front_left_joint', 'steer_front_right_joint',
+            'steer_rear_left_joint',  'steer_rear_right_joint'
+        ]
+        joint_state.position = [
+            0.0, 0.0, 0.0, 0.0,
+            self.steer_angle, self.steer_angle, self.steer_angle, self.steer_angle
+        ]
+        self.joint_pub.publish(joint_state)
 
     # ── Shutdown ───────────────────────────────────
     def shutdown(self):

@@ -1,0 +1,126 @@
+TebLocalPlannerROS:
+  # Basic topics and frames
+  odom_topic: odom
+  map_frame: map
+
+  # -------------------------------------------------------------
+  # Trajectory (time‑elastic band) settings
+  # -------------------------------------------------------------
+  teb_autosize: true           # auto choose #timesteps between start/goal
+  dt_ref: 0.3                  # nominal temporal resolution of trajectory [s]
+  dt_hysteresis: 0.1           # allowed time-step oscillation [s]
+  max_samples: 500             # hard cap on #trajectory states
+  global_plan_overwrite_orientation: true   # orient along global path
+  allow_init_with_backwards_motion: false   # forbid starting in reverse
+  max_global_plan_lookahead_dist: 3.0       # [m]
+  global_plan_viapoint_sep: 0.5             # [m] via‑points spacing, 0=off
+  via_points_ordered: false
+  via_points_ccost: 1.0                     # weight for via‑points cost
+  publish_feedback: false                   # publish detailed feedback msg
+
+  # -------------------------------------------------------------
+  # Robot kinematics & limits (swerve‑drive, holonomic)
+  # -------------------------------------------------------------
+  holonomic_robot: true
+  max_vel_x: 1.0                # [m/s]
+  max_vel_y: 1.0                # [m/s]
+  max_vel_theta: 1.0            # [rad/s] (kept for completeness)
+  max_vel_x_backwards: 0.6      # [m/s]
+  max_vel_theta_backwards: 1.0  # [rad/s]
+
+  acc_lim_x: 2.5                # [m/s^2]
+  acc_lim_y: 2.5                # [m/s^2]
+  acc_lim_theta: 3.2            # [rad/s^2]
+
+  min_turning_radius: 0.0       # holonomic => 0
+  wheelbase: 0.45               # distance between front & rear axle [m]
+
+  footprint_model:              # robot footprint for obstacle inflation
+    type: "polygon"
+    vertices: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]
+
+  enable_homotopy_class_planning: false   # multi‑band search OFF initially
+  enable_multithreading: true
+  max_number_classes: 4                   # cap alt. homotopies
+  selection_cost_hysteresis: 1.0          # prevent flapping
+
+  # -------------------------------------------------------------
+  # Goal tolerance
+  # -------------------------------------------------------------
+  xy_goal_tolerance: 0.10       # [m]
+  yaw_goal_tolerance: 3.14      # [rad] (=180°, heading free)
+  free_goal_vel: false
+  complete_global_plan: true
+
+  # -------------------------------------------------------------
+  # Obstacle handling
+  # -------------------------------------------------------------
+  min_obstacle_dist: 0.40                       # [m] (inflated)
+  include_costmap_obstacles: true
+  costmap_obstacles_behind_robot_dist: 1.0      # [m]
+  obstacle_poses_affected: 15
+
+  costmap_converter_plugin: ""               # (optional converter plugin)
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 5.0                  # [Hz]
+
+  # -------------------------------------------------------------
+  # Optimization weights
+  # (higher = stronger push towards constraint)
+  # -------------------------------------------------------------
+  weight_max_vel_x: 2.0
+  weight_max_vel_y: 2.0
+  weight_max_vel_theta: 1.0
+
+  weight_acc_lim_x: 1.0
+  weight_acc_lim_y: 1.0
+  weight_acc_lim_theta: 1.0
+
+  weight_kinematics_nh: 5.0
+  weight_kinematics_forward_drive: 1.0
+  weight_kinematics_turning_radius: 1.0
+
+  weight_optimaltime: 50.0            # time‑optimality cost
+  weight_shortest_path: 0.0           # path length cost (0 => ignore)
+
+  weight_obstacle: 50.0
+  weight_inflation: 0.1
+  weight_viapoint: 1.0
+
+  weight_dynamic_obstacle: 10.0
+  weight_dynamic_obstacle_inflation: 0.2
+
+  # -------------------------------------------------------------
+  # Homotopy class (alternative‑path) planner
+  # (ignored if enable_homotopy_class_planning = false)
+  # -------------------------------------------------------------
+  roadmap_graph_no_samples: 15
+  roadmap_graph_area_width: 6.0
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_keypoint_offset: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 0.0
+
+  viapoints_all_candidates: true
+  delete_detours_backwards: true
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: false
+
+  # -------------------------------------------------------------
+  # Recovery & oscillation behaviour
+  # -------------------------------------------------------------
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10.0   # [s]
+
+  oscillation_recovery: true
+  oscillation_v_eps: 0.1
+  oscillation_omega_eps: 0.1
+  oscillation_recovery_min_duration: 10.0  # [s]
+  oscillation_filter_duration: 10.0         # [s]
+
+  # -------------------------------------------------------------
+  # Miscellaneous
+  # -------------------------------------------------------------
+  controller_frequency: 20.0       # [Hz] (handled by move_base param)

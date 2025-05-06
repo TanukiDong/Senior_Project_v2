@@ -9,7 +9,7 @@
     <gazebo reference="base_scan">
         <sensor type="ray" name="lidar_sensor">
             <origin xyz="0 0 0.5" rpy="0 0 0" />
-            <visualize>true</visualize>
+            <visualize>false</visualize>
             <update_rate>60</update_rate>
             <ray>
                 <scan>

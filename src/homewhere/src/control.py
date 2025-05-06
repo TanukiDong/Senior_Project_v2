@@ -8,7 +8,7 @@ from std_msgs.msg import Float64
 
 class Control:
     def __init__(self):
-        rospy.init_node('control')
+        rospy.init_node('control', anonymous=False, disable_signals=False)
 
         # Publishers for left and right wheel velocity commands
         self.front_left_velocity_publisher = rospy.Publisher('/cmd_vel_front_left', Twist, queue_size=10)
@@ -37,6 +37,7 @@ class Control:
 
     def cmd_vel_callback(self, msg):
         """Handle /cmd_vel messages from move_base."""
+        prev_h = self.hemisphere
 
         # Extract linear and angular velocities from the cmd_vel message
         vx = msg.linear.x * 5
@@ -72,6 +73,8 @@ class Control:
                 self.hemisphere = "front"
 
         # print(f"Hemisphere: {self.hemisphere}")
+        if self.hemisphere != prev_h:
+            print(f"\033[92m Hemisphere: {self.hemisphere} \033[0m")
 
         # Apply the computed velocities
         self.set_velocity(v, theta)
@@ -104,8 +107,8 @@ class Control:
 
         try:
             still = 0
-            forward = 5
-            backward = -5
+            forward = 10
+            backward = -10
             left_turn = math.pi/2
             right_turn = -math.pi/2
 
@@ -134,7 +137,10 @@ class Control:
     def on_release(self, key):
         """Handle key release events."""
         self.manual_control_active = False
-        self.active_keys.discard(key.char)
+        try:
+            self.active_keys.discard(key.char)
+        except AttributeError:
+            return
         self.set_velocity(0.0,0.0)
         self.publish_velocity()
 
