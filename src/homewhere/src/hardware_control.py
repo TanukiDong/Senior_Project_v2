@@ -124,8 +124,8 @@ class Hardware_Controller:
             self.kf.predict(u)
             filtered_dl, filtered_rpm = self.kf.update(z)
 
-            rospy.loginfo(f"dl: {dl_list}, v: {self.current_theoretical_velocity}, rpm: {rpm_list}")
-            rospy.loginfo(f"Filtered: dl={filtered_dl:.4f}, rpm={filtered_rpm:.2f}")
+            # rospy.loginfo(f"dl: {dl_list}, v: {self.current_theoretical_velocity}, rpm: {rpm_list}")
+            # rospy.loginfo(f"Filtered: dl={filtered_dl:.4f}, rpm={filtered_rpm:.2f}")
             return [filtered_dl, filtered_rpm]
 
         except Exception as e:
@@ -136,7 +136,7 @@ class Hardware_Controller:
         """Get IMU Data"""
         try:
             angles = self.arduino.read_mpu6050().get_angle()
-            print("tilts: ", angles)
+            # print("tilts: ", angles)
             return angles
         except Exception as e:
             rospy.logerr(f"MPU reading error: {e}")
@@ -151,7 +151,7 @@ class Hardware_Controller:
                 vel = self.vel_limit*(1 if vel > 0 else -1)
 
             vel_list = [vel]*4
-            print("Vel:", vel)
+            # print("Vel:", vel)
             
             self.motors.set_vel(vel_list)
             # Set steering angle
@@ -192,7 +192,7 @@ class Hardware_Controller:
             # Command the actuators
             self.cmd_actuators()
 
-            print(tilts, on_slope)
+            # print(tilts, on_slope)
 
             # print(f"Time: {time.time()}")
 
