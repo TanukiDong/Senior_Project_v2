@@ -15,6 +15,7 @@ vy_cmd = 0.0
 dl = 0.0
 rpm = 0.0
 servo_theta = 0
+factor = 2
 # roll = 0.0
 # pitch = 0.0
 
@@ -57,10 +58,11 @@ def odometry_publisher():
         # print("Tilt from odom: ", roll, pitch)
 
         # print(f"dx={dl*math.cos(servo_theta)}, dy={dl*math.sin(servo_theta)}, v={rpm*2*math.pi/60*WHEEL_RADIUS}")
+        # print("Theta: ", servo_theta)
         dx = dl*math.cos(servo_theta)
         dy = dl*math.sin(servo_theta)
-        x += dx
-        y += dy
+        x += dx/factor
+        y += dy/factor
 
         v = rpm*2*math.pi/60*WHEEL_RADIUS
         vx = v*math.cos(servo_theta)
@@ -70,7 +72,7 @@ def odometry_publisher():
         dt = (current_time - last_time).to_sec()
         last_time = current_time
 
-        # print(f"x,y = ({x},{y})")
+        print(f"x,y,vx,vy = ({x},{y},{vx},{vy})")
 
         # vx = vx_cmd
         # vy = vy_cmd
@@ -79,6 +81,8 @@ def odometry_publisher():
 
         # x += vx * dt
         # y += vy * dt
+
+        # print(f"Odometry: x = {x}, y = {y}")
 
         # Create a quaternion from theta
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
