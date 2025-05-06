@@ -7,7 +7,7 @@
     <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
     <!-- Map used when running in normal nav mode -->
-    <arg name="world"    default="mi_polcorner" />
+    <arg name="world"    default="mi_full" />
     <arg name="map_file" value="$(find homewhere)/map/$(arg world)/map.yaml" />
 
     <!-- ───────────────────────────────
@@ -62,10 +62,11 @@
         <include file="$(find homewhere)/launch/multilevel.launch">  <!-- ADDED ❻‑2 -->
             <arg name="slope_th"   value="$(arg slope_th)"   />      <!-- ADDED ❻‑3 -->
             <arg name="start_room" value="$(arg start_room)" />      <!-- ADDED ❻‑4 -->
+            <arg name="world" value="$(arg world)" />
         </include>
 
         <!-- Optional visualisation for multi‑map workflow -->
-        <node pkg="rviz" type="rviz" name="rviz_multi" required="true"  <!-- ADDED ❻‑5 -->
+        <node pkg="rviz" type="rviz" name="rviz_multi" required="true"  
               args="-d $(find homewhere)/rviz/multilevel.rviz" />
     </group>
 </launch>
