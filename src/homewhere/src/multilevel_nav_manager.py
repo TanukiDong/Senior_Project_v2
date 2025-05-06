@@ -152,9 +152,13 @@ class MultiLevelNavManager:
 
     def determine_room(self, ps: PoseStamped):
         x, y = ps.pose.position.x, ps.pose.position.y
+        print("(x,y) = ", x,y)
         for room_id, info in self.map_table.items():
+            print("room: ", room_id, info)
+            x_local, y_local = self.global_to_local(x, y, room_id)
+            print("local(x,y) = ", x_local,y_local)
             xmin, xmax, ymin, ymax = info["bounds"]
-            if xmin <= x <= xmax and ymin <= y <= ymax:
+            if xmin <= x_local <= xmax and ymin <= y_local <= ymax:
                 rospy.loginfo("\033[92m Goal (%.2f,%.2f) is in room %s \033[0m", x, y, room_id)
                 return room_id
         rospy.logwarn("\033[91m Goal (%.2f,%.2f) is not in any bounds \033[0m", x, y)
