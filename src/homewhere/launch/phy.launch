@@ -65,8 +65,8 @@
             <arg name="world" value="$(arg world)" />
         </include>
 
-        <!-- Optional visualisation for multi‑map workflow -->
+        <!-- Optional visualisation for multi‑map workflow
         <node pkg="rviz" type="rviz" name="rviz_multi" required="true"  
-              args="-d $(find homewhere)/rviz/multilevel.rviz" />
+              args="-d $(find homewhere)/rviz/multilevel.rviz" /> -->
     </group>
 </launch>
