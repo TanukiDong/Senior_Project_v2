@@ -150,7 +150,7 @@ roslaunch homewhere main.launch mode:=nav world:=house
 Run multimap in 7hd world
 
 ```bash
-roslaunch homewhere main.launch mode:=multimap world:=7hd start_room:=1
+roslaunch homewhere main.launch mode:=multi world:=7hd start_room:=1
 ```
 
 # More Commands
