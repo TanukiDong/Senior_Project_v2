@@ -178,18 +178,19 @@ def main():
     if system == "Windows":
         com = "COM9"
     elif system == "Linux":
-        com = "/dev/ttyUSB0"
+        com = "/dev/ttyUSB3"
 
     arduino = Arduino(com=com)
 
     dt = 0.5
 
     while True:
-        angle = input("Enter the angle: ")
-        if not angle.isnumeric():
-            return
-        print(arduino.control_servos(int(angle)))
-        time.sleep(dt) 
+        # angle = input("Enter the angle: ")
+        # if not angle.isnumeric():
+        #     return
+        # print(arduino.control_servos(int(angle)))
+        # time.sleep(dt) 
+        print(arduino.tilted())
 
 if __name__ == '__main__':
     main()
