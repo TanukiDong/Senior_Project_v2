@@ -78,6 +78,7 @@ class Hardware_Controller:
         else:
             rospy.logerr(f"No Arduino at port: {Hardware_Controller.ARDUINO_ADDR}")
             raise Exception(f"No Arduino at port: {Hardware_Controller.ARDUINO_ADDR}")
+        # self.arduino.control_servos_new(0,True)
 
         # Motor Connection
         if Hardware_Controller.FRONT_ADDR in usb and Hardware_Controller.REAR_ADDR in usb:
@@ -155,7 +156,7 @@ class Hardware_Controller:
             
             self.motors.set_vel(vel_list)
             # Set steering angle
-            self.arduino.control_servos_new(int(self.theta))
+            self.arduino.control_servos_new(int(self.theta),verbose=True)
 
             # print(vel_list, self.theta)
         except Exception as e:
@@ -183,6 +184,7 @@ class Hardware_Controller:
             tilts = Float32MultiArray()
             tilts.data = self.read_mpu()
             self.imu_publisher.publish(tilts)
+            print("Tilts:", tilts.data)
 
             # Publish on_slope
             on_slope = self.arduino.tilted(threshold=Hardware_Controller.THRESHOLD)
