@@ -54,3 +54,10 @@ Open LiDAR in Rviz
 ```bash
 roslaunch hls_lfcd_lds_driver view_hlds_laser.launch
 ```
+
+# Multimap Procedure
+
+- Make all the maps separately using SLAM
+- Set the origin of each map to a convenient location
+- Set the center in map_table.yaml to its position in a global frame
+- Set the polygon value using mode:=nav + green arrow to get the local coord of each vertex
