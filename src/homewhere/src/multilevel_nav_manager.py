@@ -5,7 +5,8 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from actionlib_msgs.msg import GoalID
 from move_base_msgs.msg import MoveBaseActionResult
-from ramp_path import path_find
+from algo.ramp_path import path_find
+from algo.room_determination import determine_room
 
 # ──── State labels ─────────────────────────────────────────────
 STATE_IDLE        = 0
@@ -206,13 +207,14 @@ class MultiLevelNavManager:
 
     def determine_room(self, ps: PoseStamped):
         x, y = ps.pose.position.x, ps.pose.position.y
-        for room_id, info in self.map_table.items():
-            xmin, xmax, ymin, ymax = info["bounds"]
-            if xmin <= x <= xmax and ymin <= y <= ymax:
-                rospy.loginfo("\033[92m Goal (%.2f,%.2f) is in room %s \033[0m", x, y, room_id)
-                return room_id
-        rospy.logwarn("\033[91m Goal (%.2f,%.2f) is not in any bounds \033[0m", x, y)
-        return "0"
+        # for room_id, info in self.map_table.items():
+        #     xmin, xmax, ymin, ymax = info["bounds"]
+        #     if xmin <= x <= xmax and ymin <= y <= ymax:
+        #         rospy.loginfo("\033[92m Goal (%.2f,%.2f) is in room %s \033[0m", x, y, room_id)
+        #         return room_id
+        # rospy.logwarn("\033[91m Goal (%.2f,%.2f) is not in any bounds \033[0m", x, y)
+        # return "0"
+        return determine_room(yaml_path=rospy.get_param("~map_table_config"), x_global=x, y_global=y)
 
     def send_goal(self, xyzr):
         goal = PoseStamped()
