@@ -17,8 +17,8 @@
     </gui>
 
 
-    <!-- ========== RIGHT ROOM ========== -->
-    <model name="room_right">
+    <!-- ========== GREEN ROOM ========== -->
+    <model name="room_green">
       <static>true</static>
 
       <!-- floor -->

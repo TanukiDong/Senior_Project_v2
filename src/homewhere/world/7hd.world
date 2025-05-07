@@ -1,42 +1,64 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <sdf version="1.6">
-  <world name="multi_level_3_room_world_fixed">
+  <world name="7hd">
 
     <!-- ground & sun -->
-    <include><uri>model://ground_plane</uri></include>
-    <include><uri>model://sun</uri></include>
+    <!-- <include><uri>model://ground_plane</uri></include> -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
 
-  <!-- camera 1.5708 -->
-  <gui fullscreen='0'>
-    <camera name='user_camera'>
-      <pose>-4 0 1.5 0 0 0</pose>
-      <view_controller>orbit</view_controller>
-    </camera>
-  </gui>
+    <!-- camera 1.5708 -->
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>-4 0 1.5 0 0 0</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
 
 
-    <!-- ========== RIGHT ROOM ========== -->
-    <model name="room_right">
+    <!-- ========== GREEN ROOM ========== -->
+    <model name="room_green">
       <static>true</static>
 
       <!-- floor -->
       <link name="floor">
-        <collision name="coll"><geometry><box><size>5 5 0.1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>5 5 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 5 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 5 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 1 1</ambient>   <!-- White -->
             <diffuse>1 1 1 1</diffuse>
           </material>
         </visual>
-        <pose>0 0 0 0 0 0</pose>
+        <pose>0 0 0 0 0 0.7854</pose>
       </link>
 
       <!-- back wall -->
       <link name="wall_back">
-        <collision name="coll"><geometry><box><size>0.1 5 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 5 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
@@ -47,32 +69,62 @@
 
       <!-- left wall -->
       <link name="wall_left_left">
-        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>2 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
-        <pose>-1.5 2.5 0.5 0 0 0</pose>
+        <pose>-0.75 2.5 0.5 0 0 0</pose>
       </link>
       <link name="wall_left_right">
-        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>2 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
-        <pose>1.5 2.5 0.5 0 0 0</pose>
+        <pose>0.75 2.5 0.5 0 0 0</pose>
       </link>
       <!-- right wall -->
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
@@ -83,31 +135,62 @@
 
       <!-- front wall -->
       <link name="wall_front_leftSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 0.55 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 0.55 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
-        <pose> 2.5 -1.5 0.5 0 0 0</pose>
+        <pose> 2.5 -0.75 0.5 0 0 0</pose>
       </link>
       <link name="wall_front_rightSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 0.55 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 0.55 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
-        <pose> 2.5 1.5 0.5 0 0 0</pose>
+        <pose> 2.5 0.75 0.5 0 0 0</pose>
       </link>
 
       <link name="wall_ne">
-        <collision name="coll"><geometry><box><size>2.1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>2.1 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
@@ -117,8 +200,19 @@
       </link>
 
       <link name="wall_sw">
-        <collision name="coll"><geometry><box><size>2.1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>2.1 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
@@ -128,8 +222,19 @@
       </link>
 
       <link name="wall_nw">
-        <collision name="coll"><geometry><box><size>2.1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>2.1 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2.1 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 0 1</ambient>   <!-- Green -->
             <diffuse>0 1 0 1</diffuse>
@@ -138,29 +243,72 @@
         <pose> 1.75 1.75 0.5 0 0 2.356</pose>
       </link>
 
-      <link name="wall_se">
-        <collision name="coll"><geometry><box><size>2.1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>2.1 0.1 1</size></box></geometry>
+      <link name="wall_se_left">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
           <material>
-            <ambient>0 1 0 1</ambient>   <!-- Green -->
+            <ambient>0 1 0 1</ambient>
             <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
-        <pose> -1.75 -1.75 0.5 0 0 2.356</pose>
+        <pose> -1.2 -2.3 0.5 0 0 2.356</pose>
       </link>
 
+      <link name="wall_se_right">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.55 0.1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <pose> -2.3 -1.2 0.5 0 0 2.356</pose>
+      </link>
 
       <pose>0 0 0 0 0 0</pose>
     </model>
 
-    <!-- ========== LEFT ROOM ========== -->
-    <model name="room_left">
+    <!-- ========== RED ROOM ========== -->
+    <model name="room_red">
       <static>true</static>
 
       <!-- floor -->
       <link name="floor">
-        <collision name="coll"><geometry><box><size>5 5 0.1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 5 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 5 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 5 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 1 1</ambient>   <!-- White -->
             <diffuse>1 1 1 1</diffuse>
@@ -171,9 +319,19 @@
 
       <!-- back wall -->
       <link name="wall_back">
-        <collision name="coll"><geometry><box><size>0.1 5 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 5 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 5 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 5 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -183,9 +341,19 @@
       </link>
       <!-- left wall -->
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -195,9 +363,19 @@
       </link>
       <!-- right wall -->
       <link name="wall_right_left">
-        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>2 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -206,9 +384,19 @@
         <pose>-1.5 -2.5 0.5 0 0 0</pose>
       </link>
       <link name="wall_right_right">
-        <collision name="coll"><geometry><box><size>2 0.1 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>2 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>2 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -219,9 +407,19 @@
 
       <!-- front wall -->
       <link name="wall_front_leftSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -230,9 +428,19 @@
         <pose> 2.5 -1.5 0.5 0 0 0</pose>
       </link>
       <link name="wall_front_rightSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis">
-          <geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -242,8 +450,21 @@
       </link>
 
       <link name='cylinder'>
-        <collision name='collision'><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry></collision>
-        <visual name='visual'><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry>
+        <collision name='collision'>
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
           <material>
             <ambient>1 0 0 1</ambient>   <!-- Red -->
             <diffuse>1 0 0 1</diffuse>
@@ -256,14 +477,25 @@
       <pose>0 10 2 0 0 0</pose>
     </model>
 
-    <!-- ========== TOP ROOM ========== -->
-    <model name="room_top">
+    <!-- ========== BLUE ROOM ========== -->
+    <model name="room_blue">
       <static>true</static>
 
       <!-- floor -->
       <link name="floor">
-        <collision name="coll"><geometry><box><size>5 15 0.1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 15 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 15 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 15 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 1 1</ambient>   <!-- White -->
             <diffuse>1 1 1 1</diffuse>
@@ -274,8 +506,19 @@
 
       <!-- back wall -->
       <link name="wall_back">
-        <collision name="coll"><geometry><box><size>0.1 15 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 15 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 15 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 15 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -285,8 +528,19 @@
       </link>
       <!-- left wall -->
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -296,8 +550,19 @@
       </link>
       <!-- right wall -->
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -308,8 +573,19 @@
 
       <!-- front wall -->
       <link name="wall_front_leftSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -318,8 +594,19 @@
         <pose> -2.5 -6.5 0.5 0 0 0</pose>
       </link>
       <link name="wall_front_rightSeg">
-        <collision name="coll"><geometry><box><size>0.1 2 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 2 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -328,8 +615,19 @@
         <pose> -2.5 6.5 0.5 0 0 0</pose>
       </link>
       <link name="wall_front_middleSeg">
-        <collision name="coll"><geometry><box><size>0.1 9 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 9 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 9 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 9 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -338,33 +636,22 @@
         <pose> -2.5 0 0.5 0 0 0</pose>
       </link>
 
-      <!-- obstacle -->
-      <!-- <link name="partition1">
-        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
-          <material>
-            <ambient>0 0 1 1</ambient> 
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose> 0 2.5 0.5 0 0 0</pose>
-      </link>
-
-      <link name="partition2">
-        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose> 0 -2.5 0.5 0 0 0</pose>
-      </link> -->
-
-
       <link name='cylinder1'>
-        <collision name='collision'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry></collision>
-        <visual name='visual'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry>
+        <collision name='collision'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>
             <diffuse>0 0 1 1</diffuse>
@@ -374,8 +661,21 @@
       </link>
 
       <link name='cylinder2'>
-        <collision name='collision'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry></collision>
-        <visual name='visual'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry>
+        <collision name='collision'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>
             <diffuse>0 0 1 1</diffuse>
@@ -385,21 +685,22 @@
       </link>
 
 
-      <!-- <link name='cylinder3'>
-        <collision name='collision'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry></collision>
-        <visual name='visual'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose>-1.25 -5 0.5 0 0 0</pose>
-      </link> -->
-
-
       <link name='cylinder4'>
-        <collision name='collision'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry></collision>
-        <visual name='visual'><geometry><cylinder><radius>0.25</radius><length>1</length></cylinder></geometry>
+        <collision name='collision'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>1</length>
+            </cylinder>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>
             <diffuse>0 0 1 1</diffuse>
@@ -409,8 +710,19 @@
       </link>
 
       <link name="cross1">
-        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>3 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>3 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -420,8 +732,19 @@
       </link>
 
       <link name="cross2">
-        <collision name="coll"><geometry><box><size>3 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>3 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>3 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>3 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -431,8 +754,19 @@
       </link>
 
       <link name="wall1">
-        <collision name="coll"><geometry><box><size>0.5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -442,8 +776,19 @@
       </link>
 
       <link name="wall2">
-        <collision name="coll"><geometry><box><size>1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>1 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>1 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>1 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -453,8 +798,19 @@
       </link>
 
       <link name="wall3">
-        <collision name="coll"><geometry><box><size>0.5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -464,8 +820,19 @@
       </link>
 
       <link name="wall4">
-        <collision name="coll"><geometry><box><size>0.5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -475,8 +842,19 @@
       </link>
 
       <link name="wall5">
-        <collision name="coll"><geometry><box><size>1 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>1 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>1 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>1 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -486,8 +864,19 @@
       </link>
 
       <link name="wall6">
-        <collision name="coll"><geometry><box><size>0.5 0.1 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.5 0.1 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.5 0.1 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -497,8 +886,19 @@
       </link>
 
       <link name="wall7">
-        <collision name="coll"><geometry><box><size>0.1 2.5 1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 2.5 1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 2.5 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 2.5 1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 0 1 1</ambient>   <!-- Blue -->
             <diffuse>0 0 1 1</diffuse>
@@ -511,12 +911,309 @@
       <pose>10 5 1 0 0 0</pose>
     </model>
 
+    <!-- ========== Gray ROOM ========== -->
+    <model name="room_gray">
+      <static>true</static>
+
+      <!-- floor -->
+      <link name="floor">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>10 10 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>10 10 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>   <!-- Light Gray floor -->
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+      </link>
+
+      <!-- back wall -->
+      <link name="wall_back">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 10 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 10 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.3 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+        <pose>-5 0 0.5 0 0 0</pose>
+      </link>
+
+      <!-- left wall -->
+      <link name="wall_left">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>10 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>10 0.1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.3 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- right wall -->
+      <link name="wall_right">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>10 0.1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>10 0.1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.3 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+        <pose>0 -5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- front wall -->
+      <link name="wall_front_left">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 8 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 8 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.3 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+        <pose>5 1 0.5 0 0 0</pose>
+      </link>
+      <link name="wall_front_right">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.3 0.3 0.3 1</diffuse>
+          </material>
+        </visual>
+        <pose>5 -4.5 0.5 0 0 0</pose>
+      </link>
+
+      <!-- ======= Interesting Obstacles ======= -->
+
+      <!-- 1) Bookshelf -->
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_1</name>
+        <pose> -4.75 2.0 0.0 0 0 1.57</pose>
+      </include>
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_2</name>
+        <pose> -4.75 1.0 0.0 0 0 1.57</pose>
+      </include>
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_3</name>
+        <pose> -4.75 0.0 0.0 0 0 1.57</pose>
+      </include>
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_4</name>
+        <pose> -4.75 -1.0 0.0 0 0 1.57</pose>
+      </include>
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_5</name>
+        <pose> -4.75 -2.0 0.0 0 0 1.57</pose>
+      </include>
+      <include>
+        <uri>model://bookshelf</uri>
+        <name>bookshelf_6</name>
+        <pose> -4.75 -3.0 0.0 0 0 1.57</pose>
+      </include>
+
+      <!-- 2) Dumpster -->
+      <include>
+        <uri>model://dumpster</uri>
+        <name>dumpster_1</name>
+        <pose> -3.0 4.0 0.0 0 0 0 </pose>
+      </include>
+      <include>
+        <uri>model://dumpster</uri>
+        <name>dumpster_2</name>
+        <pose> -0.0 4.0 0.0 0 0 0 </pose>
+      </include>
+      <include>
+        <uri>model://dumpster</uri>
+        <name>dumpster_3</name>
+        <pose> 3.0 4.0 0.0 0 0 0 </pose>
+      </include>
+
+      <!-- Cardboard Box -->
+      <include>
+        <uri>model://cardboard_box</uri>
+        <name>cardboard_box_1</name>
+        <pose> -3.0 -4.0 0.15 0 0 0 </pose>
+      </include>
+      <include>
+        <uri>model://cardboard_box</uri>
+        <name>cardboard_box_2</name>
+        <pose> -3.0 -4.0 0.45 0 0 0 </pose>
+      </include>
+      <include>
+        <uri>model://cardboard_box</uri>
+        <name>cardboard_box_3</name>
+        <pose> -3.0 -4.0 0.75 0 0 0 </pose>
+      </include>
+      <include>
+        <uri>model://cardboard_box</uri>
+        <name>cardboard_box_4</name>
+        <pose> -3.0 -4.0 1.05 0 0 0 </pose>
+      </include>
+      
+      
+      <!-- Construction Cone -->
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_1</name>
+        <pose>  -3.5   2.5  0.0   0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_2</name>
+        <pose>  -1.5   2.5  0.0   0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_3</name>
+        <pose>  -1.5   2.5  0.0   0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_4</name>
+        <pose>  3.5   2.5  0.0   0 0 0</pose>
+      </include>
+
+      <!-- Pallet Stack -->
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_1</name>
+        <pose>-1 -4.25 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_3</name>
+        <pose>1 -4.25 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_4</name>
+        <pose>-1 -3 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_6</name>
+        <pose>1 -3 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_7</name>
+        <pose>-1 -1.75 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_9</name>
+        <pose>1 -1.75 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_10</name>
+        <pose>-1 -0.5 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_11</name>
+        <pose>0 -0.5 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://pallet_stack</uri>
+        <name>pallet_stack_12</name>
+        <pose>1 -0.5 0 0 0 0</pose>
+      </include>
+      <pose>-15 -10 -1 0 0 0.7854</pose>
+    </model>
+
+
     <!-- ========== Ramp ========== -->
     <model name="ramp_green_to_blue">
       <static>true</static>
       <link name="ramp">
-        <collision name="coll"><geometry><box><size>5.11 1 0.1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5.11 1 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5.11 1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5.11 1 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 1 1</ambient>   <!-- Cyan -->
             <diffuse>0 1 1 1</diffuse>
@@ -526,8 +1223,19 @@
       </link>
 
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 1 1</ambient>   <!-- Cyan -->
             <diffuse>0 1 1 1</diffuse>
@@ -537,8 +1245,19 @@
       </link>
 
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
           <material>
             <ambient>0 1 1 1</ambient>   <!-- Cyan -->
             <diffuse>0 1 1 1</diffuse>
@@ -553,8 +1272,19 @@
     <model name="ramp_blue_to_red">
       <static>true</static>
       <link name="ramp">
-        <collision name="coll"><geometry><box><size>5.11 1 0.1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5.11 1 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5.11 1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5.11 1 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
             <diffuse>1 0.75 0.8 1</diffuse>
@@ -564,8 +1294,19 @@
       </link>
 
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
             <diffuse>1 0.75 0.8 1</diffuse>
@@ -575,8 +1316,19 @@
       </link>
 
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>5 0.1 2</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>5 0.1 2</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>5 0.1 2</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 0.75 0.8 1</ambient>   <!-- Pink -->
             <diffuse>1 0.75 0.8 1</diffuse>
@@ -591,8 +1343,19 @@
     <model name="ramp_red_to_green">
       <static>true</static>
       <link name="ramp">
-        <collision name="coll"><geometry><box><size>1 5.43 0.1</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>1 5.43 0.1</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>1 5.43 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>1 5.43 0.1</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 0 1</ambient>   <!-- Yellow -->
             <diffuse>1 1 0 1</diffuse>
@@ -602,8 +1365,19 @@
       </link>
 
       <link name="wall_left">
-        <collision name="coll"><geometry><box><size>0.1 5 3</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 5 3</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 5 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 5 3</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 0 1</ambient>   <!-- Yellow -->
             <diffuse>1 1 0 1</diffuse>
@@ -613,8 +1387,19 @@
       </link>
 
       <link name="wall_right">
-        <collision name="coll"><geometry><box><size>0.1 5 3</size></box></geometry></collision>
-        <visual   name="vis"><geometry><box><size>0.1 5 3</size></box></geometry>
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 5 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 5 3</size>
+            </box>
+          </geometry>
           <material>
             <ambient>1 1 0 1</ambient>   <!-- Yellow -->
             <diffuse>1 1 0 1</diffuse>
@@ -624,6 +1409,80 @@
       </link>
 
       <pose>0 5 1 0 0 0</pose>
+    </model>
+
+    <model name="ramp_green_to_gray">
+      <static>true</static>
+      <link name="ramp">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>1 10.25 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>1 10.25 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
+            <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
+            
+          </material>
+        </visual>
+        <pose>0 0 0 0.0975 0 0</pose>
+      </link>
+
+      <link name="wall_left">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 10.25 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 10.25 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
+            <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
+            
+          </material>
+        </visual>
+        <pose> -0.5 0 0.5 0 0 0</pose>
+      </link>
+
+      <link name="wall_right">
+        <collision name="coll">
+          <geometry>
+            <box>
+              <size>0.1 10.25 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.1 10.25 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
+            <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
+            
+          </material>
+        </visual>
+        <pose> 0.5 0 0.5 0 0 0</pose>
+      </link>
+
+      <pose>-5.36 -5.36 -0.5 0 0 -0.7854</pose>
     </model>
 
   </world>

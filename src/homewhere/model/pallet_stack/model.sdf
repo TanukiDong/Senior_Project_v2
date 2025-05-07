@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="pallet_stack">
+    <static>true</static>
+
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_1</name>
+      <pose>0 0 0.1 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_2</name>
+      <pose>0 0 0.2 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_3</name>
+      <pose>0 0 0.3 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_4</name>
+      <pose>0 0 0.4 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_5</name>
+      <pose>0 0 0.5 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_6</name>
+      <pose>0 0 0.6 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://euro_pallet</uri>
+      <name>pallet_7</name>
+      <pose>0 0 0.7 0 0 0</pose>
+    </include>
+
+  </model>
+</sdf>
