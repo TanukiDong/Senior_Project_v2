@@ -189,3 +189,12 @@ Publish goal at (9,0)
 ```bash
 rostopic pub -1 /move_base_simple/goal geometry_msgs/PoseStamped "{header: {frame_id: 'map'}, pose: {position: {x: 9.0, y: 0.0, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}}"
 ```
+
+# Multimap Procedure
+
+- Make all the maps separately using SLAM
+- Set the origin of each map to a convenient location
+- Set the center in map_table.yaml to the origin position in the global frame
+- Set the polygon value using mode:=nav + green arrow to get the local coord of each vertex
+- Set the orientation and entry/exit pose of each slope
+
