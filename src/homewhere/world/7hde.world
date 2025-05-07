@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<sdf version="1.6">
-  <world name="7hd">
+<sdf version='1.5'>
+  <world name='7hde'>
 
     <!-- sun -->
     <include>

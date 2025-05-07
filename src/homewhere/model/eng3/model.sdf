@@ -1,4 +1,4 @@
-<?xml version="1.7" ?>
+<?xml version="1.0" ?>
 <sdf version="1.7">
   <model name="Building 3">
     <static>true</static>
