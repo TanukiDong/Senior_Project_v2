@@ -55,6 +55,7 @@ class MultiLevelNavManager:
 
         self.orientation = 0.0
         self.yaw = 0.0
+        self.start_yaw = 0.0
 
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
@@ -237,17 +238,18 @@ class MultiLevelNavManager:
         rospy.loginfo("\033[91m move_base cancel sent \033[0m")
 
     def blind_move(self, event=None):
-        angle = math.radians(self.orientation) - self.yaw
+        angle = math.radians(self.orientation) - self.start_yaw
         t = Twist()
         t.linear.x = RAMP_SPEED * math.cos(angle)
         t.linear.y = RAMP_SPEED * math.sin(angle)
-        print(f"Angle: {self.orientation}, Yaw: {math.degrees(self.yaw)}, True Angle: {math.degrees(angle)}")
+        print(f"Angle: {self.orientation}, Yaw: {math.degrees(self.start_yaw)}, True Angle: {math.degrees(angle)}")
         self.cmd_pub.publish(t)
 
     def start_blind_move(self, event=None):
         self.blind_move()
         rospy.sleep(1.0)
         self.warmup_done = True
+        self.start_yaw = self.yaw
         rospy.loginfo("\033[92m Blind move start \033[0m")
 
     def finish_blind_move(self, event=None):
