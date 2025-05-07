@@ -26,6 +26,7 @@
         name="multilevel_nav_manager" output="screen">
 
         <param name="ramp_config" value="$(find homewhere)/config/ramps.yaml" />
+        <param name="map_table_config" value="$(find homewhere)/config/map_table.yaml" />
 
         <!-- map_table: room name → map file (always the same list) -->
         <rosparam file="$(find homewhere)/config/map_table.yaml"
