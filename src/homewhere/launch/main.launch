@@ -1,45 +1,54 @@
 <launch>
     <arg name="world" default="empty" />
-    <arg name="map" default="$(arg world)" />
+    <arg name="room" default="1" />
+    <arg name="map"
+        default="$(eval arg('world') if arg('world') not in ['7hd', '7hde'] else arg('world') + '/' + arg('world') + '_' + str(arg('room')))" />
+    <arg name="pos_key"
+        default="$(eval arg('world') + '_' + str(arg('room')) if arg('world') in ['7hd', '7hde'] else arg('world'))" />
+    <arg name="map_file" value="$(find homewhere)/map/$(arg map)/map.yaml" />
     <arg name="mode" default="default" /> <!-- default|slam|nav|multi -->
     <arg name="small" default="0" />
+
     <arg name="x" default="0" />
     <arg name="y" default="0" />
     <arg name="z" default="0.5" />
     <arg name="a" default="0" />
-
-    <!-- Multi Map Params -->
-    <arg name="start_room" default="1"/>
-    <arg name="slope_th" default="5"/>
+    <arg name="slope_th" default="5" />
 
     <!-- Spawn coordinates decided by world -->
     <arg name="x_"
         default="$(eval {'turtle': -2.0,
                           'house' : -2.0,
                           'eng3'  : 50.0,
-                          '7hd/7hd_2' : 10,
-                          '7hd/7hd_3' : -1,
-                          '7hde/7hde_2' : 10,
-                          '7hde/7hde_3' : -1,
-                          }.get(arg('map'), arg('x')))" />
+                          '7hd_2' : 8.5,
+                          '7hd_3' : -1.5,
+                          '7hd_4' : -10,
+                          }.get(arg('pos_key'), arg('x')))" />
 
     <arg name="y_"
         default="$(eval {'turtle':  0.0,
                           'house' :  1.0,
                           'eng3'  : -3.0,
-                          '7hd/7hd_2' : -2,
-                          '7hd/7hd_3' : 10,
-                          '7hde/7hde2' : -2,
-                          '7hde/7hde_3' : 10,
-                          }.get(arg('map'), arg('y')))" />
+                          '7hd_3' : 10,
+                          '7hd_4' : -10,
+                          }.get(arg('pos_key'), arg('y')))" />
 
     <arg name="z_"
         default="$(eval {
-                    '7hd/7hd_2' : 1.5,
-                    '7hd/7hd_3' : 2.5,
-                    '7hde/7hde_2' : 1.5,
-                    '7hde/7hde_3' : 2.5,
-                    }.get(arg('map'), arg('z')))" />
+                    '7hd_2' : 1.5,
+                    '7hd_3' : 2.5,
+                    '7hd_4' : -0.5,
+                    }.get(arg('pos_key'), arg('z')))" />
+
+    <arg name="offset_x" default="$(eval -10 if str(arg('room')) == '2' else 0)" />
+    <arg name="offset_y"
+        default="$(eval -5 if str(arg('room')) == '2' else (-10 if str(arg('room')) == '3' else 0))" />
+    <arg name="offset_a" default="0" />
+
+    <arg name="initial_pose_x" default="$(eval float(arg('x_')) + float(arg('offset_x')))" />
+    <arg name="initial_pose_y" default="$(eval float(arg('y_')) + float(arg('offset_y')))" />
+    <arg name="initial_pose_a" default="$(eval float(arg('a')) + float(arg('offset_a')))" />
+
 
     <!-- Robot Model -->
     <arg name="robot_dir" default="$(find homewhere)/urdf" />
@@ -71,33 +80,44 @@
     <!-- Servo sim -->
     <node name="servo_sim" pkg="homewhere" type="servo_sim.py" output="screen" />
 
-    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/> -->
-    
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher"
+    type="joint_state_publisher"/> -->
+
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     <node name="marker" pkg="homewhere" type="marker.py" output="screen" />
-    <!-- <node name="slope_detector" pkg="homewhere" type="slope_detector.py" output="screen" /> -->
+
+    <!-- ─────────  IMU slope detector  ───────────────────────────── -->
+    <node pkg="homewhere" type="slope_detector.py"
+        name="slope_detector" output="screen">
+        <param name="slope_th" value="$(arg slope_th)" />
+    </node>
 
     <!-- SLAM: Gmapping -->
     <group if="$(eval arg('mode') == 'slam')">
         <include file="$(find homewhere)/launch/slam.launch" />
     </group>
 
+
     <!-- Navigation -->
     <group if="$(eval arg('mode') == 'nav')">
         <include file="$(find homewhere)/launch/navigation.launch">
-            <arg name="map_file" value="$(find homewhere)/map/$(arg map)/map.yaml" />
-            <arg name="initial_pose_x" value="$(arg x_)"/>
-            <arg name="initial_pose_y" value="$(arg y_)"/>
-            <arg name="initial_pose_a" value="$(arg a)"/>
+            <arg name="map_file" value="$(arg map_file)" />
+            <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+            <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+            <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
         </include>
     </group>
 
     <!-- Multi Level -->
     <group if="$(eval arg('mode') == 'multi')">
         <include file="$(find homewhere)/launch/multilevel.launch">
-            <arg name="slope_th" value="$(arg slope_th)"/>
-            <arg name="start_room" value="$(arg start_room)"/>
+            <arg name="slope_th" value="$(arg slope_th)" />
+            <arg name="map_file" value="$(arg map_file)" />
+            <arg name="room" value="$(arg room)" />
+            <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+            <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+            <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
         </include>
     </group>
 

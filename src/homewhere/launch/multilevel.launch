@@ -1,41 +1,32 @@
 <launch>
-    <!-- ───────── Arguments ──────────────────────────────────────── -->
-    <!-- start_room : 1 | 2 | 3  (which room’s map to load first) -->
-    <arg name="start_room" default="1" />
-
-    <!-- (Optional) pitch threshold for slope detector  -->
+    <arg name="room" default="1" />
     <arg name="slope_th" default="5.0" />
+    <arg name="map_file" default="$(find homewhere)/map/7hd/7hd_1/map.yaml" />
+    <arg name="initial_pose_x" default="0" />
+    <arg name="initial_pose_y" default="0" />
+    <arg name="initial_pose_a" default="0" />
 
-    <!-- ─────────  Map for the chosen start room  ────────────────── -->
-    <!-- Build path  maps/7hd/7hd_<start_room>/map.yaml -->
-    
+    <!-- ────────────────────  Load Map ───────────────────────────── -->
+
     <include file="$(find homewhere)/launch/load_map.launch">
-        <arg name="map_file"
-        value="$(find homewhere)/map/7hd/7hd_$(arg start_room)/map.yaml"/>
+        <arg name="map_file" value="$(arg map_file)" />
+        <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+        <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+        <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
     </include>
-
-    <!-- ─────────  IMU slope detector  ───────────────────────────── -->
-    <node pkg="homewhere" type="slope_detector.py"
-        name="slope_detector" output="screen">
-        <param name="slope_th" value="$(arg slope_th)" />
-    </node>
 
     <!-- ─────────  Multi-level navigation manager  ───────────────── -->
     <node pkg="homewhere" type="multilevel_nav_manager.py"
         name="multilevel_nav_manager" output="screen">
 
+        <param name="room" value="$(arg room)" />
         <param name="ramp_config" value="$(find homewhere)/config/ramps.yaml" />
         <param name="map_table_config" value="$(find homewhere)/config/map_table.yaml" />
-
-        <!-- map_table: room name → map file (always the same list) -->
         <rosparam file="$(find homewhere)/config/map_table.yaml"
             command="load" />
-
-        <!-- Tell the manager which room we started in  -->
-        <param name="start_room" value="$(arg start_room)" />
     </node>
 
-    <!-- RViz -->
+    <!-- ──────────────────────  Rviz ─────────────────────────────── -->
     <node pkg="rviz" type="rviz" name="rviz" required="true"
         args="-d $(find homewhere)/rviz/navigation.rviz" />
 

@@ -1,11 +1,19 @@
 <launch>
       <arg name="map_file" default="$(find homewhere)/maps/7hd/7hd_1/map.yaml" />
-
+      <arg name="initial_pose_x" default="0" />
+      <arg name="initial_pose_y" default="0" />
+      <arg name="initial_pose_a" default="0" />
+      
+      <!-- Map Server -->
       <node pkg="map_server" name="map_server" type="map_server"
             args="$(arg map_file)" />
 
       <!-- AMCL -->
-      <include file="$(find homewhere)/launch/amcl.launch" />
+      <include file="$(find homewhere)/launch/amcl.launch">
+            <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+            <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+            <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
+      </include>
 
       <!-- Move Base -->
       <include file="$(find homewhere)/launch/move_base.launch" />

@@ -2,13 +2,12 @@
 <sdf version="1.6">
   <world name="7hd">
 
-    <!-- ground & sun -->
-    <!-- <include><uri>model://ground_plane</uri></include> -->
+    <!-- sun -->
     <include>
       <uri>model://sun</uri>
     </include>
 
-    <!-- camera 1.5708 -->
+    <!-- camera -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
         <pose>-4 0 1.5 0 0 0</pose>
@@ -757,14 +756,14 @@
         <collision name="coll">
           <geometry>
             <box>
-              <size>0.5 0.1 1</size>
+              <size>1 0.1 1</size>
             </box>
           </geometry>
         </collision>
         <visual name="vis">
           <geometry>
             <box>
-              <size>0.5 0.1 1</size>
+              <size>1 0.1 1</size>
             </box>
           </geometry>
           <material>
@@ -772,7 +771,7 @@
             <diffuse>0 0 1 1</diffuse>
           </material>
         </visual>
-        <pose> 2.25 3.75 0.5 0 0 0</pose>
+        <pose> 0 3.75 0.5 0 0 0</pose>
       </link>
 
       <link name="wall2">
@@ -794,98 +793,10 @@
             <diffuse>0 0 1 1</diffuse>
           </material>
         </visual>
-        <pose> 0 3.75 0.5 0 0 0</pose>
-      </link>
-
-      <link name="wall3">
-        <collision name="coll">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="vis">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose> -2.25 3.75 0.5 0 0 0</pose>
-      </link>
-
-      <link name="wall4">
-        <collision name="coll">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="vis">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose> 2.25 6.25 0.5 0 0 0</pose>
-      </link>
-
-      <link name="wall5">
-        <collision name="coll">
-          <geometry>
-            <box>
-              <size>1 0.1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="vis">
-          <geometry>
-            <box>
-              <size>1 0.1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
         <pose> 0 6.25 0.5 0 0 0</pose>
       </link>
 
-      <link name="wall6">
-        <collision name="coll">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="vis">
-          <geometry>
-            <box>
-              <size>0.5 0.1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0 0 1 1</ambient>   <!-- Blue -->
-            <diffuse>0 0 1 1</diffuse>
-          </material>
-        </visual>
-        <pose> -2.25 6.25 0.5 0 0 0</pose>
-      </link>
-
-      <link name="wall7">
+      <link name="wall3">
         <collision name="coll">
           <geometry>
             <box>
@@ -1051,41 +962,9 @@
         <pose>5 -4.5 0.5 0 0 0</pose>
       </link>
 
-      <!-- ======= Interesting Obstacles ======= -->
+      <!-- ======= Obstacles ======= -->
 
-      <!-- 1) Bookshelf -->
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_1</name>
-        <pose> -4.75 2.0 0.0 0 0 1.57</pose>
-      </include>
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_2</name>
-        <pose> -4.75 1.0 0.0 0 0 1.57</pose>
-      </include>
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_3</name>
-        <pose> -4.75 0.0 0.0 0 0 1.57</pose>
-      </include>
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_4</name>
-        <pose> -4.75 -1.0 0.0 0 0 1.57</pose>
-      </include>
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_5</name>
-        <pose> -4.75 -2.0 0.0 0 0 1.57</pose>
-      </include>
-      <include>
-        <uri>model://bookshelf</uri>
-        <name>bookshelf_6</name>
-        <pose> -4.75 -3.0 0.0 0 0 1.57</pose>
-      </include>
-
-      <!-- 2) Dumpster -->
+      <!-- Dumpster -->
       <include>
         <uri>model://dumpster</uri>
         <name>dumpster_1</name>
@@ -1104,47 +983,51 @@
 
       <!-- Cardboard Box -->
       <include>
-        <uri>model://cardboard_box</uri>
-        <name>cardboard_box_1</name>
-        <pose> -3.0 -4.0 0.15 0 0 0 </pose>
+        <uri>model://cardboard_stack</uri>
+        <name>cardboard_stack_1</name>
+        <pose>-3.25 -4.5 0 0 0 0</pose>
       </include>
-      <include>
-        <uri>model://cardboard_box</uri>
-        <name>cardboard_box_2</name>
-        <pose> -3.0 -4.0 0.45 0 0 0 </pose>
-      </include>
-      <include>
-        <uri>model://cardboard_box</uri>
-        <name>cardboard_box_3</name>
-        <pose> -3.0 -4.0 0.75 0 0 0 </pose>
-      </include>
-      <include>
-        <uri>model://cardboard_box</uri>
-        <name>cardboard_box_4</name>
-        <pose> -3.0 -4.0 1.05 0 0 0 </pose>
-      </include>
-      
-      
+
       <!-- Construction Cone -->
       <include>
         <uri>model://construction_cone</uri>
         <name>construction_cone_1</name>
-        <pose>  -3.5   2.5  0.0   0 0 0</pose>
+        <pose> 3.25 -4.5 0.0 0 0 0</pose>
       </include>
       <include>
         <uri>model://construction_cone</uri>
         <name>construction_cone_2</name>
-        <pose>  -1.5   2.5  0.0   0 0 0</pose>
+        <pose> 2 -2 0.0 0 0 0</pose>
       </include>
       <include>
         <uri>model://construction_cone</uri>
         <name>construction_cone_3</name>
-        <pose>  -1.5   2.5  0.0   0 0 0</pose>
+        <pose> 4.5 1 0.0 0 0 0</pose>
       </include>
       <include>
         <uri>model://construction_cone</uri>
         <name>construction_cone_4</name>
-        <pose>  3.5   2.5  0.0   0 0 0</pose>
+        <pose> 1.5 2.5 0.0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_5</name>
+        <pose> 0 -0.5 0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_6</name>
+        <pose> -1.5 2.5 0.0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_7</name>
+        <pose> -2 -2 0.0 0 0 0</pose>
+      </include>
+      <include>
+        <uri>model://construction_cone</uri>
+        <name>construction_cone_8</name>
+        <pose> -4.5 1 0.0 0 0 0</pose>
       </include>
 
       <!-- Pallet Stack -->
@@ -1155,47 +1038,36 @@
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_3</name>
+        <name>pallet_stack_2</name>
         <pose>1 -4.25 0 0 0 0</pose>
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_4</name>
+        <name>pallet_stack_3</name>
         <pose>-1 -3 0 0 0 0</pose>
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_6</name>
+        <name>pallet_stack_4</name>
         <pose>1 -3 0 0 0 0</pose>
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_7</name>
+        <name>pallet_stack_5</name>
         <pose>-1 -1.75 0 0 0 0</pose>
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_9</name>
+        <name>pallet_stack_6</name>
         <pose>1 -1.75 0 0 0 0</pose>
       </include>
       <include>
         <uri>model://pallet_stack</uri>
-        <name>pallet_stack_10</name>
-        <pose>-1 -0.5 0 0 0 0</pose>
-      </include>
-      <include>
-        <uri>model://pallet_stack</uri>
-        <name>pallet_stack_11</name>
-        <pose>0 -0.5 0 0 0 0</pose>
-      </include>
-      <include>
-        <uri>model://pallet_stack</uri>
-        <name>pallet_stack_12</name>
-        <pose>1 -0.5 0 0 0 0</pose>
+        <name>pallet_stack_7</name>
+        <pose>0 -1.75 0 0 0 0</pose>
       </include>
       <pose>-15 -10 -1 0 0 0.7854</pose>
     </model>
-
 
     <!-- ========== Ramp ========== -->
     <model name="ramp_green_to_blue">
@@ -1430,7 +1302,7 @@
           <material>
             <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
             <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
-            
+
           </material>
         </visual>
         <pose>0 0 0 0.0975 0 0</pose>
@@ -1453,7 +1325,7 @@
           <material>
             <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
             <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
-            
+
           </material>
         </visual>
         <pose> -0.5 0 0.5 0 0 0</pose>
@@ -1476,7 +1348,7 @@
           <material>
             <ambient>0.6 0 0.6 1</ambient>   <!-- Purple -->
             <ambient>0.8 0.6 0.8 1</ambient>   <!-- Light Purple -->
-            
+
           </material>
         </visual>
         <pose> 0.5 0 0.5 0 0 0</pose>

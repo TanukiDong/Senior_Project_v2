@@ -134,23 +134,32 @@ World
 - gas_station
 - eng3
 - 7hd
+- 7hde
 
-Run SLAM in turtle world
+
+
+Run SLAM mode in turtle world
 
 ```bash
 roslaunch homewhere main.launch mode:=slam world:=turtle
 ```
 
-Run navigation in house world
+Run navigation mode in house world
 
 ```bash
 roslaunch homewhere main.launch mode:=nav world:=house
 ```
 
-Run multimap in 7hd world
+Run default mode in 7hd room 3 world
 
 ```bash
-roslaunch homewhere main.launch mode:=multi world:=7hd start_room:=1
+roslaunch homewhere main.launch world:=7hd room:=3
+```
+
+Run multimap mode in 7hd world
+
+```bash
+roslaunch homewhere main.launch mode:=multi world:=7hd room:=1
 ```
 
 # More Commands
