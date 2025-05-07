@@ -57,6 +57,10 @@ class MultiLevelNavManager:
         self.yaw = 0.0
         self.start_yaw = 0.0
 
+        self.warmup_delay = 2.0
+        self.blind_delay = 1.0
+        self.finish_delay = 2.0
+
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
         self.init_pub = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=1, latch=True)
@@ -133,14 +137,14 @@ class MultiLevelNavManager:
             subprocess.call(["rosnode", "kill", "/move_base", "/amcl", "/map_server"])
 
             self.state       = STATE_UP_RAMP
-            self.warmup_timer= rospy.Timer(rospy.Duration(3.0), self.start_blind_move, oneshot=True)
-            self.blind_timer = rospy.Timer(rospy.Duration(1.0), self.blind_move,    oneshot=False)
+            self.warmup_timer= rospy.Timer(rospy.Duration(self.warmup_delay), self.start_blind_move, oneshot=True)
+            self.blind_timer = rospy.Timer(rospy.Duration(self.blind_delay), self.blind_move,    oneshot=False)
             return
 
         if (self.state == STATE_UP_RAMP and self.warmup_done
                 and not self.on_slope and not self.ramp_done):
             rospy.loginfo("\033[92m Finish Drive \033[0m")
-            self.finish_timer = rospy.Timer(rospy.Duration(1.0), self.finish_blind_move, oneshot=True)
+            self.finish_timer = rospy.Timer(rospy.Duration(self.finish_delay), self.finish_blind_move, oneshot=True)
             self.ramp_done     = True
             rospy.loginfo("\033[92m Switching map....... \033[0m")
             self.switch_map()
@@ -238,11 +242,11 @@ class MultiLevelNavManager:
         rospy.loginfo("\033[91m move_base cancel sent \033[0m")
 
     def blind_move(self, event=None):
-        angle = math.radians(self.orientation) - self.start_yaw
+        angle = math.radians(self.orientation) - self.yaw
         t = Twist()
         t.linear.x = RAMP_SPEED * math.cos(angle)
         t.linear.y = RAMP_SPEED * math.sin(angle)
-        print(f"Angle: {self.orientation}, Yaw: {math.degrees(self.start_yaw)}, True Angle: {math.degrees(angle)}")
+        print(f"Angle: {self.orientation}, Yaw: {math.degrees(self.yaw)}, True Angle: {math.degrees(angle)}")
         self.cmd_pub.publish(t)
 
     def start_blind_move(self, event=None):

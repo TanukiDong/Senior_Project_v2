@@ -6,7 +6,7 @@ ramps:
     to:   "2"
     entry_pose: [ 2.50, 0.00, 0.0 ]
     exit_pose:  [ -2.50, -5.00, 0.0 ]
-    blind_len:  5.2
+    blind_len:  7.0
     orientation: 0.0
   - id: "ramp1_d"
     from: "2"
@@ -31,17 +31,17 @@ ramps:
     blind_len:  5.2
     orientation: 0.0
 
-  - id: "ramp3_a"
-    from: "1"
-    to:   "3"
-    entry_pose: [ 0.00, 2.50, 0.0 ]
-    exit_pose:  [ 0.00, -2.50, 0.0 ]
-    blind_len:  5.5
-    orientation: 90.0
-  - id: "ramp3_d"
-    from: "3"
-    to:   "1"
-    entry_pose: [ 0.00, -2.50, -90 ]
-    exit_pose:  [ 0.00, 2.50, -90 ]
-    blind_len:  5.5
-    orientation: -90.0
+  # - id: "ramp3_a"
+  #   from: "1"
+  #   to:   "3"
+  #   entry_pose: [ 0.00, 2.50, 0.0 ]
+  #   exit_pose:  [ 0.00, -2.50, 0.0 ]
+  #   blind_len:  5.5
+  #   orientation: 90.0
+  # - id: "ramp3_d"
+  #   from: "3"
+  #   to:   "1"
+  #   entry_pose: [ 0.00, -2.50, -90 ]
+  #   exit_pose:  [ 0.00, 2.50, -90 ]
+  #   blind_len:  5.5
+  #   orientation: -90.0

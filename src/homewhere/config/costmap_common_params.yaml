@@ -28,7 +28,7 @@ obstacle_layer:
 # ─── Inflation layer ──────────────────────────────────────────
 inflation_layer:
   enabled:              true
-  inflation_radius:     1.5
+  inflation_radius:     0.5
   cost_scaling_factor:  2.0
 
 # ─── Static layer ─────────────────────────────────────────────

@@ -106,6 +106,7 @@ class OdometryPublisher(object):
         odom.pose.pose.position.x = self.x
         odom.pose.pose.position.y = self.y
         odom.pose.pose.position.z = 0.0
+        odom.pose.pose.orientation.z = self.theta
         # odom.pose.pose.orientation = Quaternion(*odom_quat)
         odom.pose.pose.orientation = Quaternion(0.0, 0.0, 0.0, 1.0)
 
