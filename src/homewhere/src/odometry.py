@@ -7,6 +7,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, Quaternion
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64
+from sensor_msgs.msg import Imu
 
 # ─── Constants ────────────────────────────────────────────────
 WHEEL_RADIUS = 0.07  # (m)
@@ -21,15 +22,18 @@ class OdometryPublisher(object):
         self.velBackLeft_Linear    = 0.0
         self.velBackRight_Linear   = 0.0
         self.steer_angle           = 0.0
+        self.omega_z               = 0.0
 
         # ── Pose state ────────────────────────────────────────
         self.x = 0.0
         self.y = 0.0
+        self.theta = 0.0
         self.last_time = rospy.Time.now()
 
         # ── Publishers / TF ───────────────────────────────────
         self.odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
         self.joint_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
+        self.yaw_pub = rospy.Publisher('/yaw', Float64, queue_size=10)
         self.odom_broadcaster = tf.TransformBroadcaster()
 
         # ── Subscribers ───────────────────────────────────────
@@ -38,6 +42,7 @@ class OdometryPublisher(object):
         rospy.Subscriber('/cmd_vel_back_left',   Twist,  self.back_left_callback)
         rospy.Subscriber('/cmd_vel_back_right',  Twist,  self.back_right_callback)
         rospy.Subscriber('/cmd_steer',           Float64, self.steer_callback)
+        rospy.Subscriber("/imu", Imu, self.imu_callback)
 
         # ── Main update loop (10 Hz) ──────────────────────────
         self.timer = rospy.Timer(rospy.Duration(0.1), self.update)
@@ -59,6 +64,9 @@ class OdometryPublisher(object):
     def steer_callback(self, msg):
         self.steer_angle = msg.data
 
+    def imu_callback(self, msg):
+        self.omega_z = msg.angular_velocity.z
+
     # ── Periodic update (publishes TF, Odometry, JointState) ──
     def update(self, _event):
         current_time = rospy.Time.now()
@@ -72,6 +80,9 @@ class OdometryPublisher(object):
 
         self.x += vx * dt
         self.y += vy * dt
+        self.theta += self.omega_z*dt
+
+        self.yaw_pub.publish(Float64(data=self.theta))
 
         # ─ TF: odom → base_footprint and base_footprint → base_link
         # odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.steer_angle)

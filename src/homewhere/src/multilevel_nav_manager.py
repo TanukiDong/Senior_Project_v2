@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy, yaml, os, sys, subprocess, math, roslib.packages
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Float64
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from actionlib_msgs.msg import GoalID
@@ -54,6 +54,7 @@ class MultiLevelNavManager:
         self.ramp_done     = False
 
         self.orientation = 0.0
+        self.yaw = 0.0
 
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
@@ -63,11 +64,16 @@ class MultiLevelNavManager:
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, self.amcl_cb)
         rospy.Subscriber("/on_slope", Bool, self.slope_cb)
         rospy.Subscriber("/move_base/result", MoveBaseActionResult, self.result_cb)
+        rospy.Subscriber("/yaw", Float64, self.yaw_cb)
 
         rospy.loginfo("\033[92m MultilevelNavManager started in room %s \033[0m", self.start_room)
         rospy.spin()
 
     # ───────────────── Callbacks ────────────────────────────────
+    def yaw_cb(self, msg):
+        self.yaw = msg.data
+
+
     def goal_cb(self, msg: PoseStamped):
         if self.state != STATE_IDLE:
             return
@@ -231,10 +237,11 @@ class MultiLevelNavManager:
         rospy.loginfo("\033[91m move_base cancel sent \033[0m")
 
     def blind_move(self, event=None):
-        angle = math.radians(self.orientation)
+        angle = math.radians(self.orientation) - self.yaw
         t = Twist()
         t.linear.x = RAMP_SPEED * math.cos(angle)
         t.linear.y = RAMP_SPEED * math.sin(angle)
+        print(f"Angle: {self.orientation}, Yaw: {math.degrees(self.yaw)}, True Angle: {math.degrees(angle)}")
         self.cmd_pub.publish(t)
 
     def start_blind_move(self, event=None):
