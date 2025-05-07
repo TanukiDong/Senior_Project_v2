@@ -17,8 +17,10 @@ map_table:
   "1":
     file: map/mi_multi/mi_multi_1/map.yaml
     bounds: [ -17,  14,  -10,   2.6 ]
+    polygon: [[13.5,-5],[11.5,-5],[11.4,-9.2],[-7.8,-9.2],[-7.8,-1.7],[-16,-1.5],[-16,2],[13.5,2]]
     center: [0,0]
   "2":
     file: map/mi_multi/mi_multi_2/map.yaml
     bounds: [  -3,  3, -0.2,  22 ]
+    polygon: [[2.85,0],[-2.7,0],[-3.95,20.63],[2.95,20.47]]
     center: [-12,2]
