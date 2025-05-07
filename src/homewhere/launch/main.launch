@@ -18,7 +18,9 @@
                           'house' : -2.0,
                           'eng3'  : 50.0,
                           '7hd/7hd_2' : 10,
-                          '7hd/7hd_3' : -2,
+                          '7hd/7hd_3' : -1,
+                          '7hde/7hde_2' : 10,
+                          '7hde/7hde_3' : -1,
                           }.get(arg('map'), arg('x')))" />
 
     <arg name="y_"
@@ -27,12 +29,16 @@
                           'eng3'  : -3.0,
                           '7hd/7hd_2' : -2,
                           '7hd/7hd_3' : 10,
+                          '7hde/7hde2' : -2,
+                          '7hde/7hde_3' : 10,
                           }.get(arg('map'), arg('y')))" />
 
     <arg name="z_"
         default="$(eval {
                     '7hd/7hd_2' : 1.5,
                     '7hd/7hd_3' : 2.5,
+                    '7hde/7hde_2' : 1.5,
+                    '7hde/7hde_3' : 2.5,
                     }.get(arg('map'), arg('z')))" />
 
     <!-- Robot Model -->
