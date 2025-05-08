@@ -18,6 +18,7 @@ class Hardware_Controller:
     REAR_ADDR = "ttyUSB2"
     REFRESH_RATE = 0.1 # in second
     THRESHOLD = 6 # in degrees
+    IMU_SAMPLE = 10
 
     def __init__(self):
         """Initialize ROS Node and Hardware Connections"""
@@ -62,6 +63,12 @@ class Hardware_Controller:
         )
 
         self.current_theoretical_velocity = 0.0
+
+        # Automatically get the default value of the IMU on flat terrain
+        first_tilts = [self.arduino.read_mpu6050().get_angle() for _ in range(Hardware_Controller.IMU_SAMPLE)]
+        self.first_roll = sum([x[0] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
+        self.first_pitch = sum([x[1] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
+        print(f"Setup roll and pitch = {self.first_roll}, {self.first_pitch}")
 
         # Start periodic update loop
         rospy.Timer(rospy.Duration(Hardware_Controller.REFRESH_RATE), self.update)  # Runs update every 0.1 sec
@@ -184,17 +191,19 @@ class Hardware_Controller:
             tilts = Float32MultiArray()
             tilts.data = self.read_mpu()
             self.imu_publisher.publish(tilts)
-            print("Tilts:", tilts.data)
+            # print("Tilts:", tilts.data)
 
             # Publish on_slope
-            on_slope = self.arduino.tilted(threshold=Hardware_Controller.THRESHOLD)
+            on_slope = self.arduino.tilted(threshold=Hardware_Controller.THRESHOLD,
+                                           x_offset=self.first_roll,
+                                           y_offset=self.first_pitch)
             on_slope_bool = Bool(data=on_slope)
             self.on_slope_publisher.publish(on_slope_bool)
 
             # Command the actuators
             self.cmd_actuators()
 
-            # print(tilts, on_slope)
+            print("Tilts: ", tilts.data, on_slope)
 
             # print(f"Time: {time.time()}")
 

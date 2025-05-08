@@ -164,12 +164,12 @@ class Arduino:
                 return None
         return None
 
-    def tilted(self, threshold=10):
+    def tilted(self, threshold=10, x_offset=0, y_offset=0):
         """Return whether the robot is tilted over a certain threshold"""
         read = self.read_mpu6050()
         if read is not None:
             tiltx, tilty = read.get_angle()
-            return abs(tiltx) >= threshold or abs(tilty) >= threshold
+            return abs(tiltx-x_offset) >= threshold or abs(tilty-y_offset) >= threshold
         return
 
 def main():
