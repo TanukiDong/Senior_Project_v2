@@ -17,8 +17,12 @@ STATE_UP_RAMP     = 4
 STATE_MAP_SWITCH  = 5
 
 DIST_TO_RAMP_TH       = 0.3
-RAMP_SPEED            = 1.00
+RAMP_SPEED            = 0.5
 RAMP_RATE             = 10
+
+WARMUP_DELAY = 2
+BLIND_DELAY  = 1
+FINISH_DELAY = 1
 
 class MultiLevelNavManager:
     def __init__(self):
@@ -133,14 +137,14 @@ class MultiLevelNavManager:
             subprocess.call(["rosnode", "kill", "/move_base", "/amcl", "/map_server"])
 
             self.state       = STATE_UP_RAMP
-            self.warmup_timer= rospy.Timer(rospy.Duration(3.0), self.start_blind_move, oneshot=True)
-            self.blind_timer = rospy.Timer(rospy.Duration(1.0), self.blind_move,    oneshot=False)
+            self.warmup_timer= rospy.Timer(rospy.Duration(WARMUP_DELAY), self.start_blind_move, oneshot=True)
+            self.blind_timer = rospy.Timer(rospy.Duration(BLIND_DELAY), self.blind_move,    oneshot=False)
             return
 
         if (self.state == STATE_UP_RAMP and self.warmup_done
                 and not self.on_slope and not self.ramp_done):
             rospy.loginfo("\033[92m Finish Drive \033[0m")
-            self.finish_timer = rospy.Timer(rospy.Duration(1.0), self.finish_blind_move, oneshot=True)
+            self.finish_timer = rospy.Timer(rospy.Duration(FINISH_DELAY), self.finish_blind_move, oneshot=True)
             self.ramp_done     = True
             rospy.loginfo("\033[92m Switching map....... \033[0m")
             self.switch_map()
