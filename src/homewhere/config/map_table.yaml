@@ -14,13 +14,30 @@ map_table:
   #   bounds: [ -2.5,  2.5,   7.5,  12.5 ]
   #   center: [0,10]
 
+# # mi
+#   "1":
+#     file: map/mi_multi/mi_multi_1/map.yaml
+#     bounds: [ -17,  14,  -10,   2.6 ]
+#     polygon: [[13.5,-5],[11.5,-5],[11.4,-9.2],[-7.8,-9.2],[-7.8,-1.7],[-16,-1.5],[-16,2],[13.5,2]]
+#     center: [0,0]
+#   "2":
+#     file: map/mi_multi/mi_multi_2/map.yaml
+#     bounds: [  -3,  3, -0.2,  22 ]
+#     polygon: [[2.85,0],[-2.7,0],[-3.95,20.63],[2.95,20.47]]
+#     center: [-12,2]
+
   "1":
-    file: map/mi_multi/mi_multi_1/map.yaml
+    file: map/slope/slope_1/map.yaml
     bounds: [ -17,  14,  -10,   2.6 ]
-    polygon: [[13.5,-5],[11.5,-5],[11.4,-9.2],[-7.8,-9.2],[-7.8,-1.7],[-16,-1.5],[-16,2],[13.5,2]]
+    polygon: [[-1,-7],[1.2,-6.7],[1.5,2.2],[-1.2,2.2]]
     center: [0,0]
   "2":
-    file: map/mi_multi/mi_multi_2/map.yaml
+    file: map/slope/slope_2/map.yaml
     bounds: [  -3,  3, -0.2,  22 ]
-    polygon: [[2.85,0],[-2.7,0],[-3.95,20.63],[2.95,20.47]]
-    center: [-12,2]
+    polygon: [[0.39,1.15],[0.41,-1.33],[-1.9,-1.31],[-1.93,1.07]]
+    center: [10,2]
+  "3":
+    file: map/slope/slope_3/map.yaml
+    bounds: [ -17,  14,  -10,   2.6 ]
+    polygon: [[1.8,1.2],[2,-0.4],[-0.9,-0.47],[-1.04,1.12]]
+    center: [5,2]

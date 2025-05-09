@@ -2,20 +2,45 @@
 
 ramps:
 
+# slope
+
   - id: "ramp1_a"
     from: "1"
     to:   "2"
-    entry_pose: [ -14, 2, 0.0 ]
-    exit_pose:  [ 0, 1, 0.0 ]
+    entry_pose: [ 0.8, 1, 0.0 ]
+    exit_pose:  [ 0, -1, 0.0 ]
     blind_len:  0.1
-    orientation: 90.0
+    orientation: 0
   - id: "ramp1_d"
     from: "2"
     to:   "1"
-    entry_pose: [ 0, 0, 0.0 ]
-    exit_pose:  [ -14, 1, 0.0 ]
+    entry_pose: [ 0, -1, 0.0 ]
+    exit_pose:  [ 0.8, 1, 0.0 ]
     blind_len:  0.1
-    orientation: -90.0
+    orientation: 180.0
+  - id: "rampX"
+    from: "1"
+    to:   "3"
+    entry_pose: [ 0.8, 1, 0.0 ]
+    exit_pose:  [ 0, 0, 0.0 ]
+    blind_len:  0.1
+    orientation: 0
+
+# # mi
+#   - id: "ramp1_a"
+#     from: "1"
+#     to:   "2"
+#     entry_pose: [ -14, 2, 0.0 ]
+#     exit_pose:  [ 0, 1, 0.0 ]
+#     blind_len:  0.1
+#     orientation: 90.0
+#   - id: "ramp1_d"
+#     from: "2"
+#     to:   "1"
+#     entry_pose: [ 0, 0, 0.0 ]
+#     exit_pose:  [ -14, 1, 0.0 ]
+#     blind_len:  0.1
+#     orientation: -90.0
 
   # - id: "ramp1_a"
   #   from: "1"
