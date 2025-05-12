@@ -1,15 +1,9 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
-#include <gazebo/physics/Model.hh>
-#include <gazebo/physics/Joint.hh>
-#include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
-#include <sdf/sdf.hh>
-
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float64.h>
-
 
 namespace gazebo {
 
@@ -85,38 +79,18 @@ public:
     }
 
     void OnUpdate() {
-        // Define swerve steering constraints
-
-        double max_steer_angle = 1.57;  // 90 degrees (Pi/2
-
-        // Apply wheel linear velocities (independent swerve drive)
+        // Apply wheel velocities
         this->joints[0]->SetVelocity(0, this->velFrontLeft_Linear);
         this->joints[1]->SetVelocity(0, this->velFrontRight_Linear);
         this->joints[2]->SetVelocity(0, this->velBackLeft_Linear);
         this->joints[3]->SetVelocity(0, this->velBackRight_Linear);
 
-        // Function to handle strict steering limits at ±90 degrees
-        auto handleSteering = [&](physics::JointPtr joint, double& steer_velocity) {
-            double current_angle = joint->Position(0);
-
-            if (current_angle >= 1.57) {
-                joint->SetPosition(0, 1.57);  // Lock at +90 degrees
-                joint->SetVelocity(0, 0);  // Stop movement
-            } else if (current_angle <= -1.57) {
-                joint->SetPosition(0, -1.57);  // Lock at -90 degrees
-                joint->SetVelocity(0, 0);  // Stop movement
-            } else {
-                joint->SetVelocity(0, steer_velocity);
-            }
-        };
-
-        // Apply independent steering control for each swerve modules
-        handleSteering(this->joints[4], this->velFrontLeft_Angular);
-        handleSteering(this->joints[5], this->velFrontRight_Angular);
-        handleSteering(this->joints[6], this->velBackLeft_Angular);
-        handleSteering(this->joints[7], this->velBackRight_Angular);
+        // Apply steering angles
+        this->joints[4]->SetVelocity(0, this->velFrontLeft_Angular);
+        this->joints[5]->SetVelocity(0, this->velFrontRight_Angular);
+        this->joints[6]->SetVelocity(0, this->velBackLeft_Angular);
+        this->joints[7]->SetVelocity(0, this->velBackRight_Angular);
         }
-
 
 private:
     physics::ModelPtr model;

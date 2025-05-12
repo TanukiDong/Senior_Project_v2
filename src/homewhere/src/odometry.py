@@ -5,11 +5,11 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, Quaternion
 import tf
 import math
-import traceback
 from sensor_msgs.msg import JointState
 
 # Wheel base distance
 WHEEL_RADIUS = 0.07
+# WHEEL_BASE = 0.5 / 2
 
 # Initialize global variables for wheel velocities
 velFrontLeft_Linear = 0.0
@@ -42,10 +42,6 @@ def back_right_callback(msg):
     velBackRight_Linear = msg.linear.x
     velBackRight_Angular = msg.angular.z
 
-def clamp_steering(angle, min_angle=-math.pi/2, max_angle=math.pi/2):
-    """Clamp steering angles to be within [-π/2, π/2]"""
-    return max(min(angle, max_angle), min_angle)
-
 def odometry_publisher():
     rospy.init_node('odometry')
     odom_pub = rospy.Publisher('/odom', Odometry, queue_size=50)
@@ -65,128 +61,99 @@ def odometry_publisher():
     last_time = rospy.Time.now()
 
     while not rospy.is_shutdown():
-        try:
-            current_time = rospy.Time.now()
-            dt = (current_time - last_time).to_sec()
-            last_time = current_time
+        current_time = rospy.Time.now()
+        dt = (current_time - last_time).to_sec()
+        last_time = current_time
 
-            # Calculation
-            v = velFrontLeft_Linear * WHEEL_RADIUS
-            vx = v * math.cos(theta)
-            vy = v * math.sin(theta)
-            omega = velFrontLeft_Angular
+        # Calculation
+        v = velFrontLeft_Linear * WHEEL_RADIUS
+        vx = v * math.cos(theta)
+        vy = v * math.sin(theta)
+        omega = velFrontLeft_Angular
 
-            dx = vx * dt
-            dy = vy * dt
-            dtheta = omega * dt
+        dx = vx * dt
+        dy = vy * dt
+        dtheta = omega * dt
+        
+        x += dx
+        y += dy
+        theta += dtheta
 
-            x += dx
-            y += dy
+        # Create a quaternion from theta
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
 
-            # Check if steering is at its limit
-            steering_angle = clamp_steering(theta)
-            at_limit = abs(steering_angle) >= (math.pi / 2)
+        odom_broadcaster.sendTransform(
+            (x, y, 0.0),
+            tf.transformations.quaternion_from_euler(0, 0, theta),
+            current_time,
+            "base_footprint",
+            "odom"
+        )
+        
+        odom_broadcaster.sendTransform(
+            (0.0, 0.0, 0.0),
+            tf.transformations.quaternion_from_euler(0, 0, -theta),
+            current_time,
+            "base_link",
+            "base_footprint"
+        )
+        # odom_broadcaster.sendTransform(
+        #     (0.0, 0.0, 0.0),
+        #     tf.transformations.quaternion_from_euler(0, 0, -theta),
+        #     current_time,
+        #     "base_scan",
+        #     "base_link"
+        # )
 
-            if at_limit and ((theta > 0 and dtheta > 0) or (theta < 0 and dtheta < 0)):
-                # Stop rotation if trying to go further in the same direction
-                dtheta = 0
-            else:
-                # Allow instant switching if direction changes
-                theta += dtheta  
+        # Publish the odometry message
+        odom = Odometry()
+        odom.header.stamp = current_time
+        odom.header.frame_id = "odom"
 
-            # Create a quaternion from theta
-            odom_quat = tf.transformations.quaternion_from_euler(0, 0, theta)
+        # Set the position
+        odom.pose.pose.position.x = x
+        odom.pose.pose.position.y = y
+        odom.pose.pose.position.z = 0.0
+        odom.pose.pose.orientation = Quaternion(*odom_quat)
 
-            try:
-                odom_broadcaster.sendTransform(
-                    (x, y, 0.0),
-                    tf.transformations.quaternion_from_euler(0, 0, theta % (2 * math.pi)),  # Limit theta
-                    current_time,
-                    "base_footprint",
-                    "odom"
-                )
-            except Exception as e:
-                rospy.logerr("Error broadcasting transform (base_footprint -> odom): {}".format(e))
-                rospy.logerr(traceback.format_exc())
+        # Set the velocity
+        odom.child_frame_id = "base_footprint"
+        odom.twist.twist.linear.x = v
+        odom.twist.twist.linear.y = 0.0
+        odom.twist.twist.angular.z = omega
 
-            try:
-                odom_broadcaster.sendTransform(
-                    (0.0, 0.0, 0.0),
-                    tf.transformations.quaternion_from_euler(0, 0, -theta),
-                    current_time,
-                    "base_link",
-                    "base_footprint"
-                )
-            except Exception as e:
-                rospy.logerr("Error broadcasting transform (base_link -> base_footprint): {}".format(e))
-                rospy.logerr(traceback.format_exc())
+        # Publish the odometry message
+        odom_pub.publish(odom)
+        
+        
+        # Create a JointState message
+        joint_state = JointState()
+        joint_state.header.stamp = current_time
 
-            # Publish the odometry message
-            try:
-                odom = Odometry()
-                odom.header.stamp = current_time
-                odom.header.frame_id = "odom"
+        # Define joint names
+        joint_state.name = [
+            "wheel_front_left_joint", "wheel_front_right_joint",
+            "wheel_rear_left_joint", "wheel_rear_right_joint",
+            "steer_front_left_joint", "steer_front_right_joint",
+            "steer_rear_left_joint", "steer_rear_right_joint"
+        ]
 
-                # Set the position
-                odom.pose.pose.position.x = x
-                odom.pose.pose.position.y = y
-                odom.pose.pose.position.z = 0.0
-                odom.pose.pose.orientation = Quaternion(*odom_quat)
+        # Define joint positions
+        joint_state.position = [
+            0.0, 0.0,
+            0.0, 0.0,
+            theta, theta, theta, theta
+            # 0.0, 0.0,
+            # 0.0, 0.0,
+        ]
 
-                # Set the velocity
-                odom.child_frame_id = "base_footprint"
-                odom.twist.twist.linear.x = v
-                odom.twist.twist.linear.y = 0.0
-                odom.twist.twist.angular.z = omega if not at_limit else 0.0  # Stop rotation if at limit
+        # Publish joint states
+        joint_pub.publish(joint_state)
 
-                # Publish the odometry message
-                odom_pub.publish(odom)
-            except Exception as e:
-                rospy.logerr("Error publishing odometry message: {}".format(e))
-                rospy.logerr(traceback.format_exc())
-
-            # Create a JointState message
-            try:
-                joint_state = JointState()
-                joint_state.header.stamp = current_time
-
-                # Define joint names
-                joint_state.name = [
-                    "wheel_front_left_joint", "wheel_front_right_joint",
-                    "wheel_rear_left_joint", "wheel_rear_right_joint",
-                    "steer_front_left_joint", "steer_front_right_joint",
-                    "steer_rear_left_joint", "steer_rear_right_joint"
-                ]
-
-                wheel_rotation = (x / WHEEL_RADIUS) % (2 * math.pi)  # Limit wheel rotation
-
-                joint_state.position = [
-                    wheel_rotation,  # Front left wheel rotation
-                    wheel_rotation,  # Front right wheel rotation
-                    wheel_rotation,  # Rear left wheel rotation
-                    wheel_rotation,  # Rear right wheel rotation
-                    clamp_steering(theta),  # Steering front left
-                    clamp_steering(theta),  # Steering front right
-                    clamp_steering(theta),  # Steering rear left
-                    clamp_steering(theta)   # Steering rear right
-                ]
-
-                # Publish joint states
-                joint_pub.publish(joint_state)
-            except Exception as e:
-                rospy.logerr("Error publishing joint states: {}".format(e))
-                rospy.logerr(traceback.format_exc())
-
-            rate.sleep()
-
-        except Exception as e:
-            pass
+        rate.sleep()
 
 if __name__ == '__main__':
     try:
         odometry_publisher()
     except rospy.ROSInterruptException:
-        rospy.logwarn("ROS Node interrupted")
-    except Exception as e:
-        rospy.logerr("Unexpected error in main function: {}".format(e))
-        rospy.logerr(traceback.format_exc())
+        pass

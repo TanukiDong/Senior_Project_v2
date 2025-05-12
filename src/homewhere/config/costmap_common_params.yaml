@@ -1,36 +1,21 @@
+# no obstacle_layer here — we’ll replace that with height_map_layer below
 obstacle_range: 2.5
 raytrace_range: 3.0
 
-# Diagonal Rectangle
-# footprint: [[0.18, 0.18], [0.18, -0.18], [-0.18, -0.18], [-0.18, 0.18]]
-# # Exact Rectangle
-# footprint: [[0.15, 0.13], [0.15, -0.13], [-0.15, -0.13], [-0.15, 0.13]]
-# Test Square
-footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
-# robot_radius: 0.2
+robot_radius: 0.25
 
-inflation_radius: 0.2
-cost_scaling_factor: 3.0
-update_frequency: 5.0
-publish_frequency: 5.0
-transform_tolerance: 0.5
+plugins:
+  - {name: static_layer,      type: "costmap_2d::StaticLayer"}
+  - {name: inflation_layer,   type: "costmap_2d::InflationLayer"}
+  - {name: height_map_layer,  type: "costmap_2d::OccupancyGridLayer"}   # ← use StaticLayer
 
-map_type: costmap
-observation_sources: scan
-scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
-robot_base_frame: base_footprint
+height_map_layer:
+  map_topic: /height_map
+  subscribe_to_updates: true
+  track_unknown_space: true
+  use_maximum: false
+  lethal_cost_threshold: 99         # default, ok
+  unknown_cost_value: -1
+  trinary_costmap: false            # <-- CRITICAL: don't collapse to 0/100/-1
+  track_unknown_space: true
 
-
-observation_sources: scan scan_flat
-scan:
-  sensor_frame: base_scan
-  data_type: LaserScan
-  topic: /scan
-  marking: true
-  clearing: true
-scan_flat:
-  sensor_frame: base_scan
-  data_type: LaserScan
-  topic: /scan_flat
-  marking: true
-  clearing: true

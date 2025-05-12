@@ -103,10 +103,8 @@ class Control:
 
         try:
             still = [0, 0, 0, 0]
-            forward = [10, 10, 10, 10]
-            backward = [-10, -10, -10, -10]
-            # forward = [10, 10, 10, 10]
-            # backward = [-10, -10, -10, -10]
+            forward = [5, 5, 5, 5]
+            backward = [-5, -5, -5, -5]
             left_turn = [1, 1, 1, 1]
             right_turn = [-1, -1, -1, -1]
 

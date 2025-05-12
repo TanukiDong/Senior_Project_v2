@@ -1,0 +1,20 @@
+digraph G {
+"base_footprint" -> "base_link"[label="Broadcaster: /odometry\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 41.043 sec old)\nBuffer length: 0.000 sec\n"];
+"odom" -> "base_footprint"[label="Broadcaster: /odometry\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"base_link" -> "body"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 41.043 sec old)\nBuffer length: 0.000 sec\n"];
+"body" -> "imu_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 41.043 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "base_scan"[label="Broadcaster: /lidar_static_tf\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 41.043 sec old)\nBuffer length: 0.000 sec\n"];
+"map" -> "odom"[label="Broadcaster: /turtlebot3_slam_gmapping\nAverage rate: 20.202 Hz\nMost recent transform: 41.067 ( -0.024 sec old)\nBuffer length: 4.950 sec\n"];
+"body" -> "steer_front_left"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"body" -> "steer_front_right"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"body" -> "steer_rear_left"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"body" -> "steer_rear_right"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"steer_front_left" -> "wheel_front_left"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"steer_front_right" -> "wheel_front_right"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"steer_rear_left" -> "wheel_rear_left"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+"steer_rear_right" -> "wheel_rear_right"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.204 Hz\nMost recent transform: 41.000 ( 0.043 sec old)\nBuffer length: 4.900 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 41.043"[ shape=plaintext ] ;
+ }->"map";
+}
