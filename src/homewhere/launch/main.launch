@@ -2,9 +2,9 @@
     <arg name="world" default="empty" />
     <arg name="room" default="1" />
     <arg name="map"
-        default="$(eval arg('world') if arg('world') not in ['7hd', '7hde'] else arg('world') + '/' + arg('world') + '_' + str(arg('room')))" />
+        default="$(eval arg('world') if arg('world') not in ['7hd', '7hde', '7hdm'] else arg('world') + '/' + arg('world') + '_' + str(arg('room')))" />
     <arg name="pos_key"
-        default="$(eval arg('world') + '_' + str(arg('room')) if arg('world') in ['7hd', '7hde'] else arg('world'))" />
+        default="$(eval arg('world') + '_' + str(arg('room')) if arg('world') in ['7hd', '7hde', '7hdm'] else arg('world'))" />
     <arg name="map_file" value="$(find homewhere)/map/$(arg map)/map.yaml" />
     <arg name="mode" default="default" /> <!-- default|slam|nav|multi -->
     <arg name="small" default="0" />
