@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy, yaml, os, sys, subprocess, math, roslib.packages
-from std_msgs.msg import Bool, Float64
+from std_msgs.msg import Bool, Float64, Empty
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from actionlib_msgs.msg import GoalID
@@ -17,10 +17,10 @@ STATE_UP_RAMP     = 4
 STATE_MAP_SWITCH  = 5
 
 DIST_TO_RAMP_TH       = 0.3
-RAMP_SPEED            = 0.5
+RAMP_SPEED            = 0.3
 RAMP_RATE             = 10
 
-WARMUP_DELAY = 2
+WARMUP_DELAY = 11
 BLIND_DELAY  = 1
 FINISH_DELAY = 1
 
@@ -64,6 +64,7 @@ class MultiLevelNavManager:
         # ── pubs/subs ───────────────────────────────────────────
         self.cmd_pub  = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
         self.init_pub = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=1, latch=True)
+        self.new_slope_publisher = rospy.Publisher("/new_slope", Empty, queue_size=1)
 
         rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.goal_cb)
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, self.amcl_cb)
@@ -189,6 +190,9 @@ class MultiLevelNavManager:
 
         self.relocalize()
         self.current_room = new_room
+
+        # Publish IMU reset
+        self.new_slope_publisher.publish(Empty())
 
         # wait for amcl to start
         try:

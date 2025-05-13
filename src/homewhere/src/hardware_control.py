@@ -4,7 +4,7 @@ import rospy
 import os
 from hardware import arduino_control, motors_control
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray, Int16, Bool
+from std_msgs.msg import Float32MultiArray, Int16, Bool, Empty
 from algo.kalman_filter import KalmanFilter
 import numpy as np
 import time
@@ -17,7 +17,7 @@ class Hardware_Controller:
     FRONT_ADDR = "ttyUSB1"
     REAR_ADDR = "ttyUSB2"
     REFRESH_RATE = 0.1 # in second
-    THRESHOLD = 6 # in degrees
+    THRESHOLD = 3 # in degrees
     IMU_SAMPLE = 10
 
     def __init__(self):
@@ -34,7 +34,7 @@ class Hardware_Controller:
         self.velBackRight_Linear_x = 0.0
         self.velBackRight_Linear_y = 0.0
         self.theta = 0.0
-        self.vel_limit = 0.4
+        self.vel_limit = 0.5
 
         # ROS Publisher
         self.encoder_publisher = rospy.Publisher('/cmd_hardware_reading', Float32MultiArray, queue_size=10)
@@ -47,6 +47,7 @@ class Hardware_Controller:
         rospy.Subscriber("/cmd_vel_back_left", Twist, self.back_left_callback)
         rospy.Subscriber("/cmd_vel_back_right", Twist, self.back_right_callback)
         rospy.Subscriber("/cmd_angle", Int16, self.angle_callback)
+        rospy.Subscriber("/new_slope", Empty, self.new_slope_callback)
 
         # Detect and connect hardware devices
         self.setup_hardware()
@@ -65,10 +66,7 @@ class Hardware_Controller:
         self.current_theoretical_velocity = 0.0
 
         # Automatically get the default value of the IMU on flat terrain
-        first_tilts = [self.arduino.read_mpu6050().get_angle() for _ in range(Hardware_Controller.IMU_SAMPLE)]
-        self.first_roll = sum([x[0] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
-        self.first_pitch = sum([x[1] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
-        print(f"Setup roll and pitch = {self.first_roll}, {self.first_pitch}")
+        self.setup_imu()
 
         # Start periodic update loop
         rospy.Timer(rospy.Duration(Hardware_Controller.REFRESH_RATE), self.update)  # Runs update every 0.1 sec
@@ -97,6 +95,12 @@ class Hardware_Controller:
         else:
             rospy.logerr(f"No motor at ports {Hardware_Controller.FRONT_ADDR} or {Hardware_Controller.REAR_ADDR}")
             raise Exception(f"No motor at ports {Hardware_Controller.FRONT_ADDR} or {Hardware_Controller.REAR_ADDR}")
+        
+    def setup_imu(self):
+        first_tilts = [self.arduino.read_mpu6050().get_angle() for _ in range(Hardware_Controller.IMU_SAMPLE)]
+        self.first_roll = sum([x[0] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
+        self.first_pitch = sum([x[1] for x in first_tilts])/Hardware_Controller.IMU_SAMPLE
+        print(f"Setup roll and pitch = {self.first_roll}, {self.first_pitch}")
 
     # ---- ROS Subscriber Callbacks ----
     def front_left_callback(self, msg):
@@ -118,6 +122,10 @@ class Hardware_Controller:
 
     def angle_callback(self, msg):
         self.theta = msg.data  # Float32 contains data in `.data`
+
+    def new_slope_callback(self, msg):
+        self.setup_imu()
+        print(f"Setup roll and pitch = {self.first_roll}, {self.first_pitch}")
 
     # ---- Sensor Reading ----
     def read_sensor(self):
