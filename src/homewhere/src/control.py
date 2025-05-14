@@ -30,7 +30,7 @@ class Control:
         self.back_left_velocity = Twist()
         self.back_right_velocity = Twist()
         self.angle = 90
-        self.manual_velocity = 0.3
+        self.manual_velocity = 1.5
         self.hemisphere = "front"
         self.angle_tolerance = 0.08
 

@@ -357,7 +357,7 @@ class Motors:
         front.disable_motor()
         rear.disable_motor()
 
-        ad_time = 600 # 600ms seems to be good on the robot at 0.1 m/s 
+        ad_time = 1000 # 600ms seems to be good on the robot at 0.1 m/s 
         front.set_accel_time(ad_time,ad_time)
         front.set_decel_time(ad_time,ad_time)
         rear.set_accel_time(ad_time,ad_time)

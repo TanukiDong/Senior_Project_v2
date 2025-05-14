@@ -20,7 +20,7 @@ DIST_TO_RAMP_TH       = 0.3
 RAMP_SPEED            = 0.3
 RAMP_RATE             = 10
 
-WARMUP_DELAY = 11
+WARMUP_DELAY = 1
 BLIND_DELAY  = 1
 FINISH_DELAY = 1
 
