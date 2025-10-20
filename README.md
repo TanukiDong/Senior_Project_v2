@@ -43,7 +43,7 @@ export GAZEBO_PLUGIN_PATH="${GAZEBO_PLUGIN_PATH}:/home/username/path/to/project/
   </div>
 
 ```bash
-mamba install ros-noetic-desktop-full compilers cmake pkg-config make ninja \
+mamba install -c conda-forge -c robostack-noetic ros-noetic-desktop-full compilers cmake pkg-config make ninja \
 colcon-common-extensions catkin_tools rosdep
 ```
 
@@ -56,7 +56,7 @@ colcon-common-extensions catkin_tools rosdep
     </summary>
 
 ```bash
-mamba install ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard \
+mamba install -c conda-forge -c robostack-noetic -c robostack ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard \
 ros-noetic-laser-proc ros-noetic-rgbd-launch ros-noetic-rosserial-arduino \
 ros-noetic-rosserial-python ros-noetic-rosserial-client ros-noetic-rosserial-msgs \
 ros-noetic-amcl ros-noetic-map-server ros-noetic-move-base ros-noetic-urdf \
@@ -74,7 +74,8 @@ ros-noetic-turtlebot3-msgs ros-noetic-turtlebot3 ros-noetic-turtlebot3-gazebo
     </summary>
 
 ```bash
-mamba install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control \
+mamba install pynput
+mamba install -c conda-forge -c robostack-noetic -c robostack ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control \
 ros-noetic-global-planner ros-noetic-dwa-local-planner ros-noetic-teb-local-planner \
 ros-noetic-costmap-converter ros-noetic-libg2o ros-noetic-mbf-costmap-core \
 ros-noetic-mbf-abstract-core ros-noetic-mbf-msgs ros-noetic-mbf-utility
