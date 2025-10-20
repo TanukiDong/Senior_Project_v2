@@ -44,7 +44,7 @@ export GAZEBO_PLUGIN_PATH="${GAZEBO_PLUGIN_PATH}:/home/username/path/to/project/
 
 ```bash
 mamba install -c conda-forge -c robostack-noetic ros-noetic-desktop-full compilers cmake pkg-config make ninja \
-colcon-common-extensions catkin_tools rosdep
+colcon-common-extensions catkin_tools rosdep python=3.8
 ```
 
   </details><br>
